@@ -6,20 +6,7 @@ import {
   timelineEntries,
   timelineEras,
 } from "@/data/timeline";
-import {
-  categoryMeta,
-  type LocationCategory,
-} from "@/data/locations";
 import { pct, groupByCompany, getColor, lerp } from "@/lib/timeline";
-
-type PillKey = LocationCategory | "see";
-
-const pillMeta: Record<PillKey, { label: string; color: string }> = {
-  ...categoryMeta,
-  see: { label: "See", color: "#7B5EA7" },
-};
-
-const pillKeys: PillKey[] = ["work", "art", "volunteer", "travel", "want-to-visit", "see"];
 
 /** Blend between two rgba colours. t=0 → a, t=1 → b */
 function blendRgba(a: string, b: string, t: number) {
@@ -45,13 +32,12 @@ export default function GanttTimeline() {
   const [progress, setProgress] = useState(0);
   const [hoveredCompany, setHoveredCompany] = useState<string | null>(null);
   const [hoveredRowTop, setHoveredRowTop] = useState(0);
-  const [activePill, setActivePill] = useState<PillKey | null>(null);
 
   const handleScroll = useCallback(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
     const rect = sentinel.getBoundingClientRect();
-    const p = Math.max(0, Math.min(1, (0 - rect.top) / 200));
+    const p = Math.max(0, Math.min(1, (0 - rect.top) / 180));
     setProgress(p);
   }, []);
 
@@ -66,37 +52,29 @@ export default function GanttTimeline() {
     window.dispatchEvent(new CustomEvent("gantt-progress", { detail: progress }));
   }, [progress]);
 
-  // Broadcast pill changes so MapSection can react
-  useEffect(() => {
-    window.dispatchEvent(new CustomEvent("gantt-pill-change", { detail: activePill }));
-  }, [activePill]);
-
-  const handlePillClick = useCallback((key: PillKey) => {
-    setActivePill((prev) => (prev === key ? null : key));
-  }, []);
-
   const groups = groupByCompany(timelineEntries);
+  const N = groups.length;
 
-  // How far the bars have faded to grey (0 = full color, 1 = full grey)
-  const greyT = Math.max(0, Math.min(1, (progress - 0.3) / 0.5));
-
-  // Interpolated values
-  const rowHeight = lerp(14, 2, progress);
-  const rowGap = lerp(3, 1, progress);
-  const labelOpacity = lerp(1, 0, progress);
-  const bleedMargin = lerp(-160, 0, progress);
+  // Global interpolations
   const navRowOpacity = lerp(0, 1, Math.max(0, (progress - 0.3) / 0.7));
   const backdropOpacity = lerp(0, 0.92, progress);
   const verticalPadding = lerp(24, 8, progress);
   const hoverEnabled = progress < 0.3;
 
-  // Pills fade in as bars fade to grey
-  const pillOpacity = lerp(0, 1, Math.max(0, (progress - 0.4) / 0.4));
+  // Label columns and flex gap collapse with global progress
+  const companyLabelWidth = lerp(150, 0, progress);
+  const locationLabelWidth = lerp(120, 0, progress);
+  const flexGap = lerp(12, 0, progress);
+  const labelOpacity = lerp(1, 0, progress);
 
   // Year axis interpolation
   const tickHeight = lerp(8, 4, progress);
   const minorTickHeight = lerp(5, 3, progress);
   const yearFontSize = lerp(9, 7, progress);
+
+  // Container width transitions: Gantt (960) → Map (1200) as it collapses
+  const maxWidth = lerp(960, 1200, progress);
+  const bleedMargin = lerp(-160, 0, progress);
 
   return (
     <>
@@ -112,8 +90,24 @@ export default function GanttTimeline() {
           transition: "border-color 0.2s",
         }}
       >
+        {/* Responsive padding + max-width interpolated via injected style */}
+        <style>{`
+          [data-gantt-container] {
+            max-width: ${maxWidth}px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: ${lerp(24, 16, progress)}px;
+            padding-right: ${lerp(24, 16, progress)}px;
+          }
+          @media (min-width: 768px) {
+            [data-gantt-container] {
+              padding-left: ${lerp(48, 16, progress)}px;
+              padding-right: ${lerp(48, 16, progress)}px;
+            }
+          }
+        `}</style>
         <div
-          className="max-w-[960px] mx-auto px-6 md:px-12"
+          data-gantt-container=""
           style={{ paddingTop: `${verticalPadding}px`, paddingBottom: `${verticalPadding}px` }}
         >
           {/* Name + nav row — fades in as chart collapses */}
@@ -147,7 +141,6 @@ export default function GanttTimeline() {
 
           {/* Gantt — bleeds left on desktop for labels */}
           <div className="relative">
-            {/* Responsive bleed margin via injected style */}
             <style>{`
               @media (min-width: 640px) {
                 [data-gantt-bleed] { margin-left: ${bleedMargin}px; }
@@ -159,20 +152,30 @@ export default function GanttTimeline() {
                 style={{
                   display: "flex",
                   flexDirection: "column-reverse",
-                  gap: `${rowGap}px`,
+                  gap: `${lerp(3, 1, progress)}px`,
                 }}
               >
-                {groups.map(({ company, entries }) => {
+                {groups.map(({ company, entries }, groupIndex) => {
                   const color = getColor(company);
-                  // Blend bar colors toward grey as progress increases
-                  const barMuted = blendRgba(color.muted, GREY_MUTED, greyT);
-                  const barVivid = blendRgba(color.vivid, GREY_VIVID, greyT);
+
+                  // Per-row staggered collapse: top rows collapse first
+                  // column-reverse: groupIndex 0 = bottom visually, N-1 = top
+                  const visualIndex = N - 1 - groupIndex; // 0 = top row
+                  const rowStart = visualIndex / N;
+                  const rowT = Math.max(0, Math.min(1, (progress - rowStart) * N));
+
+                  const rowHeight = lerp(14, 2, rowT);
+
+                  // Blend bar colors toward grey as this row collapses
+                  const barMuted = blendRgba(color.muted, GREY_MUTED, rowT);
+                  const barVivid = blendRgba(color.vivid, GREY_VIVID, rowT);
 
                   return (
                     <div
                       key={company}
-                      className="flex items-center gap-3 rounded-md px-1 -mx-1 transition-colors duration-200"
+                      className="flex items-center rounded-md px-1 -mx-1 transition-colors duration-200"
                       style={{
+                        gap: `${flexGap}px`,
                         backgroundColor: hoveredCompany === company && hoverEnabled
                           ? "rgba(45, 42, 38, 0.03)"
                           : "transparent",
@@ -188,10 +191,10 @@ export default function GanttTimeline() {
                       }}
                       onMouseLeave={() => setHoveredCompany(null)}
                     >
-                      {/* Company label — sits in the bleed area */}
+                      {/* Company label */}
                       <div
-                        className="w-[150px] shrink-0 text-right hidden sm:block"
-                        style={{ opacity: labelOpacity }}
+                        className="shrink-0 text-right hidden sm:block"
+                        style={{ width: `${companyLabelWidth}px`, minWidth: 0, opacity: labelOpacity }}
                       >
                         <p
                           className="font-mono text-[8px] leading-tight truncate transition-colors duration-200"
@@ -224,14 +227,14 @@ export default function GanttTimeline() {
                               style={{
                                 left: `${left}%`,
                                 width: `${w}%`,
-                                minWidth: progress > 0.5 ? "2px" : "4px",
+                                minWidth: rowT > 0.5 ? "2px" : "4px",
                               }}
                             >
                               {/* Left-pointing arrow for clipped bars */}
-                              {clipped && progress < 0.3 && (
+                              {clipped && rowT < 0.3 && (
                                 <svg
                                   className="absolute shrink-0"
-                                  style={{ left: 0, top: "50%", transform: "translateY(-50%)", opacity: lerp(1, 0, progress / 0.3) }}
+                                  style={{ left: 0, top: "50%", transform: "translateY(-50%)", opacity: lerp(1, 0, rowT / 0.3) }}
                                   width="8" height="14" viewBox="0 0 8 14"
                                 >
                                   <polygon
@@ -241,15 +244,15 @@ export default function GanttTimeline() {
                                 </svg>
                               )}
 
-                              {/* Start tick — fades in as bars go grey */}
-                              {greyT > 0.3 && (
+                              {/* Start tick — fades in as row goes grey */}
+                              {rowT > 0.3 && (
                                 <div
                                   className="absolute top-0 bottom-0"
                                   style={{
-                                    left: clipped && progress < 0.3 ? "8px" : 0,
+                                    left: clipped && rowT < 0.3 ? "8px" : 0,
                                     width: "1px",
                                     backgroundColor: GREY_VIVID,
-                                    opacity: Math.min(1, (greyT - 0.3) / 0.3),
+                                    opacity: Math.min(1, (rowT - 0.3) / 0.3),
                                   }}
                                 />
                               )}
@@ -258,23 +261,23 @@ export default function GanttTimeline() {
                               <div
                                 className="absolute h-full w-full"
                                 style={{
-                                  left: clipped && progress < 0.3 ? "8px" : 0,
-                                  width: clipped && progress < 0.3 ? "calc(100% - 8px)" : "100%",
+                                  left: clipped && rowT < 0.3 ? "8px" : 0,
+                                  width: clipped && rowT < 0.3 ? "calc(100% - 8px)" : "100%",
                                   backgroundColor: fillColor,
-                                  borderRadius: progress > 0.7
+                                  borderRadius: rowT > 0.7
                                     ? "9999px"
                                     : clipped ? "0 3px 3px 0" : "3px",
                                 }}
                               />
 
-                              {/* End tick — fades in as bars go grey */}
-                              {greyT > 0.3 && (
+                              {/* End tick — fades in as row goes grey */}
+                              {rowT > 0.3 && (
                                 <div
                                   className="absolute top-0 bottom-0 right-0"
                                   style={{
                                     width: "1px",
                                     backgroundColor: GREY_VIVID,
-                                    opacity: Math.min(1, (greyT - 0.3) / 0.3),
+                                    opacity: Math.min(1, (rowT - 0.3) / 0.3),
                                   }}
                                 />
                               )}
@@ -284,8 +287,8 @@ export default function GanttTimeline() {
                       </div>
                       {/* Location label */}
                       <div
-                        className="w-[120px] shrink-0 hidden sm:block"
-                        style={{ opacity: labelOpacity }}
+                        className="shrink-0 hidden sm:block"
+                        style={{ width: `${locationLabelWidth}px`, minWidth: 0, opacity: labelOpacity }}
                       >
                         <p
                           className="font-mono text-[8px] leading-tight truncate transition-colors duration-200"
@@ -303,55 +306,10 @@ export default function GanttTimeline() {
                 })}
               </div>
 
-              {/* Category pills — fade in between bars and year axis */}
-              <div
-                className="flex items-start gap-3 px-1 -mx-1"
-                style={{
-                  opacity: pillOpacity,
-                  pointerEvents: pillOpacity > 0.3 ? "auto" : "none",
-                  maxHeight: pillOpacity > 0.05 ? "40px" : "0px",
-                  marginTop: pillOpacity > 0.05 ? "6px" : "0px",
-                  overflow: "hidden",
-                  transition: "max-height 0.15s ease, margin-top 0.15s ease",
-                }}
-              >
-                {/* Spacer matching company label column */}
-                <div className="w-[150px] shrink-0 hidden sm:block" />
-                <div className="flex-1 flex flex-wrap gap-2">
-                  {pillKeys.map((key) => {
-                    const meta = pillMeta[key];
-                    const isActive = activePill === key;
-                    const isNoneSelected = activePill === null;
-                    const dimmed = !isNoneSelected && !isActive;
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => handlePillClick(key)}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full font-mono text-[10px] transition-all duration-300 border"
-                        style={{
-                          borderColor: dimmed ? "var(--color-muted)" : meta.color,
-                          backgroundColor: isActive ? `${meta.color}20` : "transparent",
-                          color: dimmed ? "var(--color-muted)" : meta.color,
-                          opacity: dimmed ? 0.35 : 1,
-                        }}
-                      >
-                        <span
-                          className="w-1.5 h-1.5 rounded-full transition-colors duration-300"
-                          style={{ backgroundColor: dimmed ? "var(--color-muted)" : meta.color }}
-                        />
-                        {meta.label}
-                      </button>
-                    );
-                  })}
-                </div>
-                {/* Spacer matching location label column */}
-                <div className="w-[120px] shrink-0 hidden sm:block" />
-              </div>
-
               {/* Year axis — aligned with bar area using same flex layout */}
-              <div className="flex items-start gap-3 px-1 -mx-1 mt-1">
+              <div className="flex items-start px-1 -mx-1 mt-1" style={{ gap: `${flexGap}px` }}>
                 {/* Spacer matching company label column */}
-                <div className="w-[150px] shrink-0 hidden sm:block" style={{ opacity: labelOpacity }} />
+                <div className="shrink-0 hidden sm:block" style={{ width: `${companyLabelWidth}px`, minWidth: 0, opacity: labelOpacity }} />
                 <div className="relative flex-1">
                   {/* Baseline rule */}
                   <div className="w-full" style={{ height: "1px", backgroundColor: "rgba(45, 42, 38, 0.25)" }} />
@@ -431,7 +389,7 @@ export default function GanttTimeline() {
                   })()}
                 </div>
                 {/* Spacer matching location label column */}
-                <div className="w-[120px] shrink-0 hidden sm:block" style={{ opacity: labelOpacity }} />
+                <div className="shrink-0 hidden sm:block" style={{ width: `${locationLabelWidth}px`, minWidth: 0, opacity: labelOpacity }} />
               </div>
 
               {/* Row hover — floating callout card */}

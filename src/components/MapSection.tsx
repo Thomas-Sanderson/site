@@ -48,6 +48,8 @@ const pillMeta: Record<PillKey, { label: string; color: string }> = {
   see: { label: "See", color: "#7B5EA7" },
 };
 
+const pillKeys: PillKey[] = ["work", "art", "volunteer", "travel", "want-to-visit", "see"];
+
 /** Group locations by city, counting industries per city for a given category */
 interface CityGroup {
   city: string;
@@ -71,17 +73,16 @@ export default function MapSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [mapOffset, setMapOffset] = useState(0);
 
-  // Listen for pill changes from GanttTimeline
-  useEffect(() => {
-    const handlePillChange = (e: Event) => {
-      const pill = (e as CustomEvent<PillKey | null>).detail;
-      setActivePill(pill);
-      setSelectedGalleryLocation(null);
-      setHoveredPin(null);
-      setHoveredCityGroup(null);
-    };
-    window.addEventListener("gantt-pill-change", handlePillChange);
-    return () => window.removeEventListener("gantt-pill-change", handlePillChange);
+  const handlePillClick = useCallback((key: PillKey) => {
+    setActivePill((prev) => {
+      const next = prev === key ? null : key;
+      if (next !== prev) {
+        setSelectedGalleryLocation(null);
+        setHoveredPin(null);
+        setHoveredCityGroup(null);
+      }
+      return next;
+    });
   }, []);
 
   const images = galleryData as GalleryImage[];
@@ -506,6 +507,34 @@ export default function MapSection() {
                 </div>
               </div>
             )}
+          {/* Category pills — bottom-right of map */}
+          <div className="absolute bottom-3 right-3 flex flex-col-reverse gap-1.5 z-10">
+            {pillKeys.map((key) => {
+              const meta = pillMeta[key];
+              const isActive = activePill === key;
+              const isNoneSelected = activePill === null;
+              const dimmed = !isNoneSelected && !isActive;
+              return (
+                <button
+                  key={key}
+                  onClick={() => handlePillClick(key)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full font-mono text-[10px] transition-all duration-300 border backdrop-blur-sm"
+                  style={{
+                    borderColor: dimmed ? "var(--color-muted)" : meta.color,
+                    backgroundColor: isActive ? `${meta.color}20` : "rgba(245, 240, 235, 0.8)",
+                    color: dimmed ? "var(--color-muted)" : meta.color,
+                    opacity: dimmed ? 0.35 : 1,
+                  }}
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full transition-colors duration-300"
+                    style={{ backgroundColor: dimmed ? "var(--color-muted)" : meta.color }}
+                  />
+                  {meta.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
