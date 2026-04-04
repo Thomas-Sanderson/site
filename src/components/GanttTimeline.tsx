@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { siteConfig } from "@/data/siteConfig";
 import {
   timelineEntries,
@@ -8,12 +9,15 @@ import {
 } from "@/data/timeline";
 import { pct, groupByCompany, getColor, lerp } from "@/lib/timeline";
 
+const ContentQuiz = dynamic(() => import("./ContentQuiz"), { ssr: false });
+
 export default function GanttTimeline() {
   const ganttRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [hoveredCompany, setHoveredCompany] = useState<string | null>(null);
   const [hoveredRowTop, setHoveredRowTop] = useState(0);
+  const [quizOpen, setQuizOpen] = useState(false);
 
   const handleScroll = useCallback(() => {
     const sentinel = sentinelRef.current;
@@ -98,7 +102,7 @@ export default function GanttTimeline() {
             <a href="#intro" className="font-serif font-bold text-sm">
               {siteConfig.name}
             </a>
-            <div className="flex gap-5">
+            <div className="flex gap-5 items-center">
               {siteConfig.navItems.map((item) => (
                 <a
                   key={item.href}
@@ -109,6 +113,14 @@ export default function GanttTimeline() {
                   {item.label}
                 </a>
               ))}
+              <button
+                onClick={() => setQuizOpen(true)}
+                className="font-mono text-[10px] tracking-wide hover:opacity-70 transition-opacity hidden sm:block"
+                style={{ color: "rgba(45, 42, 38, 0.5)" }}
+                title="Edit content data"
+              >
+                &#9998;
+              </button>
             </div>
           </div>
 
@@ -336,6 +348,7 @@ export default function GanttTimeline() {
         </div>
       </div>
       <div ref={sentinelRef} id="gantt-sentinel" />
+      <ContentQuiz open={quizOpen} onClose={() => setQuizOpen(false)} />
     </>
   );
 }

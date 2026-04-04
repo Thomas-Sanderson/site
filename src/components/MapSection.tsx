@@ -20,22 +20,9 @@ interface GalleryImage {
   height: number;
   location?: string;
   date?: string;
-}
-
-function getGalleryCoords(loc: string): [number, number] | null {
-  const mapping: Record<string, [number, number]> = {
-    "Porto, Portugal": [-8.6291, 41.1579],
-    "Delaware": [-75.5277, 38.9108],
-    "Lewes, Delaware": [-75.1394, 38.7746],
-    "Rehoboth, Delaware": [-75.076, 38.721],
-    "Saratoga, California": [-122.023, 37.2638],
-    "Fort Bragg, California": [-123.8053, 39.4457],
-    "South Royalton, New Hampshire": [-72.5218, 43.8195],
-    "Memphis, Tennessee": [-90.049, 35.1495],
-    "Big South Fork National River & Recreation Area": [-84.6985, 36.487],
-    "Pinnacle Natural Park": [-83.55, 36.6],
-  };
-  return mapping[loc] || null;
+  lat?: number;
+  lng?: number;
+  category?: string;
 }
 
 const WORLD_TOPO_URL =
@@ -100,6 +87,18 @@ export default function MapSection() {
     }
     return map;
   }, [images]);
+
+  /** Get [lng, lat] for a gallery location group from the first image with coords */
+  const getGalleryCoords = useCallback(
+    (loc: string): [number, number] | null => {
+      const imgs = imagesByLocation.get(loc);
+      if (!imgs) return null;
+      const withCoords = imgs.find((img) => img.lat != null && img.lng != null);
+      if (!withCoords) return null;
+      return [withCoords.lng!, withCoords.lat!];
+    },
+    [imagesByLocation]
+  );
 
   /** When a geo category is selected, group by city and count industries */
   const cityGroups = useMemo(() => {
