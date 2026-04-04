@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { siteConfig } from "@/data/siteConfig";
 import {
   timelineEntries,
   timelineEras,
+  eraLabels,
 } from "@/data/timeline";
 import { pct, groupByCompany, getColor, lerp } from "@/lib/timeline";
+
+const ContentQuiz = dynamic(() => import("./ContentQuiz"), { ssr: false });
 
 export default function GanttTimeline() {
   const ganttRef = useRef<HTMLDivElement>(null);
@@ -14,6 +18,7 @@ export default function GanttTimeline() {
   const [progress, setProgress] = useState(0);
   const [hoveredCompany, setHoveredCompany] = useState<string | null>(null);
   const [hoveredRowTop, setHoveredRowTop] = useState(0);
+  const [quizOpen, setQuizOpen] = useState(false);
 
   const handleScroll = useCallback(() => {
     const sentinel = sentinelRef.current;
@@ -98,7 +103,7 @@ export default function GanttTimeline() {
             <a href="#intro" className="font-serif font-bold text-sm">
               {siteConfig.name}
             </a>
-            <div className="flex gap-5">
+            <div className="flex gap-5 items-center">
               {siteConfig.navItems.map((item) => (
                 <a
                   key={item.href}
@@ -109,6 +114,14 @@ export default function GanttTimeline() {
                   {item.label}
                 </a>
               ))}
+              <button
+                onClick={() => setQuizOpen(true)}
+                className="font-mono text-[10px] tracking-wide hover:opacity-70 transition-opacity hidden sm:block"
+                style={{ color: "rgba(45, 42, 38, 0.5)" }}
+                title="Edit content data"
+              >
+                &#9998;
+              </button>
             </div>
           </div>
 
@@ -282,6 +295,43 @@ export default function GanttTimeline() {
                 <div className="shrink-0 hidden sm:block" style={{ width: `${lerp(120, 0, progress)}px`, minWidth: 0 }} />
               </div>
 
+              {/* Era labels */}
+              <div
+                className="flex items-start px-1 -mx-1"
+                style={{
+                  gap: `${lerp(12, 0, progress)}px`,
+                  opacity: lerp(1, 0, progress * 2),
+                }}
+              >
+                <div className="shrink-0 hidden sm:block" style={{ width: `${lerp(150, 0, progress)}px`, minWidth: 0 }} />
+                <div className="relative flex-1" style={{ height: "14px" }}>
+                  {eraLabels.map((era) => {
+                    const left = pct(era.startMonth);
+                    const right = pct(era.endMonth);
+                    const width = right - left;
+                    return (
+                      <div
+                        key={era.label}
+                        className="absolute top-0 flex flex-col items-center"
+                        style={{ left: `${left}%`, width: `${width}%` }}
+                      >
+                        <div
+                          className="w-full"
+                          style={{ height: "2px", backgroundColor: era.color, opacity: 0.4, borderRadius: "1px" }}
+                        />
+                        <span
+                          className="font-mono whitespace-nowrap mt-0.5"
+                          style={{ fontSize: "7px", color: era.color, opacity: 0.7 }}
+                        >
+                          {era.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="shrink-0 hidden sm:block" style={{ width: `${lerp(120, 0, progress)}px`, minWidth: 0 }} />
+              </div>
+
               {/* Hover card */}
               {hoveredCompany && hoverEnabled && (() => {
                 const group = groups.find(g => g.company === hoveredCompany);
@@ -336,6 +386,7 @@ export default function GanttTimeline() {
         </div>
       </div>
       <div ref={sentinelRef} id="gantt-sentinel" />
+      <ContentQuiz open={quizOpen} onClose={() => setQuizOpen(false)} />
     </>
   );
 }

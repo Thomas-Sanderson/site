@@ -10,6 +10,10 @@ export interface TimelineEntry {
   /** Numeric value for positioning: months from Jan 2013 */
   startMonth: number;
   endMonth: number;
+  lat?: number;
+  lng?: number;
+  country?: string;
+  category?: "work" | "art" | "volunteer" | "travel" | "want-to-visit";
 }
 
 // Month 0 = Jan 2013
@@ -31,6 +35,10 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2010, 9),
     endMonth: m(2014, 5),
+    lat: 40.7128,
+    lng: -74.006,
+    country: "USA",
+    category: "work",
   },
   {
     role: "Design Lead",
@@ -46,6 +54,10 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2014, 2),
     endMonth: m(2014, 8),
+    lat: 40.7128,
+    lng: -74.006,
+    country: "USA",
+    category: "work",
   },
   {
     role: "Design Lead | Product Owner",
@@ -61,6 +73,10 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2014, 6),
     endMonth: m(2014, 9),
+    lat: 41.3874,
+    lng: 2.1686,
+    country: "Spain",
+    category: "work",
   },
   {
     role: "Digital Analyst Intern — Experience Design | Product Owner",
@@ -76,6 +92,10 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2013, 6),
     endMonth: m(2014, 10),
+    lat: 40.7128,
+    lng: -74.006,
+    country: "USA",
+    category: "work",
   },
   {
     role: "Designer",
@@ -91,6 +111,10 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2014, 10),
     endMonth: m(2016, 10),
+    lat: 37.7749,
+    lng: -122.4194,
+    country: "USA",
+    category: "work",
   },
   {
     role: "Senior Designer",
@@ -106,6 +130,10 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2016, 10),
     endMonth: m(2018, 7),
+    lat: 37.7749,
+    lng: -122.4194,
+    country: "USA",
+    category: "work",
   },
   {
     role: "Associate Design Director",
@@ -121,6 +149,10 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2018, 7),
     endMonth: m(2019, 8),
+    lat: 37.7749,
+    lng: -122.4194,
+    country: "USA",
+    category: "work",
   },
   {
     role: "Design Research Consultant",
@@ -136,6 +168,8 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2019, 8),
     endMonth: m(2019, 10),
+    country: "USA",
+    category: "work",
   },
   {
     role: "Lead Experience Designer",
@@ -151,6 +185,10 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2019, 9),
     endMonth: m(2020, 3),
+    lat: 37.3688,
+    lng: -122.0363,
+    country: "USA",
+    category: "work",
   },
   {
     role: "Experience Designer",
@@ -166,6 +204,10 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2020, 4),
     endMonth: m(2021, 1),
+    lat: 40.7128,
+    lng: -74.006,
+    country: "USA",
+    category: "work",
   },
   {
     role: "Visual Artist + Experience Designer",
@@ -181,6 +223,10 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2021, 3),
     endMonth: m(2023, 3),
+    lat: 41.1579,
+    lng: -8.6291,
+    country: "Portugal",
+    category: "art",
   },
   {
     role: "Hostel Receptionist",
@@ -196,6 +242,10 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2022, 3),
     endMonth: m(2022, 9),
+    lat: 41.1579,
+    lng: -8.6291,
+    country: "Portugal",
+    category: "work",
   },
   {
     role: "Behavioral Health Technician",
@@ -211,6 +261,10 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2023, 7),
     endMonth: m(2023, 9),
+    lat: 30.2672,
+    lng: -97.7431,
+    country: "USA",
+    category: "work",
   },
   {
     role: "Lead Behavioral Health Technician",
@@ -226,6 +280,10 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2023, 9),
     endMonth: m(2023, 12),
+    lat: 30.2672,
+    lng: -97.7431,
+    country: "USA",
+    category: "work",
   },
   {
     role: "Operations Manager",
@@ -241,6 +299,10 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2023, 12),
     endMonth: m(2024, 10),
+    lat: 30.2672,
+    lng: -97.7431,
+    country: "USA",
+    category: "work",
   },
   {
     role: "Virtual Case Manager",
@@ -256,6 +318,8 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2024, 10),
     endMonth: m(2025, 11),
+    country: "USA",
+    category: "work",
   },
   {
     role: "Experience Designer",
@@ -271,6 +335,8 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2025, 5),
     endMonth: m(2026, 4),
+    country: "USA",
+    category: "work",
   },
   {
     role: "Client Services Manager",
@@ -286,6 +352,8 @@ export const timelineEntries: TimelineEntry[] = [
     ],
     startMonth: m(2025, 11),
     endMonth: m(2026, 4),
+    country: "USA",
+    category: "work",
   },
 ];
 
@@ -302,3 +370,10 @@ export const timelineEras = generateEras();
 
 export const TIMELINE_START = m(2013, 1);
 export const TIMELINE_END = m(2026, 4);
+
+export const eraLabels = [
+  { label: "Consulting",        startMonth: m(2013, 6),  endMonth: m(2019, 10), color: "#C4725A" },
+  { label: "Art + Independence", startMonth: m(2019, 8),  endMonth: m(2023, 3),  color: "#7B5EA7" },
+  { label: "Behavioral Health",  startMonth: m(2023, 7),  endMonth: m(2025, 5),  color: "#2A6B5A" },
+  { label: "Acceleration",       startMonth: m(2025, 5),  endMonth: m(2026, 4),  color: "#C4725A" },
+];

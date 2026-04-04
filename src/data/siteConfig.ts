@@ -5,7 +5,8 @@ export const siteConfig = {
   navItems: [
     { label: "Intro", href: "#intro" },
     { label: "Map", href: "#map" },
-    { label: "Work", href: "#case-studies" },
+    { label: "Work", href: "#era-acceleration" },
+    { label: "See", href: "#see" },
     { label: "Contact", href: "#contact" },
   ],
   colors: {
