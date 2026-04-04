@@ -30,8 +30,13 @@ export default function Nav() {
       }}
     >
       <div className="max-w-[960px] mx-auto px-6 md:px-12 py-4 flex items-center justify-between">
-        <a href="#intro" className="font-serif font-bold text-lg">
-          {siteConfig.name}
+        <a href="#intro" className="flex items-baseline gap-4">
+          <span className="font-mono text-[10px] tracking-wide uppercase hidden sm:inline" style={{ color: "var(--color-terracotta)" }}>
+            {siteConfig.title}
+          </span>
+          <span className="font-serif font-bold text-lg">
+            {siteConfig.name}
+          </span>
         </a>
         <div className="flex gap-6">
           {siteConfig.navItems.map((item) => (

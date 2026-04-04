@@ -107,8 +107,13 @@ export default function GanttTimeline() {
               transition: "max-height 0.15s ease, margin-bottom 0.15s ease",
             }}
           >
-            <a href="#intro" className="font-serif font-bold text-sm">
-              {siteConfig.name}
+            <a href="#intro" className="flex items-baseline gap-4">
+              <span className="font-mono text-[10px] tracking-wide uppercase" style={{ color: "var(--color-terracotta)" }}>
+                {siteConfig.title}
+              </span>
+              <span className="font-serif font-bold text-sm">
+                {siteConfig.name}
+              </span>
             </a>
             <div className="flex gap-5 items-center">
               {siteConfig.navItems.map((item) => (
