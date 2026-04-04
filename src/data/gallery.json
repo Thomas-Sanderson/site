@@ -8,7 +8,10 @@
     "width": 640,
     "height": 856,
     "location": "Lewes, Delaware",
-    "date": "September 7, 2025"
+    "date": "September 7, 2025",
+    "lat": 38.7746,
+    "lng": -75.1394,
+    "category": "see"
   },
   {
     "slug": "datura-delaware",
@@ -19,7 +22,10 @@
     "width": 632,
     "height": 857,
     "location": "Delaware",
-    "date": "2025"
+    "date": "2025",
+    "lat": 38.9108,
+    "lng": -75.5277,
+    "category": "see"
   },
   {
     "slug": "sunset-stream-porto",
@@ -30,7 +36,10 @@
     "width": 838,
     "height": 840,
     "location": "Porto, Portugal",
-    "date": "2022"
+    "date": "2022",
+    "lat": 41.1579,
+    "lng": -8.6291,
+    "category": "see"
   },
   {
     "slug": "beach-sunset-porto",
@@ -41,7 +50,10 @@
     "width": 756,
     "height": 838,
     "location": "Porto, Portugal",
-    "date": "2022"
+    "date": "2022",
+    "lat": 41.1579,
+    "lng": -8.6291,
+    "category": "see"
   },
   {
     "slug": "storm-clouds-porto",
@@ -52,7 +64,10 @@
     "width": 757,
     "height": 851,
     "location": "Porto, Portugal",
-    "date": "2022"
+    "date": "2022",
+    "lat": 41.1579,
+    "lng": -8.6291,
+    "category": "see"
   },
   {
     "slug": "cat-mouse-saratoga",
@@ -63,7 +78,10 @@
     "width": 753,
     "height": 852,
     "location": "Saratoga, California",
-    "date": "2017"
+    "date": "2017",
+    "lat": 37.2638,
+    "lng": -122.023,
+    "category": "see"
   },
   {
     "slug": "fireworks-fort-bragg",
@@ -74,7 +92,10 @@
     "width": 758,
     "height": 855,
     "location": "Fort Bragg, California",
-    "date": "2017"
+    "date": "2017",
+    "lat": 39.4457,
+    "lng": -123.8053,
+    "category": "see"
   },
   {
     "slug": "milky-way-south-royalton",
@@ -85,7 +106,10 @@
     "width": 542,
     "height": 852,
     "location": "South Royalton, New Hampshire",
-    "date": "2017"
+    "date": "2017",
+    "lat": 43.8195,
+    "lng": -72.5218,
+    "category": "see"
   },
   {
     "slug": "shattered-glass-porto",
@@ -95,7 +119,10 @@
     "width": 717,
     "height": 852,
     "location": "Porto, Portugal",
-    "date": "2022"
+    "date": "2022",
+    "lat": 41.1579,
+    "lng": -8.6291,
+    "category": "see"
   },
   {
     "slug": "thorns-porto",
@@ -105,7 +132,10 @@
     "width": 659,
     "height": 858,
     "location": "Porto, Portugal",
-    "date": "2022"
+    "date": "2022",
+    "lat": 41.1579,
+    "lng": -8.6291,
+    "category": "see"
   },
   {
     "slug": "white-lashes-porto",
@@ -115,7 +145,10 @@
     "width": 758,
     "height": 860,
     "location": "Porto, Portugal",
-    "date": "2022"
+    "date": "2022",
+    "lat": 41.1579,
+    "lng": -8.6291,
+    "category": "see"
   },
   {
     "slug": "farturas-porto",
@@ -125,7 +158,10 @@
     "width": 667,
     "height": 854,
     "location": "Porto, Portugal",
-    "date": "2022"
+    "date": "2022",
+    "lat": 41.1579,
+    "lng": -8.6291,
+    "category": "see"
   },
   {
     "slug": "bird-shadow-porto",
@@ -135,7 +171,10 @@
     "width": 659,
     "height": 860,
     "location": "Porto, Portugal",
-    "date": "2022"
+    "date": "2022",
+    "lat": 41.1579,
+    "lng": -8.6291,
+    "category": "see"
   },
   {
     "slug": "umbrella-doll-porto",
@@ -145,7 +184,10 @@
     "width": 750,
     "height": 857,
     "location": "Porto, Portugal",
-    "date": "2022"
+    "date": "2022",
+    "lat": 41.1579,
+    "lng": -8.6291,
+    "category": "see"
   },
   {
     "slug": "rose-prism-porto",
@@ -155,7 +197,10 @@
     "width": 585,
     "height": 858,
     "location": "Porto, Portugal",
-    "date": "2022"
+    "date": "2022",
+    "lat": 41.1579,
+    "lng": -8.6291,
+    "category": "see"
   },
   {
     "slug": "graffiti-porto",
@@ -165,7 +210,10 @@
     "width": 759,
     "height": 857,
     "location": "Porto, Portugal",
-    "date": "2022"
+    "date": "2022",
+    "lat": 41.1579,
+    "lng": -8.6291,
+    "category": "see"
   },
   {
     "slug": "toilet-terra-porto",
@@ -175,7 +223,10 @@
     "width": 534,
     "height": 852,
     "location": "Porto, Portugal",
-    "date": "2022"
+    "date": "2022",
+    "lat": 41.1579,
+    "lng": -8.6291,
+    "category": "see"
   },
   {
     "slug": "minimart-shelves-rehoboth",
@@ -185,7 +236,10 @@
     "width": 757,
     "height": 858,
     "location": "Rehoboth, Delaware",
-    "date": "2025"
+    "date": "2025",
+    "lat": 38.721,
+    "lng": -75.076,
+    "category": "see"
   },
   {
     "slug": "moss-sprout-porto",
@@ -195,7 +249,10 @@
     "width": 549,
     "height": 855,
     "location": "Porto, Portugal",
-    "date": "2022"
+    "date": "2022",
+    "lat": 41.1579,
+    "lng": -8.6291,
+    "category": "see"
   },
   {
     "slug": "stained-window-porto",
@@ -205,7 +262,10 @@
     "width": 590,
     "height": 857,
     "location": "Porto, Portugal",
-    "date": "2022"
+    "date": "2022",
+    "lat": 41.1579,
+    "lng": -8.6291,
+    "category": "see"
   },
   {
     "slug": "altar-candles-memphis",
@@ -215,7 +275,10 @@
     "width": 540,
     "height": 857,
     "location": "Memphis, Tennessee",
-    "date": "September 2020"
+    "date": "September 2020",
+    "lat": 35.1495,
+    "lng": -90.049,
+    "category": "see"
   },
   {
     "slug": "firepit-memphis",
@@ -225,7 +288,10 @@
     "width": 588,
     "height": 853,
     "location": "Memphis, Tennessee",
-    "date": "September 2020"
+    "date": "September 2020",
+    "lat": 35.1495,
+    "lng": -90.049,
+    "category": "see"
   },
   {
     "slug": "statue-trees-memphis",
@@ -235,7 +301,10 @@
     "width": 471,
     "height": 859,
     "location": "Memphis, Tennessee",
-    "date": "2020"
+    "date": "2020",
+    "lat": 35.1495,
+    "lng": -90.049,
+    "category": "see"
   },
   {
     "slug": "waterfall-big-south-fork",
@@ -245,7 +314,10 @@
     "width": 617,
     "height": 855,
     "location": "Big South Fork National River & Recreation Area",
-    "date": "2020"
+    "date": "2020",
+    "lat": 36.487,
+    "lng": -84.6985,
+    "category": "see"
   },
   {
     "slug": "cave-hiker-big-south-fork",
@@ -255,7 +327,10 @@
     "width": 601,
     "height": 861,
     "location": "Big South Fork National River & Recreation Area",
-    "date": "2020"
+    "date": "2020",
+    "lat": 36.487,
+    "lng": -84.6985,
+    "category": "see"
   },
   {
     "slug": "morning-mist-big-south-fork",
@@ -265,7 +340,10 @@
     "width": 625,
     "height": 857,
     "location": "Big South Fork National River & Recreation Area",
-    "date": "2020"
+    "date": "2020",
+    "lat": 36.487,
+    "lng": -84.6985,
+    "category": "see"
   },
   {
     "slug": "campfire-bread-pinnacle",
@@ -275,6 +353,9 @@
     "width": 754,
     "height": 855,
     "location": "Pinnacle Natural Park",
-    "date": "2020"
+    "date": "2020",
+    "lat": 36.6,
+    "lng": -83.55,
+    "category": "see"
   }
 ]
