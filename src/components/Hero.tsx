@@ -7,11 +7,13 @@ import { lerp } from "@/lib/timeline";
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const labelRef = useRef<HTMLParagraphElement>(null);
   const [mounted, setMounted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [ganttCollapse, setGanttCollapse] = useState(0);
   const [headingInitialY, setHeadingInitialY] = useState(0);
+  const [labelToHeadingGap, setLabelToHeadingGap] = useState(0);
 
   useEffect(() => {
     setMounted(true);
@@ -24,11 +26,17 @@ export default function Hero() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Measure heading position for shrink animation target
+  // Measure heading + label positions for shrink animation targets
   useEffect(() => {
     const measure = () => {
       if (headingRef.current) {
         setHeadingInitialY(headingRef.current.getBoundingClientRect().top);
+      }
+      if (labelRef.current && headingRef.current) {
+        setLabelToHeadingGap(
+          headingRef.current.getBoundingClientRect().top -
+            labelRef.current.getBoundingClientRect().top
+        );
       }
     };
     const timer = setTimeout(measure, 50);
@@ -43,7 +51,6 @@ export default function Hero() {
     const el = sectionRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    // Progress 0→1 over the 200vh section (minus one viewport of sticky space)
     const p = Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight)));
     setProgress(p);
   }, []);
@@ -71,27 +78,34 @@ export default function Hero() {
   const bioT = Math.max(0, Math.min(1, (progress - 0.10) / 0.20));
   const bioOpacity = lerp(1, 0, bioT);
 
-  // Label ("DESIGN TECHNOLOGIST"): zips left 0.25–0.55
+  // Label phase 1 (labelT, 0.25–0.55): zip left + shrink
   const labelT = Math.max(0, Math.min(1, (progress - 0.25) / 0.30));
-  const labelOpacity = isMobile
-    ? lerp(1, 0, labelT)
-    : lerp(1, 0, Math.max(0, (labelT - 0.8) / 0.2));
-  const labelTranslateX = isMobile ? 0 : lerp(0, -250, labelT);
-  const labelTranslateY = isMobile ? 0 : lerp(0, -80, labelT);
-  const labelScaleVal = isMobile ? 1 : lerp(1, 0.6, labelT);
+  // Desktop: label stays visible; Mobile: fades out
+  const labelBaseOpacity = isMobile ? lerp(1, 0, labelT) : 1;
+  // Label shrinks to ~10px from text-sm (14px)
+  const labelTargetScale = 10 / 14;
+  const labelScaleVal = isMobile ? 1 : lerp(1, labelTargetScale, labelT);
+  // Label zips left ~150px
+  const labelTranslateX = isMobile ? 0 : lerp(0, -150, labelT);
 
-  // Heading ("Thomas"): shrinks + moves to top-left 0.40–0.70
+  // Heading ("Thomas"): shrinks + moves STRAIGHT UP 0.40–0.70
   const headingT = Math.max(0, Math.min(1, (progress - 0.40) / 0.30));
-  const targetScale = isMobile ? 0.29 : 0.19;
-  const headingScale = lerp(1, targetScale, headingT);
-  const headingTargetY = 24; // px from viewport top — matches Gantt nav row paddingTop
+  const headingTargetY = 24;
   const headingMoveY = headingInitialY > 0 ? headingInitialY - headingTargetY : 0;
+  const targetScale = isMobile ? 0.377 : 0.247;
+  const headingScale = lerp(1, targetScale, headingT);
   const headingTranslateY = lerp(0, -headingMoveY, headingT);
 
-  // Heading fades when Gantt nav row appears (during Gantt collapse)
-  const headingOpacity = ganttCollapse > 0.2
+  // Label phase 2 (headingT, 0.40–0.70): move up in sync with Thomas
+  const labelTargetTranslateY = labelToHeadingGap - headingMoveY;
+  const labelTranslateY = isMobile ? 0 : lerp(0, labelTargetTranslateY, headingT);
+
+  // Gantt crossfade — both heading and label fade together
+  const ganttFade = ganttCollapse > 0.2
     ? lerp(1, 0, Math.min(1, (ganttCollapse - 0.2) / 0.3))
     : 1;
+  const headingOpacity = ganttFade;
+  const labelOpacity = labelBaseOpacity * ganttFade;
 
   return (
     <>
@@ -125,6 +139,7 @@ export default function Hero() {
           }}
         >
           <p
+            ref={labelRef}
             className="font-mono text-sm tracking-widest uppercase mb-4"
             style={{
               color: "var(--color-terracotta)",
