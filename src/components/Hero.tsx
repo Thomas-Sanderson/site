@@ -13,7 +13,6 @@ export default function Hero() {
   const [isMobile, setIsMobile] = useState(false);
   const [ganttCollapse, setGanttCollapse] = useState(0);
   const [headingInitialY, setHeadingInitialY] = useState(0);
-  const [labelNaturalWidth, setLabelNaturalWidth] = useState(0);
   const [labelToHeadingGap, setLabelToHeadingGap] = useState(0);
 
   useEffect(() => {
@@ -32,9 +31,6 @@ export default function Hero() {
     const measure = () => {
       if (headingRef.current) {
         setHeadingInitialY(headingRef.current.getBoundingClientRect().top);
-      }
-      if (labelRef.current) {
-        setLabelNaturalWidth(labelRef.current.getBoundingClientRect().width);
       }
       if (labelRef.current && headingRef.current) {
         setLabelToHeadingGap(
@@ -82,28 +78,27 @@ export default function Hero() {
   const bioT = Math.max(0, Math.min(1, (progress - 0.10) / 0.20));
   const bioOpacity = lerp(1, 0, bioT);
 
-  // Label ("DESIGN TECHNOLOGIST"): zips left 0.25–0.55
+  // Label phase 1 (labelT, 0.25–0.55): zip left + shrink
   const labelT = Math.max(0, Math.min(1, (progress - 0.25) / 0.30));
   // Desktop: label stays visible; Mobile: fades out
   const labelBaseOpacity = isMobile ? lerp(1, 0, labelT) : 1;
   // Label shrinks to ~10px from text-sm (14px)
   const labelTargetScale = 10 / 14;
   const labelScaleVal = isMobile ? 1 : lerp(1, labelTargetScale, labelT);
-  // Label Y: move down to align with heading's final Y position
+  // Label zips left ~150px
+  const labelTranslateX = isMobile ? 0 : lerp(0, -150, labelT);
+
+  // Heading ("Thomas"): shrinks + moves STRAIGHT UP 0.40–0.70
+  const headingT = Math.max(0, Math.min(1, (progress - 0.40) / 0.30));
   const headingTargetY = 24;
   const headingMoveY = headingInitialY > 0 ? headingInitialY - headingTargetY : 0;
-  const labelTargetTranslateY = labelToHeadingGap - headingMoveY;
-  const labelTranslateY = isMobile ? 0 : lerp(0, labelTargetTranslateY, labelT);
-
-  // Heading ("Thomas"): shrinks + moves to top-left 0.40–0.70
-  const headingT = Math.max(0, Math.min(1, (progress - 0.40) / 0.30));
   const targetScale = isMobile ? 0.377 : 0.247;
   const headingScale = lerp(1, targetScale, headingT);
   const headingTranslateY = lerp(0, -headingMoveY, headingT);
-  // Heading shifts right to make room for label
-  const labelVisualWidth = labelNaturalWidth * labelTargetScale;
-  const labelGap = 20;
-  const headingTranslateX = isMobile ? 0 : lerp(0, labelVisualWidth + labelGap, headingT);
+
+  // Label phase 2 (headingT, 0.40–0.70): move up in sync with Thomas
+  const labelTargetTranslateY = labelToHeadingGap - headingMoveY;
+  const labelTranslateY = isMobile ? 0 : lerp(0, labelTargetTranslateY, headingT);
 
   // Gantt crossfade — both heading and label fade together
   const ganttFade = ganttCollapse > 0.2
@@ -149,7 +144,7 @@ export default function Hero() {
             style={{
               color: "var(--color-terracotta)",
               opacity: labelOpacity,
-              transform: `translate(0px, ${labelTranslateY}px) scale(${labelScaleVal})`,
+              transform: `translate(${labelTranslateX}px, ${labelTranslateY}px) scale(${labelScaleVal})`,
               transformOrigin: "left center",
             }}
           >
@@ -161,7 +156,7 @@ export default function Hero() {
             className="font-serif text-5xl md:text-7xl font-bold mb-8 leading-tight"
             style={{
               opacity: headingOpacity,
-              transform: `translate(${headingTranslateX}px, ${headingTranslateY}px) scale(${headingScale})`,
+              transform: `translateY(${headingTranslateY}px) scale(${headingScale})`,
               transformOrigin: "top left",
             }}
           >
