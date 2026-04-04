@@ -70,6 +70,5 @@ export const eras: Era[] = [
     ],
     color: "#C4725A",
     companies: ["Recovery Unplugged (Consultant)", "Recovery Unplugged"],
-    caseStudySlugs: ["sudsy", "melody", "paper-cannon"],
   },
 ];

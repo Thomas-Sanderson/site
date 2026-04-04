@@ -3,20 +3,10 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { lerp } from "@/lib/timeline";
 import type { Era } from "@/data/eras";
-import { caseStudies } from "@/data/caseStudies";
-import CaseStudyCard from "./CaseStudyCard";
 
 export default function EraSection({ era }: { era: Era }) {
   const outerRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
-
-  const studies = era.caseStudySlugs
-    ? caseStudies.filter((s) => era.caseStudySlugs!.includes(s.slug))
-    : [];
-
-  const hasCaseStudies = studies.length > 0;
-  // Less runway for era 4 since case studies provide scroll content below
-  const runwayHeight = hasCaseStudies ? "150vh" : "200vh";
 
   const handleScroll = useCallback(() => {
     const el = outerRef.current;
@@ -39,9 +29,6 @@ export default function EraSection({ era }: { era: Era }) {
   const enterT = Math.min(1, progress / 0.3); // 0→1 during enter
   const exitT = Math.max(0, (progress - 0.7) / 0.3); // 0→1 during exit
 
-  // Don't exit for era 4 — case studies flow below
-  const effectiveExitT = hasCaseStudies ? 0 : exitT;
-
   // Staggered enter for each element (date, title, subtitle, narrative)
   const stagger = (index: number, total: number) => {
     const delay = (index / total) * 0.5; // spread over half the enter phase
@@ -56,14 +43,13 @@ export default function EraSection({ era }: { era: Era }) {
   // Composite opacity/transform
   const fadeIn = (t: number) => lerp(0, 1, t);
   const slideIn = (t: number) => lerp(30, 0, t);
-  const fadeOut = lerp(1, 0, effectiveExitT);
-  const slideOut = lerp(0, -40, effectiveExitT);
+  const fadeOut = lerp(1, 0, exitT);
+  const slideOut = lerp(0, -40, exitT);
 
   return (
-    <>
       <div
         ref={outerRef}
-        style={{ height: runwayHeight, position: "relative" }}
+        style={{ height: "200vh", position: "relative" }}
       >
         <section
           id={`era-${era.id}`}
@@ -145,17 +131,5 @@ export default function EraSection({ era }: { era: Era }) {
           </div>
         </section>
       </div>
-
-      {/* Case studies render OUTSIDE the sticky zone */}
-      {studies.length > 0 && (
-        <div className="px-6 md:px-12 max-w-[960px] mx-auto py-16">
-          <div className="flex flex-col gap-16">
-            {studies.map((study) => (
-              <CaseStudyCard key={study.slug} study={study} />
-            ))}
-          </div>
-        </div>
-      )}
-    </>
   );
 }
