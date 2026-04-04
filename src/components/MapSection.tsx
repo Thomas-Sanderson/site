@@ -71,6 +71,19 @@ export default function MapSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [mapOffset, setMapOffset] = useState(0);
 
+  // Listen for pill changes from GanttTimeline
+  useEffect(() => {
+    const handlePillChange = (e: Event) => {
+      const pill = (e as CustomEvent<PillKey | null>).detail;
+      setActivePill(pill);
+      setSelectedGalleryLocation(null);
+      setHoveredPin(null);
+      setHoveredCityGroup(null);
+    };
+    window.addEventListener("gantt-pill-change", handlePillChange);
+    return () => window.removeEventListener("gantt-pill-change", handlePillChange);
+  }, []);
+
   const images = galleryData as GalleryImage[];
   const isSelected = activePill !== null;
   const isSeeMode = activePill === "see";
@@ -168,14 +181,7 @@ export default function MapSection() {
     [projection]
   );
 
-  const handlePillClick = useCallback((key: PillKey) => {
-    setActivePill((prev) => (prev === key ? null : key));
-    setSelectedGalleryLocation(null);
-    setHoveredPin(null);
-    setHoveredCityGroup(null);
-  }, []);
-
-  // Count pins per category
+  // categoryCounts kept for potential future use by tooltips
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const loc of locations) {
@@ -278,52 +284,6 @@ export default function MapSection() {
       ref={sectionRef}
       className="reveal py-24 overflow-hidden"
     >
-      <div className="px-6 md:px-12 max-w-[960px] mx-auto mb-8">
-        {/* Pills */}
-        <div className="flex flex-wrap gap-3">
-          {(
-            Object.entries(pillMeta) as [
-              PillKey,
-              { label: string; color: string },
-            ][]
-          ).map(([key, meta]) => {
-            const isActive = activePill === key;
-            const isNoneSelected = activePill === null;
-            const dimmed = !isNoneSelected && !isActive;
-            return (
-              <button
-                key={key}
-                onClick={() => handlePillClick(key)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full font-mono text-xs transition-all duration-300 border"
-                style={{
-                  borderColor: dimmed ? "var(--color-muted)" : meta.color,
-                  backgroundColor: isActive
-                    ? `${meta.color}20`
-                    : "transparent",
-                  color: dimmed ? "var(--color-muted)" : meta.color,
-                  opacity: dimmed ? 0.35 : 1,
-                }}
-              >
-                <span
-                  className="w-2 h-2 rounded-full transition-colors duration-300"
-                  style={{
-                    backgroundColor: dimmed
-                      ? "var(--color-muted)"
-                      : meta.color,
-                  }}
-                />
-                {meta.label}
-                {isActive && (
-                  <span className="ml-1 text-[10px] opacity-60">
-                    {categoryCounts[key] || 0}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Map container with parallax */}
       <div className="relative w-full max-w-[1200px] mx-auto px-4">
         <div

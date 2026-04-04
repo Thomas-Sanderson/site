@@ -6,7 +6,38 @@ import {
   timelineEntries,
   timelineEras,
 } from "@/data/timeline";
+import {
+  categoryMeta,
+  type LocationCategory,
+} from "@/data/locations";
 import { pct, groupByCompany, getColor, lerp } from "@/lib/timeline";
+
+type PillKey = LocationCategory | "see";
+
+const pillMeta: Record<PillKey, { label: string; color: string }> = {
+  ...categoryMeta,
+  see: { label: "See", color: "#7B5EA7" },
+};
+
+const pillKeys: PillKey[] = ["work", "art", "volunteer", "travel", "want-to-visit", "see"];
+
+/** Blend between two rgba colours. t=0 → a, t=1 → b */
+function blendRgba(a: string, b: string, t: number) {
+  const parse = (s: string) => {
+    const m = s.match(/[\d.]+/g);
+    return m ? m.map(Number) : [0, 0, 0, 0];
+  };
+  const ca = parse(a);
+  const cb = parse(b);
+  const r = Math.round(lerp(ca[0], cb[0], t));
+  const g = Math.round(lerp(ca[1], cb[1], t));
+  const bl = Math.round(lerp(ca[2], cb[2], t));
+  const al = lerp(ca[3] ?? 1, cb[3] ?? 1, t);
+  return `rgba(${r}, ${g}, ${bl}, ${al.toFixed(3)})`;
+}
+
+const GREY_MUTED = "rgba(45, 42, 38, 0.12)";
+const GREY_VIVID = "rgba(45, 42, 38, 0.30)";
 
 export default function GanttTimeline() {
   const ganttRef = useRef<HTMLDivElement>(null);
@@ -14,6 +45,7 @@ export default function GanttTimeline() {
   const [progress, setProgress] = useState(0);
   const [hoveredCompany, setHoveredCompany] = useState<string | null>(null);
   const [hoveredRowTop, setHoveredRowTop] = useState(0);
+  const [activePill, setActivePill] = useState<PillKey | null>(null);
 
   const handleScroll = useCallback(() => {
     const sentinel = sentinelRef.current;
@@ -34,7 +66,19 @@ export default function GanttTimeline() {
     window.dispatchEvent(new CustomEvent("gantt-progress", { detail: progress }));
   }, [progress]);
 
+  // Broadcast pill changes so MapSection can react
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("gantt-pill-change", { detail: activePill }));
+  }, [activePill]);
+
+  const handlePillClick = useCallback((key: PillKey) => {
+    setActivePill((prev) => (prev === key ? null : key));
+  }, []);
+
   const groups = groupByCompany(timelineEntries);
+
+  // How far the bars have faded to grey (0 = full color, 1 = full grey)
+  const greyT = Math.max(0, Math.min(1, (progress - 0.3) / 0.5));
 
   // Interpolated values
   const rowHeight = lerp(14, 2, progress);
@@ -44,7 +88,10 @@ export default function GanttTimeline() {
   const navRowOpacity = lerp(0, 1, Math.max(0, (progress - 0.3) / 0.7));
   const backdropOpacity = lerp(0, 0.92, progress);
   const verticalPadding = lerp(24, 8, progress);
-  const hoverEnabled = progress < 0.5;
+  const hoverEnabled = progress < 0.3;
+
+  // Pills fade in as bars fade to grey
+  const pillOpacity = lerp(0, 1, Math.max(0, (progress - 0.4) / 0.4));
 
   // Year axis interpolation
   const tickHeight = lerp(8, 4, progress);
@@ -99,15 +146,13 @@ export default function GanttTimeline() {
           </div>
 
           {/* Gantt — bleeds left on desktop for labels */}
-          <div className="relative" style={{ marginLeft: undefined }}>
-            {/* On desktop, apply the interpolated bleed margin */}
-            <div className="hidden sm:contents">
-              <style>{`
-                @media (min-width: 640px) {
-                  [data-gantt-bleed] { margin-left: ${bleedMargin}px; }
-                }
-              `}</style>
-            </div>
+          <div className="relative">
+            {/* Responsive bleed margin via injected style */}
+            <style>{`
+              @media (min-width: 640px) {
+                [data-gantt-bleed] { margin-left: ${bleedMargin}px; }
+              }
+            `}</style>
             <div data-gantt-bleed="">
               {/* Rows — one per company */}
               <div
@@ -117,113 +162,190 @@ export default function GanttTimeline() {
                   gap: `${rowGap}px`,
                 }}
               >
-                {groups.map(({ company, entries }) => (
-                  <div
-                    key={company}
-                    className="flex items-center gap-3 rounded-md px-1 -mx-1 transition-colors duration-200"
-                    style={{
-                      backgroundColor: hoveredCompany === company && hoverEnabled
-                        ? "rgba(45, 42, 38, 0.03)"
-                        : "transparent",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!hoverEnabled) return;
-                      setHoveredCompany(company);
-                      const rect = ganttRef.current?.getBoundingClientRect();
-                      const rowRect = e.currentTarget.getBoundingClientRect();
-                      if (rect) {
-                        setHoveredRowTop(rowRect.bottom - rect.top);
-                      }
-                    }}
-                    onMouseLeave={() => setHoveredCompany(null)}
-                  >
-                    {/* Company label — sits in the bleed area */}
+                {groups.map(({ company, entries }) => {
+                  const color = getColor(company);
+                  // Blend bar colors toward grey as progress increases
+                  const barMuted = blendRgba(color.muted, GREY_MUTED, greyT);
+                  const barVivid = blendRgba(color.vivid, GREY_VIVID, greyT);
+
+                  return (
                     <div
-                      className="w-[150px] shrink-0 text-right hidden sm:block"
-                      style={{ opacity: labelOpacity }}
+                      key={company}
+                      className="flex items-center gap-3 rounded-md px-1 -mx-1 transition-colors duration-200"
+                      style={{
+                        backgroundColor: hoveredCompany === company && hoverEnabled
+                          ? "rgba(45, 42, 38, 0.03)"
+                          : "transparent",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!hoverEnabled) return;
+                        setHoveredCompany(company);
+                        const rect = ganttRef.current?.getBoundingClientRect();
+                        const rowRect = e.currentTarget.getBoundingClientRect();
+                        if (rect) {
+                          setHoveredRowTop(rowRect.bottom - rect.top);
+                        }
+                      }}
+                      onMouseLeave={() => setHoveredCompany(null)}
                     >
-                      <p
-                        className="font-mono text-[8px] leading-tight truncate transition-colors duration-200"
-                        style={{
-                          color: hoveredCompany === company
-                            ? getColor(company).vivid
-                            : "rgba(45, 42, 38, 0.4)",
-                        }}
+                      {/* Company label — sits in the bleed area */}
+                      <div
+                        className="w-[150px] shrink-0 text-right hidden sm:block"
+                        style={{ opacity: labelOpacity }}
                       >
-                        {company}
-                      </p>
-                    </div>
-                    {/* Bar row */}
-                    <div
-                      className="relative flex-1 overflow-hidden"
-                      style={{ height: `${rowHeight}px` }}
-                    >
-                      {entries.map((entry, i) => {
-                        const rawLeft = pct(entry.startMonth);
-                        const clipped = rawLeft < 0;
-                        const left = Math.max(rawLeft, 0);
-                        const rawRight = pct(entry.endMonth);
-                        const w = Math.max(Math.min(rawRight, 100) - left, 0.8);
-                        const isRowHovered = hoveredCompany === company && hoverEnabled;
-                        const color = getColor(company);
-                        const barColor = progress > 0.5
-                          ? color.vivid
-                          : isRowHovered ? color.vivid : color.muted;
-                        return (
-                          <div
-                            key={i}
-                            className="absolute h-full flex items-center transition-colors duration-200"
-                            style={{
-                              left: `${left}%`,
-                              width: `${w}%`,
-                              minWidth: progress > 0.5 ? "2px" : "4px",
-                            }}
-                          >
-                            {clipped && progress < 0.5 && (
-                              <svg
-                                className="absolute shrink-0 transition-colors duration-200"
-                                style={{ left: 0, top: "50%", transform: "translateY(-50%)", opacity: lerp(1, 0, progress * 2) }}
-                                width="8" height="14" viewBox="0 0 8 14"
-                              >
-                                <polygon
-                                  points="8,0 0,7 8,14"
-                                  fill={isRowHovered ? color.vivid : color.muted}
-                                />
-                              </svg>
-                            )}
+                        <p
+                          className="font-mono text-[8px] leading-tight truncate transition-colors duration-200"
+                          style={{
+                            color: hoveredCompany === company
+                              ? color.vivid
+                              : "rgba(45, 42, 38, 0.4)",
+                          }}
+                        >
+                          {company}
+                        </p>
+                      </div>
+                      {/* Bar row */}
+                      <div
+                        className="relative flex-1 overflow-hidden"
+                        style={{ height: `${rowHeight}px` }}
+                      >
+                        {entries.map((entry, i) => {
+                          const rawLeft = pct(entry.startMonth);
+                          const clipped = rawLeft < 0;
+                          const left = Math.max(rawLeft, 0);
+                          const rawRight = pct(entry.endMonth);
+                          const w = Math.max(Math.min(rawRight, 100) - left, 0.8);
+                          const isRowHovered = hoveredCompany === company && hoverEnabled;
+                          const fillColor = isRowHovered ? barVivid : barMuted;
+                          return (
                             <div
-                              className="absolute h-full w-full transition-colors duration-200"
+                              key={i}
+                              className="absolute h-full flex items-center"
                               style={{
-                                left: clipped && progress < 0.5 ? "8px" : 0,
-                                width: clipped && progress < 0.5 ? "calc(100% - 8px)" : "100%",
-                                backgroundColor: barColor,
-                                borderRadius: progress > 0.7
-                                  ? "9999px"
-                                  : clipped ? "0 3px 3px 0" : "3px",
+                                left: `${left}%`,
+                                width: `${w}%`,
+                                minWidth: progress > 0.5 ? "2px" : "4px",
                               }}
-                            />
-                          </div>
-                        );
-                      })}
+                            >
+                              {/* Left-pointing arrow for clipped bars */}
+                              {clipped && progress < 0.3 && (
+                                <svg
+                                  className="absolute shrink-0"
+                                  style={{ left: 0, top: "50%", transform: "translateY(-50%)", opacity: lerp(1, 0, progress / 0.3) }}
+                                  width="8" height="14" viewBox="0 0 8 14"
+                                >
+                                  <polygon
+                                    points="8,0 0,7 8,14"
+                                    fill={isRowHovered ? color.vivid : color.muted}
+                                  />
+                                </svg>
+                              )}
+
+                              {/* Start tick — fades in as bars go grey */}
+                              {greyT > 0.3 && (
+                                <div
+                                  className="absolute top-0 bottom-0"
+                                  style={{
+                                    left: clipped && progress < 0.3 ? "8px" : 0,
+                                    width: "1px",
+                                    backgroundColor: GREY_VIVID,
+                                    opacity: Math.min(1, (greyT - 0.3) / 0.3),
+                                  }}
+                                />
+                              )}
+
+                              {/* Bar fill */}
+                              <div
+                                className="absolute h-full w-full"
+                                style={{
+                                  left: clipped && progress < 0.3 ? "8px" : 0,
+                                  width: clipped && progress < 0.3 ? "calc(100% - 8px)" : "100%",
+                                  backgroundColor: fillColor,
+                                  borderRadius: progress > 0.7
+                                    ? "9999px"
+                                    : clipped ? "0 3px 3px 0" : "3px",
+                                }}
+                              />
+
+                              {/* End tick — fades in as bars go grey */}
+                              {greyT > 0.3 && (
+                                <div
+                                  className="absolute top-0 bottom-0 right-0"
+                                  style={{
+                                    width: "1px",
+                                    backgroundColor: GREY_VIVID,
+                                    opacity: Math.min(1, (greyT - 0.3) / 0.3),
+                                  }}
+                                />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {/* Location label */}
+                      <div
+                        className="w-[120px] shrink-0 hidden sm:block"
+                        style={{ opacity: labelOpacity }}
+                      >
+                        <p
+                          className="font-mono text-[8px] leading-tight truncate transition-colors duration-200"
+                          style={{
+                            color: hoveredCompany === company
+                              ? color.vivid
+                              : "rgba(45, 42, 38, 0.3)",
+                          }}
+                        >
+                          {entries[entries.length - 1].location || ""}
+                        </p>
+                      </div>
                     </div>
-                    {/* Location label */}
-                    <div
-                      className="w-[120px] shrink-0 hidden sm:block"
-                      style={{ opacity: labelOpacity }}
-                    >
-                      <p
-                        className="font-mono text-[8px] leading-tight truncate transition-colors duration-200"
+                  );
+                })}
+              </div>
+
+              {/* Category pills — fade in between bars and year axis */}
+              <div
+                className="flex items-start gap-3 px-1 -mx-1"
+                style={{
+                  opacity: pillOpacity,
+                  pointerEvents: pillOpacity > 0.3 ? "auto" : "none",
+                  maxHeight: pillOpacity > 0.05 ? "40px" : "0px",
+                  marginTop: pillOpacity > 0.05 ? "6px" : "0px",
+                  overflow: "hidden",
+                  transition: "max-height 0.15s ease, margin-top 0.15s ease",
+                }}
+              >
+                {/* Spacer matching company label column */}
+                <div className="w-[150px] shrink-0 hidden sm:block" />
+                <div className="flex-1 flex flex-wrap gap-2">
+                  {pillKeys.map((key) => {
+                    const meta = pillMeta[key];
+                    const isActive = activePill === key;
+                    const isNoneSelected = activePill === null;
+                    const dimmed = !isNoneSelected && !isActive;
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => handlePillClick(key)}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full font-mono text-[10px] transition-all duration-300 border"
                         style={{
-                          color: hoveredCompany === company
-                            ? getColor(company).vivid
-                            : "rgba(45, 42, 38, 0.3)",
+                          borderColor: dimmed ? "var(--color-muted)" : meta.color,
+                          backgroundColor: isActive ? `${meta.color}20` : "transparent",
+                          color: dimmed ? "var(--color-muted)" : meta.color,
+                          opacity: dimmed ? 0.35 : 1,
                         }}
                       >
-                        {entries[entries.length - 1].location || ""}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                        <span
+                          className="w-1.5 h-1.5 rounded-full transition-colors duration-300"
+                          style={{ backgroundColor: dimmed ? "var(--color-muted)" : meta.color }}
+                        />
+                        {meta.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                {/* Spacer matching location label column */}
+                <div className="w-[120px] shrink-0 hidden sm:block" />
               </div>
 
               {/* Year axis — aligned with bar area using same flex layout */}
