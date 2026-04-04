@@ -5,28 +5,33 @@ import { siteConfig } from "@/data/siteConfig";
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
-  const [ganttVisible, setGanttVisible] = useState(false);
+  const [ganttProgress, setGanttProgress] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
-      const hero = document.getElementById("intro");
-      if (hero) {
-        setGanttVisible(hero.getBoundingClientRect().bottom < 60);
-      }
+    };
+    const handleGanttProgress = (e: Event) => {
+      setGanttProgress((e as CustomEvent<number>).detail);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("gantt-progress", handleGanttProgress);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("gantt-progress", handleGanttProgress);
+    };
   }, []);
+
+  const ganttActive = ganttProgress > 0;
 
   return (
     <nav
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
       style={{
-        backgroundColor: scrolled && !ganttVisible ? "rgba(245, 240, 235, 0.9)" : "transparent",
-        backdropFilter: scrolled && !ganttVisible ? "blur(12px)" : "none",
-        opacity: ganttVisible ? 0 : 1,
-        pointerEvents: ganttVisible ? "none" : "auto",
+        backgroundColor: scrolled && !ganttActive ? "rgba(245, 240, 235, 0.9)" : "transparent",
+        backdropFilter: scrolled && !ganttActive ? "blur(12px)" : "none",
+        opacity: ganttActive ? 0 : 1,
+        pointerEvents: ganttActive ? "none" : "auto",
       }}
     >
       <div className="max-w-[960px] mx-auto px-6 md:px-12 py-4 flex items-center justify-between">
