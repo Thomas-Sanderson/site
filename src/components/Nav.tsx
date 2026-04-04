@@ -4,41 +4,29 @@ import { useState, useEffect } from "react";
 import { siteConfig } from "@/data/siteConfig";
 
 export default function Nav() {
-  const [scrolled, setScrolled] = useState(false);
   const [ganttProgress, setGanttProgress] = useState(0);
-  const [heroProgress, setHeroProgress] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
-    };
     const handleGanttProgress = (e: Event) => {
       setGanttProgress((e as CustomEvent<number>).detail);
     };
-    const handleHeroProgress = (e: Event) => {
-      setHeroProgress((e as CustomEvent<number>).detail);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("gantt-progress", handleGanttProgress);
-    window.addEventListener("hero-progress", handleHeroProgress);
     return () => {
-      window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("gantt-progress", handleGanttProgress);
-      window.removeEventListener("hero-progress", handleHeroProgress);
     };
   }, []);
 
-  const ganttActive = ganttProgress > 0;
-  const heroShrinking = heroProgress > 0.3;
+  // Nav only appears after Gantt fully collapses
+  const visible = ganttProgress >= 0.95;
 
   return (
     <nav
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
       style={{
-        backgroundColor: scrolled && !ganttActive ? "rgba(245, 240, 235, 0.9)" : "transparent",
-        backdropFilter: scrolled && !ganttActive ? "blur(12px)" : "none",
-        opacity: ganttActive || heroShrinking ? 0 : 1,
-        pointerEvents: ganttActive || heroShrinking ? "none" : "auto",
+        backgroundColor: visible ? "rgba(245, 240, 235, 0.9)" : "transparent",
+        backdropFilter: visible ? "blur(12px)" : "none",
+        opacity: visible ? 1 : 0,
+        pointerEvents: visible ? "auto" : "none",
       }}
     >
       <div className="max-w-[960px] mx-auto px-6 md:px-12 py-4 flex items-center justify-between">

@@ -15,7 +15,8 @@ const ContentQuiz = dynamic(() => import("./ContentQuiz"), { ssr: false });
 export default function GanttTimeline() {
   const ganttRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState(0);
+  const [revealProgress, setRevealProgress] = useState(0);
+  const [collapseProgress, setCollapseProgress] = useState(0);
   const [hoveredCompany, setHoveredCompany] = useState<string | null>(null);
   const [hoveredRowTop, setHoveredRowTop] = useState(0);
   const [quizOpen, setQuizOpen] = useState(false);
@@ -24,8 +25,11 @@ export default function GanttTimeline() {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
     const rect = sentinel.getBoundingClientRect();
-    const p = Math.max(0, Math.min(1, (0 - rect.top) / 120));
-    setProgress(p);
+    const scrollInto = -rect.top;
+    // First 400px → reveal (rows appear bottom-to-top)
+    setRevealProgress(Math.max(0, Math.min(1, scrollInto / 400)));
+    // Next 200px → collapse (rows disappear top-to-bottom)
+    setCollapseProgress(Math.max(0, Math.min(1, (scrollInto - 400) / 200)));
   }, []);
 
   useEffect(() => {
@@ -34,26 +38,29 @@ export default function GanttTimeline() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
-  // Broadcast progress so Nav can react
+  // Broadcast collapse progress so Nav and Hero can react
   useEffect(() => {
-    window.dispatchEvent(new CustomEvent("gantt-progress", { detail: progress }));
-  }, [progress]);
+    window.dispatchEvent(new CustomEvent("gantt-progress", { detail: collapseProgress }));
+  }, [collapseProgress]);
 
   const groups = groupByCompany(timelineEntries);
   const N = groups.length;
 
-  const navRowOpacity = lerp(0, 1, Math.max(0, (progress - 0.3) / 0.7));
-  const backdropOpacity = lerp(0, 0.92, progress);
-  const verticalPadding = lerp(24, 8, progress);
-  const hoverEnabled = progress < 0.1;
+  // ── Collapse-phase interpolations (same as original, driven by collapseProgress) ──
+  const navRowOpacity = lerp(0, 1, Math.max(0, (collapseProgress - 0.3) / 0.7));
+  const verticalPadding = lerp(24, 8, collapseProgress);
+  const hoverEnabled = revealProgress >= 1 && collapseProgress < 0.1;
 
-  // Year axis interpolation
-  const tickHeight = lerp(8, 4, progress);
-  const minorTickHeight = lerp(5, 3, progress);
-  const yearFontSize = lerp(9, 7, progress);
+  const tickHeight = lerp(8, 4, collapseProgress);
+  const minorTickHeight = lerp(5, 3, collapseProgress);
+  const yearFontSize = lerp(9, 7, collapseProgress);
+  const maxWidth = lerp(960, 1200, collapseProgress);
 
-  // Container width: Gantt (960) → Map (1200) as it collapses
-  const maxWidth = lerp(960, 1200, progress);
+  // ── Reveal-phase interpolations ──
+  // Backdrop fades in during reveal, stays solid during collapse
+  const backdropOpacity = lerp(0, 0.92, revealProgress);
+  // Year axis + era labels fade in during latter half of reveal
+  const revealAxisOpacity = lerp(0, 1, Math.max(0, (revealProgress - 0.5) / 0.5));
 
   return (
     <>
@@ -64,8 +71,8 @@ export default function GanttTimeline() {
           top: 0,
           zIndex: 40,
           backgroundColor: `rgba(245, 240, 235, ${backdropOpacity})`,
-          backdropFilter: progress > 0 ? "blur(12px)" : "none",
-          borderBottom: progress > 0.1 ? "1px solid rgba(45, 42, 38, 0.08)" : "1px solid transparent",
+          backdropFilter: revealProgress > 0 ? "blur(12px)" : "none",
+          borderBottom: collapseProgress > 0.1 ? "1px solid rgba(45, 42, 38, 0.08)" : "1px solid transparent",
           transition: "border-color 0.2s",
         }}
       >
@@ -74,13 +81,13 @@ export default function GanttTimeline() {
             max-width: ${maxWidth}px;
             margin-left: auto;
             margin-right: auto;
-            padding-left: ${lerp(24, 16, progress)}px;
-            padding-right: ${lerp(24, 16, progress)}px;
+            padding-left: ${lerp(24, 16, collapseProgress)}px;
+            padding-right: ${lerp(24, 16, collapseProgress)}px;
           }
           @media (min-width: 768px) {
             [data-gantt-container] {
-              padding-left: ${lerp(48, 16, progress)}px;
-              padding-right: ${lerp(48, 16, progress)}px;
+              padding-left: ${lerp(48, 16, collapseProgress)}px;
+              padding-right: ${lerp(48, 16, collapseProgress)}px;
             }
           }
         `}</style>
@@ -125,11 +132,11 @@ export default function GanttTimeline() {
             </div>
           </div>
 
-          {/* Gantt rows — each row disappears one-by-one from top */}
+          {/* Gantt rows — reveal bottom-to-top, then collapse top-to-bottom */}
           <div className="relative">
             <style>{`
               @media (min-width: 640px) {
-                [data-gantt-bleed] { margin-left: ${lerp(-160, 0, progress)}px; }
+                [data-gantt-bleed] { margin-left: ${lerp(-160, 0, collapseProgress)}px; }
               }
             `}</style>
             <div data-gantt-bleed="">
@@ -137,23 +144,28 @@ export default function GanttTimeline() {
                 style={{
                   display: "flex",
                   flexDirection: "column-reverse",
-                  gap: `${lerp(3, 0, progress)}px`,
+                  gap: `${lerp(3, 0, collapseProgress)}px`,
                 }}
               >
                 {groups.map(({ company, entries }, groupIndex) => {
                   const color = getColor(company);
 
-                  // Staggered: top rows disappear first
-                  // column-reverse means groupIndex 0 = bottom, N-1 = top
+                  // ── REVEAL: bottom-to-top (groupIndex 0 = bottom, appears first) ──
+                  const revealStart = groupIndex / N;
+                  const revealT = Math.max(0, Math.min(1, (revealProgress - revealStart) * N));
+
+                  // ── COLLAPSE: top-to-bottom (visual top disappears first) ──
                   const visualIndex = N - 1 - groupIndex;
-                  const rowStart = visualIndex / N;
-                  const rowT = Math.max(0, Math.min(1, (progress - rowStart) * N));
+                  const collapseStart = visualIndex / N;
+                  const collapseT = Math.max(0, Math.min(1, (collapseProgress - collapseStart) * N));
 
-                  // Row is fully gone when rowT >= 1
-                  if (rowT >= 1) return null;
+                  // Row fully collapsed — skip render
+                  if (collapseT >= 1) return null;
 
-                  const rowOpacity = lerp(1, 0, rowT);
-                  const rowHeight = lerp(14, 0, rowT);
+                  // Combine phases
+                  const isRevealing = revealProgress < 1;
+                  const rowOpacity = isRevealing ? lerp(0, 1, revealT) : lerp(1, 0, collapseT);
+                  const rowHeight = isRevealing ? lerp(0, 14, revealT) : lerp(14, 0, collapseT);
 
                   return (
                     <div
@@ -245,17 +257,23 @@ export default function GanttTimeline() {
               </div>
 
               {/* Year axis */}
-              <div className="flex items-start px-1 -mx-1 mt-1" style={{ gap: `${lerp(12, 0, progress)}px` }}>
-                <div className="shrink-0 hidden sm:block" style={{ width: `${lerp(150, 0, progress)}px`, minWidth: 0 }} />
+              <div
+                className="flex items-start px-1 -mx-1 mt-1"
+                style={{
+                  gap: `${lerp(12, 0, collapseProgress)}px`,
+                  opacity: revealProgress < 1 ? revealAxisOpacity : 1,
+                }}
+              >
+                <div className="shrink-0 hidden sm:block" style={{ width: `${lerp(150, 0, collapseProgress)}px`, minWidth: 0 }} />
                 <div className="relative flex-1">
                   <div className="w-full" style={{ height: "1px", backgroundColor: "rgba(45, 42, 38, 0.25)" }} />
                   {timelineEras.map((era) => {
                     const yr = parseInt(era.year);
                     const isMajor = yr % 5 === 0 || yr === 2013;
                     const isAccented = yr === 2013;
-                    if (!isMajor && progress > 0.5) return null;
-                    const tickColor = isAccented && progress < 0.5 ? "var(--color-terracotta)" : "rgba(45, 42, 38, 0.25)";
-                    const labelColor = isAccented && progress < 0.5 ? "var(--color-terracotta)" : "rgba(45, 42, 38, 0.45)";
+                    if (!isMajor && collapseProgress > 0.5) return null;
+                    const tickColor = isAccented && collapseProgress < 0.5 ? "var(--color-terracotta)" : "rgba(45, 42, 38, 0.25)";
+                    const labelColor = isAccented && collapseProgress < 0.5 ? "var(--color-terracotta)" : "rgba(45, 42, 38, 0.45)";
                     return (
                       <div
                         key={era.label}
@@ -280,10 +298,10 @@ export default function GanttTimeline() {
                         style={{ left: `${pct(todayMonth)}%`, transform: "translateX(-50%)" }}
                       >
                         <div style={{ width: "1px", height: `${tickHeight}px`, backgroundColor: "var(--color-terracotta)" }} />
-                        {progress < 0.5 && (
+                        {collapseProgress < 0.5 && (
                           <span
                             className="font-mono mt-0.5 whitespace-nowrap"
-                            style={{ fontSize: `${yearFontSize}px`, color: "var(--color-terracotta)", opacity: lerp(1, 0, progress * 2) }}
+                            style={{ fontSize: `${yearFontSize}px`, color: "var(--color-terracotta)", opacity: lerp(1, 0, collapseProgress * 2) }}
                           >
                             Today
                           </span>
@@ -292,18 +310,20 @@ export default function GanttTimeline() {
                     );
                   })()}
                 </div>
-                <div className="shrink-0 hidden sm:block" style={{ width: `${lerp(120, 0, progress)}px`, minWidth: 0 }} />
+                <div className="shrink-0 hidden sm:block" style={{ width: `${lerp(120, 0, collapseProgress)}px`, minWidth: 0 }} />
               </div>
 
               {/* Era labels */}
               <div
                 className="flex items-start px-1 -mx-1"
                 style={{
-                  gap: `${lerp(12, 0, progress)}px`,
-                  opacity: lerp(1, 0, progress * 2),
+                  gap: `${lerp(12, 0, collapseProgress)}px`,
+                  opacity: revealProgress < 1
+                    ? revealAxisOpacity
+                    : lerp(1, 0, collapseProgress * 2),
                 }}
               >
-                <div className="shrink-0 hidden sm:block" style={{ width: `${lerp(150, 0, progress)}px`, minWidth: 0 }} />
+                <div className="shrink-0 hidden sm:block" style={{ width: `${lerp(150, 0, collapseProgress)}px`, minWidth: 0 }} />
                 <div className="relative flex-1" style={{ height: "14px" }}>
                   {eraLabels.map((era) => {
                     const left = pct(era.startMonth);
@@ -329,7 +349,7 @@ export default function GanttTimeline() {
                     );
                   })}
                 </div>
-                <div className="shrink-0 hidden sm:block" style={{ width: `${lerp(120, 0, progress)}px`, minWidth: 0 }} />
+                <div className="shrink-0 hidden sm:block" style={{ width: `${lerp(120, 0, collapseProgress)}px`, minWidth: 0 }} />
               </div>
 
               {/* Hover card */}
@@ -385,7 +405,8 @@ export default function GanttTimeline() {
           </div>
         </div>
       </div>
-      <div ref={sentinelRef} id="gantt-sentinel" />
+      {/* Sentinel — 600px scroll fuel: 400px reveal + 200px collapse */}
+      <div ref={sentinelRef} id="gantt-sentinel" style={{ height: "600px" }} />
       <ContentQuiz open={quizOpen} onClose={() => setQuizOpen(false)} />
     </>
   );
