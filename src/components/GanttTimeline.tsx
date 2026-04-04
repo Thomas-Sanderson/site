@@ -82,13 +82,18 @@ export default function GanttTimeline() {
 
   // Interpolated values
   const rowHeight = lerp(14, 2, progress);
-  const rowGap = lerp(3, 1, progress);
+  const rowGap = lerp(3, 0, progress);
   const labelOpacity = lerp(1, 0, progress);
   const bleedMargin = lerp(-160, 0, progress);
   const navRowOpacity = lerp(0, 1, Math.max(0, (progress - 0.3) / 0.7));
   const backdropOpacity = lerp(0, 0.92, progress);
   const verticalPadding = lerp(24, 8, progress);
   const hoverEnabled = progress < 0.3;
+
+  // Label column widths and flex gap shrink to 0 as chart collapses
+  const companyLabelWidth = lerp(150, 0, progress);
+  const locationLabelWidth = lerp(120, 0, progress);
+  const flexGap = lerp(12, 0, progress);
 
   // Pills fade in as bars fade to grey
   const pillOpacity = lerp(0, 1, Math.max(0, (progress - 0.4) / 0.4));
@@ -171,8 +176,9 @@ export default function GanttTimeline() {
                   return (
                     <div
                       key={company}
-                      className="flex items-center gap-3 rounded-md px-1 -mx-1 transition-colors duration-200"
+                      className="flex items-center rounded-md px-1 -mx-1 transition-colors duration-200"
                       style={{
+                        gap: `${flexGap}px`,
                         backgroundColor: hoveredCompany === company && hoverEnabled
                           ? "rgba(45, 42, 38, 0.03)"
                           : "transparent",
@@ -190,8 +196,8 @@ export default function GanttTimeline() {
                     >
                       {/* Company label — sits in the bleed area */}
                       <div
-                        className="w-[150px] shrink-0 text-right hidden sm:block"
-                        style={{ opacity: labelOpacity }}
+                        className="shrink-0 text-right hidden sm:block"
+                        style={{ width: `${companyLabelWidth}px`, minWidth: 0, opacity: labelOpacity }}
                       >
                         <p
                           className="font-mono text-[8px] leading-tight truncate transition-colors duration-200"
@@ -284,8 +290,8 @@ export default function GanttTimeline() {
                       </div>
                       {/* Location label */}
                       <div
-                        className="w-[120px] shrink-0 hidden sm:block"
-                        style={{ opacity: labelOpacity }}
+                        className="shrink-0 hidden sm:block"
+                        style={{ width: `${locationLabelWidth}px`, minWidth: 0, opacity: labelOpacity }}
                       >
                         <p
                           className="font-mono text-[8px] leading-tight truncate transition-colors duration-200"
@@ -305,8 +311,9 @@ export default function GanttTimeline() {
 
               {/* Category pills — fade in between bars and year axis */}
               <div
-                className="flex items-start gap-3 px-1 -mx-1"
+                className="flex items-start px-1 -mx-1"
                 style={{
+                  gap: `${flexGap}px`,
                   opacity: pillOpacity,
                   pointerEvents: pillOpacity > 0.3 ? "auto" : "none",
                   maxHeight: pillOpacity > 0.05 ? "40px" : "0px",
@@ -316,7 +323,7 @@ export default function GanttTimeline() {
                 }}
               >
                 {/* Spacer matching company label column */}
-                <div className="w-[150px] shrink-0 hidden sm:block" />
+                <div className="shrink-0 hidden sm:block" style={{ width: `${companyLabelWidth}px`, minWidth: 0 }} />
                 <div className="flex-1 flex flex-wrap gap-2">
                   {pillKeys.map((key) => {
                     const meta = pillMeta[key];
@@ -345,13 +352,13 @@ export default function GanttTimeline() {
                   })}
                 </div>
                 {/* Spacer matching location label column */}
-                <div className="w-[120px] shrink-0 hidden sm:block" />
+                <div className="shrink-0 hidden sm:block" style={{ width: `${locationLabelWidth}px`, minWidth: 0 }} />
               </div>
 
               {/* Year axis — aligned with bar area using same flex layout */}
-              <div className="flex items-start gap-3 px-1 -mx-1 mt-1">
+              <div className="flex items-start px-1 -mx-1 mt-1" style={{ gap: `${flexGap}px` }}>
                 {/* Spacer matching company label column */}
-                <div className="w-[150px] shrink-0 hidden sm:block" style={{ opacity: labelOpacity }} />
+                <div className="shrink-0 hidden sm:block" style={{ width: `${companyLabelWidth}px`, minWidth: 0, opacity: labelOpacity }} />
                 <div className="relative flex-1">
                   {/* Baseline rule */}
                   <div className="w-full" style={{ height: "1px", backgroundColor: "rgba(45, 42, 38, 0.25)" }} />
@@ -431,7 +438,7 @@ export default function GanttTimeline() {
                   })()}
                 </div>
                 {/* Spacer matching location label column */}
-                <div className="w-[120px] shrink-0 hidden sm:block" style={{ opacity: labelOpacity }} />
+                <div className="shrink-0 hidden sm:block" style={{ width: `${locationLabelWidth}px`, minWidth: 0, opacity: labelOpacity }} />
               </div>
 
               {/* Row hover — floating callout card */}
