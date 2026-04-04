@@ -1,0 +1,529 @@
+[
+  {
+    "slug": "moth-lewes",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 232716.png",
+    "processed": "processed/moth-lewes.png",
+    "cropped": "cropped/moth-lewes.png",
+    "width": 640,
+    "height": 856,
+    "location": "Lewes, Delaware",
+    "date": "September 2025",
+    "caption": null,
+    "likes": {
+      "anchor": "dane_pinard",
+      "others": 4
+    }
+  },
+  {
+    "slug": "datura-delaware",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 233409.png",
+    "processed": "processed/datura-delaware.png",
+    "cropped": "cropped/datura-delaware.png",
+    "width": 632,
+    "height": 857,
+    "location": "Delaware",
+    "date": "September 2025",
+    "caption": "\ud83c\udf3f G\u00e1tia.",
+    "likes": {
+      "anchor": "chandugold",
+      "others": 6
+    }
+  },
+  {
+    "slug": "sunset-stream-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 233420.png",
+    "processed": "processed/sunset-stream-porto.png",
+    "cropped": "cropped/sunset-stream-porto.png",
+    "width": 838,
+    "height": 840,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "Trip.",
+    "likes": {
+      "anchor": "malk_ocean",
+      "others": 11
+    }
+  },
+  {
+    "slug": "beach-sunset-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 233427.png",
+    "processed": "processed/beach-sunset-porto.png",
+    "cropped": "cropped/beach-sunset-porto.png",
+    "width": 756,
+    "height": 838,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "El reflecto e o c\u00e3ozinho.",
+    "likes": {
+      "anchor": "malk_ocean",
+      "others": 16
+    }
+  },
+  {
+    "slug": "storm-clouds-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 233435.png",
+    "processed": "processed/storm-clouds-porto.png",
+    "cropped": "cropped/storm-clouds-porto.png",
+    "width": 757,
+    "height": 851,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "Tr\u00eas fedeu.",
+    "likes": {
+      "anchor": null,
+      "others": 7
+    }
+  },
+  {
+    "slug": "cat-mouse-saratoga",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 233442.png",
+    "processed": "processed/cat-mouse-saratoga.png",
+    "cropped": "cropped/cat-mouse-saratoga.png",
+    "width": 753,
+    "height": 852,
+    "location": "Saratoga, California",
+    "date": "July 2017",
+    "caption": "Cat and mouse. c.2017",
+    "likes": {
+      "anchor": "creative_mindst",
+      "others": 21
+    }
+  },
+  {
+    "slug": "fireworks-fort-bragg",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 233451.png",
+    "processed": "processed/fireworks-fort-bragg.png",
+    "cropped": "cropped/fireworks-fort-bragg.png",
+    "width": 758,
+    "height": 855,
+    "location": "Fort Bragg, California",
+    "date": "July 2017",
+    "caption": "Fireworks over the Pacific. c. 2017",
+    "likes": {
+      "anchor": "malk_ocean",
+      "others": 23
+    }
+  },
+  {
+    "slug": "milky-way-south-royalton",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 233500.png",
+    "processed": "processed/milky-way-south-royalton.png",
+    "cropped": "cropped/milky-way-south-royalton.png",
+    "width": 542,
+    "height": 852,
+    "location": "South Royalton, New Hampshire",
+    "date": "December 26, 2017",
+    "caption": "VRaptor!",
+    "likes": {
+      "anchor": "malk_ocean",
+      "others": 35
+    }
+  },
+  {
+    "slug": "shattered-glass-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234147.png",
+    "processed": "processed/shattered-glass-porto.png",
+    "cropped": "cropped/shattered-glass-porto.png",
+    "width": 717,
+    "height": 852,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "Si Brando.",
+    "likes": {
+      "anchor": "malk_ocean",
+      "others": 9
+    }
+  },
+  {
+    "slug": "thorns-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234153.png",
+    "processed": "processed/thorns-porto.png",
+    "cropped": "cropped/thorns-porto.png",
+    "width": 659,
+    "height": 858,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "Dire\u00e7\u00e3...",
+    "likes": {
+      "anchor": "gretebacani",
+      "others": 17
+    }
+  },
+  {
+    "slug": "white-lashes-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234200.png",
+    "processed": "processed/white-lashes-porto.png",
+    "cropped": "cropped/white-lashes-porto.png",
+    "width": 758,
+    "height": 860,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "Gelo...",
+    "likes": {
+      "anchor": "amigobrown",
+      "others": 21
+    }
+  },
+  {
+    "slug": "farturas-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234208.png",
+    "processed": "processed/farturas-porto.png",
+    "cropped": "cropped/farturas-porto.png",
+    "width": 667,
+    "height": 854,
+    "location": "Ola de Sintra",
+    "date": "March 2022",
+    "caption": "Farturas!",
+    "likes": {
+      "anchor": "williamdombroph",
+      "others": 10
+    }
+  },
+  {
+    "slug": "bird-shadow-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234215.png",
+    "processed": "processed/bird-shadow-porto.png",
+    "cropped": "cropped/bird-shadow-porto.png",
+    "width": 659,
+    "height": 860,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "Triste Solidam Filme...",
+    "likes": {
+      "anchor": "amigobrown",
+      "others": 18
+    }
+  },
+  {
+    "slug": "umbrella-doll-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234220.png",
+    "processed": "processed/umbrella-doll-porto.png",
+    "cropped": "cropped/umbrella-doll-porto.png",
+    "width": 750,
+    "height": 857,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "Programa redundante.",
+    "likes": {
+      "anchor": "malk_ocean",
+      "others": 15
+    }
+  },
+  {
+    "slug": "rose-prism-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234226.png",
+    "processed": "processed/rose-prism-porto.png",
+    "cropped": "cropped/rose-prism-porto.png",
+    "width": 585,
+    "height": 858,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "Otos sombra de uma rosa.",
+    "likes": {
+      "anchor": "malk",
+      "others": 28
+    }
+  },
+  {
+    "slug": "graffiti-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234232.png",
+    "processed": "processed/graffiti-porto.png",
+    "cropped": "cropped/graffiti-porto.png",
+    "width": 759,
+    "height": 857,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "Frente na casa.",
+    "likes": {
+      "anchor": "malk_ocean",
+      "others": 17
+    }
+  },
+  {
+    "slug": "toilet-terra-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234240.png",
+    "processed": "processed/toilet-terra-porto.png",
+    "cropped": "cropped/toilet-terra-porto.png",
+    "width": 534,
+    "height": 852,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "Terra Mind.",
+    "likes": {
+      "anchor": "dirtworkler",
+      "others": 5
+    }
+  },
+  {
+    "slug": "spider-web-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234655.png",
+    "processed": "processed/spider-web-porto.png",
+    "cropped": "cropped/spider-web-porto.png",
+    "width": 658,
+    "height": 855,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "Orra teia de aranha.",
+    "likes": {
+      "anchor": "malk_ocean",
+      "others": 7
+    }
+  },
+  {
+    "slug": "silhouette-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234702.png",
+    "processed": "processed/silhouette-porto.png",
+    "cropped": "cropped/silhouette-porto.png",
+    "width": 572,
+    "height": 859,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "Ay.",
+    "likes": {
+      "anchor": "malk_ocean",
+      "others": 27
+    }
+  },
+  {
+    "slug": "plants-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234708.png",
+    "processed": "processed/plants-porto.png",
+    "cropped": "cropped/plants-porto.png",
+    "width": 758,
+    "height": 856,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "Hyper pixeis...",
+    "likes": {
+      "anchor": "malk_ocean",
+      "others": 16
+    }
+  },
+  {
+    "slug": "minimart-shelves-rehoboth",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234719.png",
+    "processed": "processed/minimart-shelves-rehoboth.png",
+    "cropped": "cropped/minimart-shelves-rehoboth.png",
+    "width": 458,
+    "height": 862,
+    "location": "Rehoboth, Delaware",
+    "date": "August 2025",
+    "caption": "Rehoboh Mini Mart, USA...",
+    "likes": {
+      "anchor": "amigobrown",
+      "others": 4
+    }
+  },
+  {
+    "slug": "lens-flare-memphis",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234725.png",
+    "processed": "processed/lens-flare-memphis.png",
+    "cropped": "cropped/lens-flare-memphis.png",
+    "width": 845,
+    "height": 855,
+    "location": "Memphis, Tennessee",
+    "date": "January 2021",
+    "caption": "Happy New Year.",
+    "likes": {
+      "anchor": "williamdombroph",
+      "others": 3
+    }
+  },
+  {
+    "slug": "moss-sprout-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234742.png",
+    "processed": "processed/moss-sprout-porto.png",
+    "cropped": "cropped/moss-sprout-porto.png",
+    "width": 549,
+    "height": 855,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "Qualquer sitio que podes.",
+    "likes": {
+      "anchor": "malk_ocean",
+      "others": 16
+    }
+  },
+  {
+    "slug": "stained-window-porto",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234809.png",
+    "processed": "processed/stained-window-porto.png",
+    "cropped": "cropped/stained-window-porto.png",
+    "width": 590,
+    "height": 857,
+    "location": "Porto, Portugal",
+    "date": "March 2022",
+    "caption": "quando ele por fim chegou...",
+    "likes": {
+      "anchor": "amigobrown",
+      "others": 12
+    }
+  },
+  {
+    "slug": "altar-candles-memphis",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234819.png",
+    "processed": "processed/altar-candles-memphis.png",
+    "cropped": "cropped/altar-candles-memphis.png",
+    "width": 540,
+    "height": 857,
+    "location": "Memphis, Tennessee",
+    "date": "September 27, 2020",
+    "caption": "Slowly getting settled.",
+    "likes": {
+      "anchor": null,
+      "others": 0
+    }
+  },
+  {
+    "slug": "firepit-memphis",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234826.png",
+    "processed": "processed/firepit-memphis.png",
+    "cropped": "cropped/firepit-memphis.png",
+    "width": 588,
+    "height": 853,
+    "location": "Memphis, Tennessee",
+    "date": "September 22, 2020",
+    "caption": "DIY \u2014upcycled\u2014 brick fire pit life.",
+    "likes": {
+      "anchor": "amigobrown",
+      "others": 10
+    }
+  },
+  {
+    "slug": "statue-trees-memphis",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234834.png",
+    "processed": "processed/statue-trees-memphis.png",
+    "cropped": "cropped/statue-trees-memphis.png",
+    "width": 471,
+    "height": 859,
+    "location": "Memphis, Tennessee",
+    "date": "September 2020",
+    "caption": "Just thinking.",
+    "likes": {
+      "anchor": "amigobrown",
+      "others": 14
+    }
+  },
+  {
+    "slug": "waterfall-big-south-fork",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234843.png",
+    "processed": "processed/waterfall-big-south-fork.png",
+    "cropped": "cropped/waterfall-big-south-fork.png",
+    "width": 617,
+    "height": 855,
+    "location": "Big South Fork National River & Recreation Area",
+    "date": "September 2020",
+    "caption": "Pickle Barrel Falls!",
+    "likes": {
+      "anchor": "amigobrown",
+      "others": 16
+    }
+  },
+  {
+    "slug": "cave-hiker-big-south-fork",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234851.png",
+    "processed": "processed/cave-hiker-big-south-fork.png",
+    "cropped": "cropped/cave-hiker-big-south-fork.png",
+    "width": 601,
+    "height": 861,
+    "location": "Big South Fork National River & Recreation Area",
+    "date": "September 2020",
+    "caption": null,
+    "likes": {
+      "anchor": "amigobrown",
+      "others": 16
+    }
+  },
+  {
+    "slug": "morning-mist-big-south-fork",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234900.png",
+    "processed": "processed/morning-mist-big-south-fork.png",
+    "cropped": "cropped/morning-mist-big-south-fork.png",
+    "width": 625,
+    "height": 857,
+    "location": "Big South Fork National River & Recreation Area",
+    "date": "September 2020",
+    "caption": "Motorcar union.",
+    "likes": {
+      "anchor": "pandasaint",
+      "others": 3
+    }
+  },
+  {
+    "slug": "campfire-bread-pinnacle",
+    "source": "instagram",
+    "account": "thomas.w.sanderson",
+    "raw": "raw/Screenshot 2026-04-03 234909.png",
+    "processed": "processed/campfire-bread-pinnacle.png",
+    "cropped": "cropped/campfire-bread-pinnacle.png",
+    "width": 754,
+    "height": 855,
+    "location": "Pinnacle Natural Park",
+    "date": "September 2020",
+    "caption": "Do you know what cooked food looks like?",
+    "likes": {
+      "anchor": "katedombroph",
+      "others": 7
+    }
+  }
+]
