@@ -45,7 +45,6 @@ export default function Hero() {
   const isMobile = useIsMobile();
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [safeAreaTop, setSafeAreaTop] = useState(0);
   const [labelTop, setLabelTop] = useState(0);
   const [labelLeft, setLabelLeft] = useState(0);
   const [labelWidth, setLabelWidth] = useState(0);
@@ -61,9 +60,6 @@ export default function Hero() {
     }
     // Force scroll to top so element measurements are correct
     window.scrollTo(0, 0);
-    // Read safe area inset for animation targets
-    const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--safe-area-top")) || 0;
-    setSafeAreaTop(sat);
     setMounted(true);
   }, []);
 
@@ -132,8 +128,7 @@ export default function Hero() {
     const headingScale = lerp(1, headingTargetScale, riseT);
 
     // Heading Y — uses initial (unscrolled) position
-    const headerTop = HEADER_TOP + safeAreaTop;
-    const headingMoveY = lerp(0, -(headingTop - headerTop), riseT);
+    const headingMoveY = lerp(0, -(headingTop - HEADER_TOP), riseT);
 
     // Label X — clamp on small screens so label doesn't overflow viewport
     const gapFull = isMobile ? 8 : 16;
@@ -153,7 +148,7 @@ export default function Hero() {
     const labelSlideTargetY = headingBottom - 14 - labelTop;
     const labelSlideY = lerp(0, labelSlideTargetY, slideT);
 
-    const labelFinalY = headerTop + 4;
+    const labelFinalY = HEADER_TOP + 4;
     const labelAfterSlide = labelTop + labelSlideTargetY;
     const labelRiseTargetY = -(labelAfterSlide - labelFinalY);
     const labelRiseY = lerp(0, labelRiseTargetY, riseT);
@@ -168,7 +163,7 @@ export default function Hero() {
       headingScale, headingMoveY,
       slideT, riseT,
     };
-  }, [progress, isMobile, safeAreaTop, labelTop, labelLeft, labelWidth,
+  }, [progress, isMobile, labelTop, labelLeft, labelWidth,
       headingTop, headingLeft, headingHeight, headingWidth]);
 
   // Sentinel height: just enough so the Gantt starts right after the animation.
@@ -203,8 +198,7 @@ export default function Hero() {
             top: 0,
             left: 0,
             right: 0,
-            height: "calc(52px + env(safe-area-inset-top, 0px))",
-            paddingTop: "env(safe-area-inset-top, 0px)",
+            height: "52px",
             backgroundColor: `rgba(245, 240, 235, ${phases.riseT >= 1 ? 0.95 : 0})`,
             backdropFilter: phases.riseT >= 1 ? "blur(12px)" : "none",
             borderBottom: phases.riseT >= 1
@@ -253,7 +247,7 @@ export default function Hero() {
           <div
             className="sm:hidden absolute left-0 right-0"
             style={{
-              top: "calc(52px + env(safe-area-inset-top, 0px))",
+              top: "52px",
               backgroundColor: "rgba(245, 240, 235, 0.98)",
               backdropFilter: "blur(12px)",
               borderBottom: "1px solid rgba(45, 42, 38, 0.08)",

@@ -72,7 +72,7 @@ export default function GanttTimeline() {
 
   const ganttApproxHeight = 340;
   const centerY = `calc(50vh - ${ganttApproxHeight / 2}px)`;
-  const finalY = `calc(${HEADER_HEIGHT}px + env(safe-area-inset-top, 0px))`;
+  const finalY = `${HEADER_HEIGHT}px`;
   const fixedTop = migrateT < 1
     ? `calc(${centerY} + (${finalY} - ${centerY}) * ${migrateT})`
     : finalY;

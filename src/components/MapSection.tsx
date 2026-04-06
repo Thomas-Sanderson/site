@@ -241,8 +241,8 @@ export default function MapSection() {
         className="px-0 sm:px-4"
         style={{
           position: "sticky",
-          top: "calc(60px + env(safe-area-inset-top, 0px))",
-          height: "calc(100vh - 60px - env(safe-area-inset-top, 0px))",
+          top: "60px",
+          height: "calc(100vh - 60px)",
           zIndex: 20,
           display: "flex",
           flexDirection: "column",
