@@ -86,6 +86,25 @@ export default function CaseStudyCard({ study }: { study: CaseStudy }) {
             </div>
           )}
 
+          {/* Videos */}
+          {study.videos && study.videos.length > 0 && (
+            <div className="grid gap-4">
+              {study.videos.map((vid) => (
+                <video
+                  key={vid.src}
+                  src={vid.src}
+                  controls
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="w-full border"
+                  style={{ borderColor: "rgba(45, 42, 38, 0.08)" }}
+                />
+              ))}
+            </div>
+          )}
+
           {fullImages.length > 0 && (
             <div className="grid gap-4">
               {fullImages.map((img) => (
@@ -93,7 +112,7 @@ export default function CaseStudyCard({ study }: { study: CaseStudy }) {
                   key={img.src}
                   src={img.src}
                   alt={img.alt}
-                  className="rounded-xl w-full border cursor-pointer hover:opacity-90 transition-opacity"
+                  className="w-full border cursor-pointer hover:opacity-90 transition-opacity"
                   style={{ borderColor: "rgba(45, 42, 38, 0.08)" }}
                   onClick={() => openModal(img.src, img.alt)}
                 />
@@ -109,15 +128,14 @@ export default function CaseStudyCard({ study }: { study: CaseStudy }) {
                   className="border overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
                   style={{
                     borderColor: "rgba(45, 42, 38, 0.08)",
-                    height: "200px",
+                    aspectRatio: "1",
                   }}
                   onClick={() => openModal(img.src, img.alt)}
                 >
                   <img
                     src={img.src}
                     alt={img.alt}
-                    className="w-full object-cover object-left-top"
-                    style={{ height: "auto", maxWidth: "none", width: "100%" }}
+                    className="w-full h-full object-cover object-left-top"
                   />
                 </div>
               ))}
@@ -155,7 +173,7 @@ export default function CaseStudyCard({ study }: { study: CaseStudy }) {
           <img
             src={modalSrc}
             alt={modalAlt}
-            className="max-w-full max-h-full rounded-lg object-contain"
+            className="max-w-full max-h-full object-contain"
             onClick={(e) => e.stopPropagation()}
           />
         </div>

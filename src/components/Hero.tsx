@@ -6,10 +6,11 @@ import { lerp } from "@/lib/useScrollCard";
 import { useIsMobile } from "@/lib/useIsMobile";
 
 const navLinks = [
-  { label: "Timeline", href: "#gantt-sentinel" },
-  { label: "Map", href: "#map" },
-  { label: "Work", href: "#era-acceleration" },
-  { label: "Contact", href: "#contact" },
+  { label: "Employment", href: "#gantt-sentinel" },
+  { label: "World", href: "#map" },
+  { label: "Eras", href: "#era-consulting" },
+  { label: "Case Studies", href: "#case-studies" },
+  { label: "Resume", href: "#resume" },
 ];
 
 /*
@@ -43,6 +44,7 @@ export default function Hero() {
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
 
+  const [menuOpen, setMenuOpen] = useState(false);
   const [labelTop, setLabelTop] = useState(0);
   const [labelLeft, setLabelLeft] = useState(0);
   const [labelWidth, setLabelWidth] = useState(0);
@@ -211,18 +213,58 @@ export default function Hero() {
               transition: "opacity 0.3s ease",
             }}
           >
+            {/* Desktop links */}
             {navLinks.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
-                className="font-mono text-[10px] tracking-wide hover:opacity-70 transition-opacity"
+                className="font-mono text-[10px] tracking-wide hover:opacity-70 transition-opacity hidden sm:block"
                 style={{ color: "rgba(45, 42, 38, 0.5)" }}
               >
                 {item.label}
               </a>
             ))}
+            {/* Mobile hamburger */}
+            <button
+              className="sm:hidden flex flex-col gap-[3px] p-1"
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label="Menu"
+            >
+              <span className="block w-4 h-[1.5px] rounded-full" style={{ backgroundColor: "rgba(45, 42, 38, 0.5)" }} />
+              <span className="block w-4 h-[1.5px] rounded-full" style={{ backgroundColor: "rgba(45, 42, 38, 0.5)" }} />
+              <span className="block w-4 h-[1.5px] rounded-full" style={{ backgroundColor: "rgba(45, 42, 38, 0.5)" }} />
+            </button>
           </nav>
         </div>
+
+        {/* Mobile dropdown menu */}
+        {menuOpen && phases.riseT >= 1 && (
+          <div
+            className="sm:hidden absolute left-0 right-0"
+            style={{
+              top: "52px",
+              backgroundColor: "rgba(245, 240, 235, 0.98)",
+              backdropFilter: "blur(12px)",
+              borderBottom: "1px solid rgba(45, 42, 38, 0.08)",
+              zIndex: 46,
+              pointerEvents: "auto",
+            }}
+          >
+            <div className="flex flex-col px-6 py-3 gap-1">
+              {navLinks.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="font-mono text-xs tracking-wide py-2 hover:opacity-70 transition-opacity"
+                  style={{ color: "rgba(45, 42, 38, 0.6)" }}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Content — initial centered layout */}
         <div
