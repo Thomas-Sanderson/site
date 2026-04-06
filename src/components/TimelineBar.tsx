@@ -69,11 +69,7 @@ export default function TimelineBar() {
             const left = pct(era.startMonth);
             const right = pct(era.endMonth);
             const width = right - left;
-            const eraId = era.label
-              .toLowerCase()
-              .replace(/ \+ /g, "-")
-              .replace(/ /g, "-");
-            const isActive = activeEra === eraId;
+            const isActive = activeEra === era.id;
             return (
               <div
                 key={era.label}

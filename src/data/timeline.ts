@@ -372,8 +372,8 @@ export const TIMELINE_START = m(2013, 1);
 export const TIMELINE_END = m(2026, 4);
 
 export const eraLabels = [
-  { label: "Consulting",        startMonth: m(2013, 6),  endMonth: m(2019, 10), color: "#C4725A" },
-  { label: "Art + Independence", startMonth: m(2019, 8),  endMonth: m(2023, 3),  color: "#7B5EA7" },
-  { label: "Behavioral Health",  startMonth: m(2023, 7),  endMonth: m(2025, 5),  color: "#2A6B5A" },
-  { label: "Acceleration",       startMonth: m(2025, 5),  endMonth: m(2026, 4),  color: "#C4725A" },
+  { id: "consulting",        label: "Consulting",         startMonth: m(2013, 6),  endMonth: m(2019, 10), color: "#C4725A" },
+  { id: "art",               label: "Art + Independence", startMonth: m(2019, 10), endMonth: m(2023, 7),  color: "#7B5EA7" },
+  { id: "behavioral-health", label: "Behavioral Health",  startMonth: m(2023, 7),  endMonth: m(2025, 5),  color: "#2A6B5A" },
+  { id: "acceleration",      label: "Acceleration",       startMonth: m(2025, 5),  endMonth: m(2026, 4),  color: "#C4725A" },
 ];
