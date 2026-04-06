@@ -365,9 +365,76 @@ export default function GanttTimeline() {
                 })}
               </div>
 
+              {/* Era labels — above the year axis line */}
+              <div
+                className="flex items-end px-1 -mx-1 mt-1"
+                style={{
+                  gap: `${lerp(12, 0, collapseProgress)}px`,
+                  opacity:
+                    revealProgress < 1
+                      ? revealAxisOpacity
+                      : lerp(1, 0, collapseProgress * 2),
+                }}
+              >
+                <div
+                  className="shrink-0 hidden sm:block"
+                  style={{
+                    width: `${lerp(150, 0, collapseProgress)}px`,
+                    minWidth: 0,
+                  }}
+                />
+                <div className="relative flex-1" style={{ height: "14px" }}>
+                  {eraLabels.map((era) => {
+                    const left = pct(era.startMonth);
+                    const right = pct(era.endMonth);
+                    const w = right - left;
+                    const shortLabels: Record<string, string> = {
+                      "Consulting": "Consult.",
+                      "Art + Independence": "Art+Ind.",
+                      "Behavioral Health": "BH",
+                      "Acceleration": "Accel.",
+                    };
+                    return (
+                      <div
+                        key={era.label}
+                        className="absolute bottom-0 flex flex-col items-center"
+                        style={{ left: `${left}%`, width: `${w}%` }}
+                      >
+                        <span
+                          className="font-mono whitespace-nowrap mb-0.5"
+                          style={{
+                            fontSize: "7px",
+                            color: era.color,
+                            opacity: 0.7,
+                          }}
+                        >
+                          {isMobile ? shortLabels[era.label] || era.label : era.label}
+                        </span>
+                        <div
+                          className="w-full"
+                          style={{
+                            height: "2px",
+                            backgroundColor: era.color,
+                            opacity: 0.4,
+                            borderRadius: "1px",
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <div
+                  className="shrink-0 hidden sm:block"
+                  style={{
+                    width: `${lerp(120, 0, collapseProgress)}px`,
+                    minWidth: 0,
+                  }}
+                />
+              </div>
+
               {/* Year axis */}
               <div
-                className="flex items-start px-1 -mx-1 mt-1"
+                className="flex items-start px-1 -mx-1"
                 style={{
                   gap: `${lerp(12, 0, collapseProgress)}px`,
                   opacity: revealProgress < 1 ? revealAxisOpacity : 1,
@@ -401,13 +468,18 @@ export default function GanttTimeline() {
                       isAccented && collapseProgress < 0.5
                         ? "var(--color-terracotta)"
                         : "rgba(45, 42, 38, 0.45)";
+                    // Edge labels align inward to avoid clipping
+                    const isLeft = yr === 2013 || yr === 2015;
+                    const isRight = yr === 2025;
+                    const align = isLeft ? "items-start" : isRight ? "items-end" : "items-center";
+                    const tx = isLeft ? "translateX(0)" : isRight ? "translateX(-100%)" : "translateX(-50%)";
                     return (
                       <div
                         key={era.label}
-                        className="absolute top-0 flex flex-col items-center"
+                        className={`absolute top-0 flex flex-col ${align}`}
                         style={{
                           left: `${pct(era.month)}%`,
-                          transform: "translateX(-50%)",
+                          transform: tx,
                         }}
                       >
                         <div
@@ -437,10 +509,10 @@ export default function GanttTimeline() {
                       (now.getFullYear() - 2013) * 12 + now.getMonth();
                     return (
                       <div
-                        className="absolute top-0 flex flex-col items-center"
+                        className="absolute top-0 flex flex-col items-end"
                         style={{
                           left: `${pct(todayMonth)}%`,
-                          transform: "translateX(-50%)",
+                          transform: "translateX(-100%)",
                         }}
                       >
                         <div
@@ -475,66 +547,6 @@ export default function GanttTimeline() {
                 />
               </div>
 
-              {/* Era labels */}
-              <div
-                className="flex items-start px-1 -mx-1"
-                style={{
-                  gap: `${lerp(12, 0, collapseProgress)}px`,
-                  opacity:
-                    revealProgress < 1
-                      ? revealAxisOpacity
-                      : lerp(1, 0, collapseProgress * 2),
-                }}
-              >
-                <div
-                  className="shrink-0 hidden sm:block"
-                  style={{
-                    width: `${lerp(150, 0, collapseProgress)}px`,
-                    minWidth: 0,
-                  }}
-                />
-                <div className="relative flex-1" style={{ height: "14px" }}>
-                  {eraLabels.map((era) => {
-                    const left = pct(era.startMonth);
-                    const right = pct(era.endMonth);
-                    const width = right - left;
-                    return (
-                      <div
-                        key={era.label}
-                        className="absolute top-0 flex flex-col items-center"
-                        style={{ left: `${left}%`, width: `${width}%` }}
-                      >
-                        <div
-                          className="w-full"
-                          style={{
-                            height: "2px",
-                            backgroundColor: era.color,
-                            opacity: 0.4,
-                            borderRadius: "1px",
-                          }}
-                        />
-                        <span
-                          className="font-mono whitespace-nowrap mt-0.5"
-                          style={{
-                            fontSize: "7px",
-                            color: era.color,
-                            opacity: 0.7,
-                          }}
-                        >
-                          {era.label}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-                <div
-                  className="shrink-0 hidden sm:block"
-                  style={{
-                    width: `${lerp(120, 0, collapseProgress)}px`,
-                    minWidth: 0,
-                  }}
-                />
-              </div>
 
               {/* Hover/tap card */}
               {hoveredCompany &&
