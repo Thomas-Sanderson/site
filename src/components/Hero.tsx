@@ -352,6 +352,7 @@ export default function Hero() {
             figured out are possible yet.
           </p>
         </div>
+
       </div>
     </>
   );
