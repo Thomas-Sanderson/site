@@ -1,7 +1,7 @@
-import Nav from "@/components/Nav";
+import TimelineBar from "@/components/TimelineBar";
 import Hero from "@/components/Hero";
-import MapSection from "@/components/MapSection";
 import GanttTimeline from "@/components/GanttTimeline";
+import MapSection from "@/components/MapSection";
 import EraSection from "@/components/EraSection";
 import CaseStudySection from "@/components/CaseStudySection";
 import ResumeSection from "@/components/ResumeSection";
@@ -11,11 +11,11 @@ import { eras } from "@/data/eras";
 export default function Home() {
   return (
     <>
-      <Nav />
+      <TimelineBar />
       <main>
         <Hero />
-        <MapSection />
         <GanttTimeline />
+        <MapSection />
         <EraSection era={eras[0]} />
         <EraSection era={eras[1]} />
         <EraSection era={eras[2]} />

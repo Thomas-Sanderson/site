@@ -1,23 +1,49 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import { siteConfig } from "@/data/siteConfig";
-import { lerp } from "@/lib/timeline";
+import { lerp } from "@/lib/useScrollCard";
+
+/*
+  Hero animation — driven by raw scrollY, NOT useScrollCard.
+
+  The hero is position:fixed, so it doesn't need a tall sentinel.
+  The sentinel is just a spacer that controls how much document space
+  the hero "occupies" before the Gantt starts. We keep it short so
+  there's minimal dead scroll between the hero finishing and the Gantt
+  appearing.
+
+  HERO_SCROLL_RANGE controls total scroll distance for the animation.
+  The sentinel height = 100vh + HERO_SCROLL_RANGE (first 100vh is visible
+  without scrolling, then HERO_SCROLL_RANGE px of actual scroll).
+
+  Phase A — BIO FADE (0.0–0.15)
+  Phase B — LABEL SLIDES RIGHT (0.10–0.35)
+  Phase C — BOTH MOVE UP + SHRINK (0.30–0.85)
+  Dead zone: 0.85–1.0 = 15% of range = small buffer before Gantt
+*/
+
+const HEADER_TOP = 16;
+const HERO_SCROLL_RANGE = 400; // px of scroll for the full animation
 
 export default function Hero() {
-  const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const headingTextRef = useRef<HTMLSpanElement>(null);
   const labelRef = useRef<HTMLParagraphElement>(null);
-  const [mounted, setMounted] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-  const [ganttCollapse, setGanttCollapse] = useState(0);
-  const [headingInitialY, setHeadingInitialY] = useState(0);
-  const [labelToHeadingGap, setLabelToHeadingGap] = useState(0);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  const [labelTop, setLabelTop] = useState(0);
+  const [labelLeft, setLabelLeft] = useState(0);
+  const [labelWidth, setLabelWidth] = useState(0);
+  const [headingTop, setHeadingTop] = useState(0);
+  const [headingLeft, setHeadingLeft] = useState(0);
+  const [headingHeight, setHeadingHeight] = useState(0);
+  const [headingWidth, setHeadingWidth] = useState(0);
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
@@ -26,17 +52,42 @@ export default function Hero() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Measure heading + label positions for shrink animation targets
+  // Track scrollY directly
+  useEffect(() => {
+    let raf = 0;
+    const handleScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const p = Math.max(0, Math.min(1, window.scrollY / HERO_SCROLL_RANGE));
+        setProgress(p);
+      });
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
   useEffect(() => {
     const measure = () => {
-      if (headingRef.current) {
-        setHeadingInitialY(headingRef.current.getBoundingClientRect().top);
+      if (labelRef.current) {
+        const r = labelRef.current.getBoundingClientRect();
+        // Adjust for current scroll position to get initial (unscrolled) position
+        setLabelTop(r.top + window.scrollY);
+        setLabelLeft(r.left);
+        setLabelWidth(r.width);
       }
-      if (labelRef.current && headingRef.current) {
-        setLabelToHeadingGap(
-          headingRef.current.getBoundingClientRect().top -
-            labelRef.current.getBoundingClientRect().top
-        );
+      if (headingRef.current) {
+        const r = headingRef.current.getBoundingClientRect();
+        setHeadingTop(r.top + window.scrollY);
+        setHeadingLeft(r.left);
+        setHeadingHeight(r.height);
+        if (headingTextRef.current) {
+          setHeadingWidth(headingTextRef.current.getBoundingClientRect().width);
+        }
       }
     };
     const timer = setTimeout(measure, 50);
@@ -47,72 +98,72 @@ export default function Hero() {
     };
   }, []);
 
-  const handleScroll = useCallback(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const p = Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight)));
-    setProgress(p);
-  }, []);
+  const phases = useMemo(() => {
+    // ── Phase A: Bio fade (0.0–0.15) ──
+    const bioT = Math.max(0, Math.min(1, progress / 0.15));
+    const bioOpacity = lerp(1, 0, bioT);
+    const bioSlide = lerp(0, 30, bioT);
 
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
+    // ── Phase B: Label slides right (0.10–0.35) ──
+    const slideT = Math.max(0, Math.min(1, (progress - 0.10) / 0.25));
 
-  // Listen for Gantt collapse to crossfade heading → Gantt nav row
-  useEffect(() => {
-    const handler = (e: Event) => setGanttCollapse((e as CustomEvent<number>).detail);
-    window.addEventListener("gantt-progress", handler);
-    return () => window.removeEventListener("gantt-progress", handler);
-  }, []);
+    // ── Phase C: Both move up + shrink (0.30–0.85) ──
+    const riseT = Math.max(0, Math.min(1, (progress - 0.30) / 0.55));
 
-  // Broadcast hero progress
-  useEffect(() => {
-    window.dispatchEvent(new CustomEvent("hero-progress", { detail: progress }));
-  }, [progress]);
+    // Heading scale
+    const headingFontPx = isMobile ? 48 : 72;
+    const headingTargetScale = 22 / headingFontPx;
+    const headingScale = lerp(1, headingTargetScale, riseT);
 
-  // ── Phase calculations ──────────────────────────────────────
-  // Bio paragraph: fades during 0.10–0.30
-  const bioT = Math.max(0, Math.min(1, (progress - 0.10) / 0.20));
-  const bioOpacity = lerp(1, 0, bioT);
+    // Heading Y — uses initial (unscrolled) position
+    const headingMoveY = lerp(0, -(headingTop - HEADER_TOP), riseT);
 
-  // Label phase 1 (labelT, 0.25–0.55): zip left + shrink
-  const labelT = Math.max(0, Math.min(1, (progress - 0.25) / 0.30));
-  // Desktop: label stays visible; Mobile: fades out
-  const labelBaseOpacity = isMobile ? lerp(1, 0, labelT) : 1;
-  // Label shrinks to ~10px from text-sm (14px)
-  const labelTargetScale = 10 / 14;
-  const labelScaleVal = isMobile ? 1 : lerp(1, labelTargetScale, labelT);
-  // Label zips left ~150px
-  const labelTranslateX = isMobile ? 0 : lerp(0, -150, labelT);
+    // Label X
+    const gapFull = 16;
+    const slideTargetX = headingWidth + gapFull;
+    const labelSlideX = lerp(0, slideTargetX, slideT);
 
-  // Heading ("Thomas"): shrinks + moves STRAIGHT UP 0.40–0.70
-  const headingT = Math.max(0, Math.min(1, (progress - 0.40) / 0.30));
-  const headingTargetY = 24;
-  const headingMoveY = headingInitialY > 0 ? headingInitialY - headingTargetY : 0;
-  const targetScale = isMobile ? 0.377 : 0.247;
-  const headingScale = lerp(1, targetScale, headingT);
-  const headingTranslateY = lerp(0, -headingMoveY, headingT);
+    const gapFinal = 10;
+    const shrunkTargetX = headingWidth * headingScale + gapFinal;
+    const labelShrinkAdjustX = lerp(0, shrunkTargetX - slideTargetX, riseT);
+    const labelTotalX = labelSlideX + labelShrinkAdjustX;
 
-  // Label phase 2 (headingT, 0.40–0.70): move up in sync with Thomas
-  const labelTargetTranslateY = labelToHeadingGap - headingMoveY;
-  const labelTranslateY = isMobile ? 0 : lerp(0, labelTargetTranslateY, headingT);
+    // Label Y
+    const headingBottom = headingTop + headingHeight;
+    const labelSlideTargetY = headingBottom - 14 - labelTop;
+    const labelSlideY = lerp(0, labelSlideTargetY, slideT);
 
-  // Gantt crossfade — both heading and label fade together
-  const ganttFade = ganttCollapse > 0.2
-    ? lerp(1, 0, Math.min(1, (ganttCollapse - 0.2) / 0.3))
-    : 1;
-  const headingOpacity = ganttFade;
-  const labelOpacity = labelBaseOpacity * ganttFade;
+    const labelFinalY = HEADER_TOP + 4;
+    const labelAfterSlide = labelTop + labelSlideTargetY;
+    const labelRiseTargetY = -(labelAfterSlide - labelFinalY);
+    const labelRiseY = lerp(0, labelRiseTargetY, riseT);
+    const labelTotalY = labelSlideY + labelRiseY;
+
+    // Label scale
+    const labelTotalScale = lerp(1, 10 / 14, Math.max(slideT, riseT));
+
+    return {
+      bioOpacity, bioSlide,
+      labelTotalX, labelTotalY, labelTotalScale,
+      headingScale, headingMoveY,
+      slideT, riseT,
+    };
+  }, [progress, isMobile, labelTop, labelLeft, labelWidth,
+      headingTop, headingLeft, headingHeight, headingWidth]);
+
+  // Sentinel height: just enough so the Gantt starts right after the animation.
+  // The animation finishes at progress 0.85 = 340px of scroll.
+  // Add a small buffer. Total sentinel = HERO_SCROLL_RANGE + small margin.
+  // The first 100vh is visible without scrolling, so we need the sentinel
+  // to push the Gantt down by the scroll range amount.
+  const sentinelHeight = HERO_SCROLL_RANGE + 80; // 480px total
 
   return (
     <>
-      {/* Scroll fuel — 200vh of empty space */}
-      <section id="intro" ref={sectionRef} style={{ height: "200vh" }} />
+      {/* Scroll fuel — short sentinel, just enough to push Gantt down */}
+      <div id="intro" style={{ height: `${sentinelHeight}px` }} />
 
-      {/* Fixed overlay — animated hero content */}
+      {/* Fixed overlay */}
       <div
         style={{
           position: "fixed",
@@ -123,12 +174,27 @@ export default function Hero() {
           pointerEvents: "none",
           opacity: mounted ? 1 : 0,
           transition: "opacity 0.8s ease",
-          visibility:
-            bioOpacity > 0.01 || labelOpacity > 0.01 || headingOpacity > 0.01
-              ? "visible"
-              : "hidden",
         }}
       >
+        {/* Backdrop — only appears after text has settled */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: "52px",
+            backgroundColor: `rgba(245, 240, 235, ${phases.riseT >= 1 ? 0.95 : 0})`,
+            backdropFilter: phases.riseT >= 1 ? "blur(12px)" : "none",
+            borderBottom: phases.riseT >= 1
+              ? "1px solid rgba(45, 42, 38, 0.08)"
+              : "1px solid transparent",
+            transition: "background-color 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease",
+            pointerEvents: phases.riseT >= 1 ? "auto" : "none",
+          }}
+        />
+
+        {/* Content — initial centered layout */}
         <div
           className="max-w-[960px] mx-auto px-6 md:px-12"
           style={{
@@ -143,9 +209,11 @@ export default function Hero() {
             className="font-mono text-sm tracking-widest uppercase mb-4"
             style={{
               color: "var(--color-terracotta)",
-              opacity: labelOpacity,
-              transform: `translate(${labelTranslateX}px, ${labelTranslateY}px) scale(${labelScaleVal})`,
-              transformOrigin: "left center",
+              transform: `translate(${phases.labelTotalX}px, ${phases.labelTotalY}px) scale(${phases.labelTotalScale})`,
+              transformOrigin: "left bottom",
+              position: "relative",
+              zIndex: 46,
+              whiteSpace: "nowrap",
             }}
           >
             {siteConfig.title}
@@ -155,19 +223,20 @@ export default function Hero() {
             ref={headingRef}
             className="font-serif text-5xl md:text-7xl font-bold mb-8 leading-tight"
             style={{
-              opacity: headingOpacity,
-              transform: `translateY(${headingTranslateY}px) scale(${headingScale})`,
+              transform: `translateY(${phases.headingMoveY}px) scale(${phases.headingScale})`,
               transformOrigin: "top left",
+              position: "relative",
+              zIndex: 46,
             }}
           >
-            {siteConfig.name}
+            <span ref={headingTextRef}>{siteConfig.name}</span>
           </h1>
 
           <p
             className="text-lg md:text-xl leading-relaxed max-w-[640px] mb-12 text-charcoal/80"
             style={{
-              opacity: bioOpacity,
-              transform: `translateY(${bioT * 30}px)`,
+              opacity: phases.bioOpacity,
+              transform: `translateY(${phases.bioSlide}px)`,
             }}
           >
             I spent the first chapter of my career in boardrooms — consulting for
