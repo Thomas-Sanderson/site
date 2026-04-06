@@ -58,9 +58,12 @@ export default function GanttTimeline() {
   const N = groups.length;
 
   // Phase breakdowns
-  const revealProgress = Math.min(1, progress / 0.4);
-  const migrateT = Math.max(0, Math.min(1, (progress - 0.5) / 0.2));
-  const collapseProgress = Math.max(0, Math.min(1, (progress - 0.7) / 0.3));
+  // Reveal takes 45% of scroll, then a generous hold (45-65%) where the
+  // fully-revealed Gantt sits in the center with no animation.
+  // Migrate (65-80%), collapse (80-100%).
+  const revealProgress = Math.min(1, progress / 0.45);
+  const migrateT = Math.max(0, Math.min(1, (progress - 0.65) / 0.15));
+  const collapseProgress = Math.max(0, Math.min(1, (progress - 0.80) / 0.20));
 
   // Visibility: show the Gantt once the sentinel is in view (progress > 0)
   const ganttVisible = progress > 0;
@@ -84,8 +87,8 @@ export default function GanttTimeline() {
   const tickHeight = lerp(8, 4, collapseProgress);
   const minorTickHeight = lerp(5, 3, collapseProgress);
   const yearFontSize = lerp(9, 7, collapseProgress);
-  const maxWidth = lerp(960, 1200, collapseProgress);
-  const hoverEnabled = revealProgress >= 1 && collapseProgress < 0.1;
+  const maxWidth = lerp(1250, 1200, collapseProgress);
+  const hoverEnabled = revealProgress >= 1 && collapseProgress < 0.05;
 
   const handleRowEnter = useCallback(
     (company: string, e: React.MouseEvent) => {
@@ -104,7 +107,7 @@ export default function GanttTimeline() {
       <div
         ref={sentinelRef}
         id="gantt-sentinel"
-        style={{ height: `${SCROLL_FUEL}px`, position: "relative" }}
+        style={{ height: `calc(${SCROLL_FUEL}px + 50vh)`, position: "relative" }}
       />
 
       {/* Gantt — fixed during reveal/hold/migrate, sticky during collapse */}
@@ -194,37 +197,36 @@ export default function GanttTimeline() {
                   const rowOpacity = isRevealing
                     ? lerp(0, 1, revealT)
                     : lerp(1, 0, collapseT);
+                  // Height grows in the first 40% of revealT (smooth unfold),
+                  // then stays at full height while the clip sweep continues
+                  const heightT = Math.min(1, revealT / 0.4);
                   const rowHeight = isRevealing
-                    ? lerp(0, 14, revealT)
+                    ? lerp(0, 14, heightT)
                     : lerp(14, 0, collapseT);
 
                   return (
                     <div
                       key={company}
-                      className="flex items-center"
+                      className="flex items-center px-1 -mx-1"
                       style={{
+                        gap: "12px",
                         opacity: rowOpacity,
                         height: `${rowHeight}px`,
-                        overflow: "visible",
+                        overflow: "hidden",
                         backgroundColor:
                           hoveredCompany === company && hoverEnabled
                             ? "rgba(45, 42, 38, 0.03)"
                             : "transparent",
-                        marginLeft: `${lerp(-162, 0, collapseProgress)}px`,
-                        marginRight: `${lerp(-162, 0, collapseProgress)}px`,
-                        paddingLeft: `${lerp(162, 0, collapseProgress)}px`,
-                        paddingRight: `${lerp(162, 0, collapseProgress)}px`,
                       }}
                       onMouseEnter={(e) => handleRowEnter(company, e)}
                       onMouseLeave={() => setHoveredCompany(null)}
                     >
-                      {/* Company label — in left margin via negative margin */}
+                      {/* Company label */}
                       <div
-                        className="shrink-0 text-right hidden sm:block pr-3"
+                        className="shrink-0 text-right hidden sm:block"
                         style={{
                           width: `${lerp(150, 0, collapseProgress)}px`,
                           minWidth: 0,
-                          opacity: lerp(1, 0, collapseProgress),
                         }}
                       >
                         <p
@@ -240,10 +242,23 @@ export default function GanttTimeline() {
                         </p>
                       </div>
 
-                      {/* Bars — full width */}
+                      {/* Bars — row clips left-to-right during reveal */}
+                      {(() => {
+                        // Clip sweep starts after height settles (revealT > 0.2)
+                        // and progresses more slowly across the full range
+                        const clipT = isRevealing
+                          ? Math.max(0, Math.min(1, (revealT - 0.15) / 0.85))
+                          : 1;
+                        const clipRight = lerp(100, 0, clipT);
+                        return (
                       <div
                         className="relative flex-1"
-                        style={{ height: "14px" }}
+                        style={{
+                          height: "14px",
+                          clipPath: isRevealing && clipRight > 0.5
+                            ? `inset(0 ${clipRight}% 0 0)`
+                            : undefined,
+                        }}
                       >
                         {entries.map((entry, i) => {
                           const rawLeft = pct(entry.startMonth);
@@ -307,14 +322,15 @@ export default function GanttTimeline() {
                           );
                         })}
                       </div>
+                        );
+                      })()}
 
-                      {/* Location label — in right margin via negative margin */}
+                      {/* Location label */}
                       <div
-                        className="shrink-0 hidden sm:block pl-3"
+                        className="shrink-0 hidden sm:block"
                         style={{
-                          width: `${lerp(150, 0, collapseProgress)}px`,
+                          width: `${lerp(120, 0, collapseProgress)}px`,
                           minWidth: 0,
-                          opacity: lerp(1, 0, collapseProgress),
                         }}
                       >
                         <p
@@ -334,14 +350,22 @@ export default function GanttTimeline() {
                 })}
               </div>
 
-              {/* Year axis — full width */}
+              {/* Year axis */}
               <div
-                className="mt-1"
+                className="flex items-start px-1 -mx-1 mt-1"
                 style={{
+                  gap: `${lerp(12, 0, collapseProgress)}px`,
                   opacity: revealProgress < 1 ? revealAxisOpacity : 1,
                 }}
               >
-                <div className="relative">
+                <div
+                  className="shrink-0 hidden sm:block"
+                  style={{
+                    width: `${lerp(150, 0, collapseProgress)}px`,
+                    minWidth: 0,
+                  }}
+                />
+                <div className="relative flex-1">
                   <div
                     className="w-full"
                     style={{
@@ -427,18 +451,34 @@ export default function GanttTimeline() {
                     );
                   })()}
                 </div>
+                <div
+                  className="shrink-0 hidden sm:block"
+                  style={{
+                    width: `${lerp(120, 0, collapseProgress)}px`,
+                    minWidth: 0,
+                  }}
+                />
               </div>
 
-              {/* Era labels — full width */}
+              {/* Era labels */}
               <div
+                className="flex items-start px-1 -mx-1"
                 style={{
+                  gap: `${lerp(12, 0, collapseProgress)}px`,
                   opacity:
                     revealProgress < 1
                       ? revealAxisOpacity
                       : lerp(1, 0, collapseProgress * 2),
                 }}
               >
-                <div className="relative" style={{ height: "14px" }}>
+                <div
+                  className="shrink-0 hidden sm:block"
+                  style={{
+                    width: `${lerp(150, 0, collapseProgress)}px`,
+                    minWidth: 0,
+                  }}
+                />
+                <div className="relative flex-1" style={{ height: "14px" }}>
                   {eraLabels.map((era) => {
                     const left = pct(era.startMonth);
                     const right = pct(era.endMonth);
@@ -472,6 +512,13 @@ export default function GanttTimeline() {
                     );
                   })}
                 </div>
+                <div
+                  className="shrink-0 hidden sm:block"
+                  style={{
+                    width: `${lerp(120, 0, collapseProgress)}px`,
+                    minWidth: 0,
+                  }}
+                />
               </div>
 
               {/* Hover card */}

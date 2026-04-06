@@ -156,7 +156,7 @@ export default function Hero() {
   // Add a small buffer. Total sentinel = HERO_SCROLL_RANGE + small margin.
   // The first 100vh is visible without scrolling, so we need the sentinel
   // to push the Gantt down by the scroll range amount.
-  const sentinelHeight = HERO_SCROLL_RANGE + 80; // 480px total
+  const sentinelHeight = HERO_SCROLL_RANGE + 30; // 430px total
 
   return (
     <>
