@@ -265,10 +265,10 @@ export default function MapSection() {
           ref={mapScrollRef}
           className="relative w-full max-w-[1200px]"
           style={{
-            // On mobile: allow horizontal scroll, map is wider than viewport
-            overflowX: isMobile && progress >= 0.99 ? "auto" : "hidden",
-            overflowY: "hidden",
-            // pan-x: horizontal touch scrolls the map, vertical touch scrolls the page
+            // During animation: no overflow capture, touches pass through for page scroll
+            // After pills appear: horizontal scroll enabled for map panning
+            overflowX: isMobile && progress >= 0.99 ? "auto" : "visible",
+            overflowY: "visible",
             touchAction: isMobile && progress >= 0.99 ? "pan-x" : "auto",
             WebkitOverflowScrolling: "touch",
             scrollbarWidth: "none",
