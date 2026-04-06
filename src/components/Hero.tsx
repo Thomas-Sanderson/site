@@ -160,11 +160,14 @@ export default function Hero() {
     // Label scale
     const labelTotalScale = lerp(1, 10 / 14, Math.max(slideT, riseT));
 
+    // Once rise is mostly done, snap to final state
+    const settled = riseT >= 0.85;
+
     return {
       bioOpacity, bioSlide,
       labelTotalX, labelTotalY, labelTotalScale,
       headingScale, headingMoveY,
-      slideT, riseT,
+      slideT, riseT, settled,
     };
   }, [progress, isMobile, headerTargetTop, labelTop, labelLeft, labelWidth,
       headingTop, headingLeft, headingHeight, headingWidth]);
@@ -290,7 +293,17 @@ export default function Hero() {
           <p
             ref={labelRef}
             className="font-mono text-sm tracking-widest uppercase mb-4"
-            style={{
+            style={phases.settled ? {
+              color: "var(--color-terracotta)",
+              position: "fixed",
+              top: `${HEADER_TOP + 4}px`,
+              left: `${labelLeft + phases.labelTotalX}px`,
+              fontSize: "10px",
+              zIndex: 46,
+              whiteSpace: "nowrap",
+              pointerEvents: "none",
+              margin: 0,
+            } : {
               color: "var(--color-terracotta)",
               transform: `translate(${phases.labelTotalX}px, ${phases.labelTotalY}px) scale(${phases.labelTotalScale})`,
               transformOrigin: "left bottom",
@@ -306,7 +319,16 @@ export default function Hero() {
           <h1
             ref={headingRef}
             className="font-serif text-5xl md:text-7xl font-bold mb-8 leading-tight"
-            style={{
+            style={phases.settled ? {
+              position: "fixed",
+              top: `${HEADER_TOP}px`,
+              left: `${headingLeft}px`,
+              fontSize: "22px",
+              lineHeight: 1,
+              zIndex: 46,
+              pointerEvents: "none",
+              margin: 0,
+            } : {
               transform: `translateY(${phases.headingMoveY}px) scale(${phases.headingScale})`,
               transformOrigin: "top left",
               position: "relative",
