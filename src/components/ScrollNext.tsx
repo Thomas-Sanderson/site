@@ -2,13 +2,17 @@
 
 import { useState, useEffect, useCallback } from "react";
 
+const GANTT_OFFSET = () => (window.innerWidth < 640 ? 700 : 1200) * 0.5;
+const MAP_OFFSET = () => window.innerHeight + 600; // 100vh lead-in + 600px anim range
+const ERA_OFFSET = () => window.innerHeight * 0.5; // mid-hold of 200vh sentinel
+
 const sections = [
-  { id: "intro", next: "gantt-sentinel", label: "Employment", scrollOffset: 0.5 },
-  { id: "gantt-sentinel", next: "map", label: "World" },
-  { id: "map", next: "era-consulting", label: "Eras" },
-  { id: "era-consulting", next: "era-art", label: "Continue" },
-  { id: "era-art", next: "era-behavioral-health", label: "Continue" },
-  { id: "era-behavioral-health", next: "era-acceleration", label: "Continue" },
+  { id: "intro", next: "gantt-sentinel", label: "Employment", scrollPx: GANTT_OFFSET },
+  { id: "gantt-sentinel", next: "map", label: "World", scrollPx: MAP_OFFSET },
+  { id: "map", next: "era-consulting", label: "Eras", scrollPx: ERA_OFFSET },
+  { id: "era-consulting", next: "era-art", label: "Continue", scrollPx: ERA_OFFSET },
+  { id: "era-art", next: "era-behavioral-health", label: "Continue", scrollPx: ERA_OFFSET },
+  { id: "era-behavioral-health", next: "era-acceleration", label: "Continue", scrollPx: ERA_OFFSET },
   { id: "era-acceleration", next: "case-studies", label: "Case Studies" },
   { id: "case-studies", next: "resume", label: "Resume" },
   { id: "resume", next: "contact", label: "Get in Touch" },
@@ -52,13 +56,9 @@ export default function ScrollNext() {
       const target = document.getElementById(current.next);
       if (!target) return;
 
-      // For the Gantt, scroll partway into its sentinel so the chart is fully revealed
-      const offset = "scrollOffset" in current ? current.scrollOffset : 0;
-      if (offset) {
-        const isMobile = window.innerWidth < 640;
-        const scrollFuel = isMobile ? 700 : 1200;
-        const targetY =
-          target.getBoundingClientRect().top + window.scrollY + offset * scrollFuel;
+      if ("scrollPx" in current && current.scrollPx) {
+        const px = current.scrollPx();
+        const targetY = target.getBoundingClientRect().top + window.scrollY + px;
         window.scrollTo({ top: targetY, behavior: "smooth" });
       } else {
         target.scrollIntoView({ behavior: "smooth" });
