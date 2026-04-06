@@ -22,8 +22,8 @@ export default function CaseStudyCard({ study }: { study: CaseStudy }) {
   return (
     <div
       ref={ref}
-      className={`reveal rounded-2xl p-8 md:p-12 ${
-        study.flagship ? "bg-warm-white ring-1 ring-charcoal/5" : ""
+      className={`reveal rounded-2xl ${
+        study.flagship ? "p-8 md:p-12 bg-warm-white ring-1 ring-charcoal/5" : ""
       }`}
     >
       {study.flagship && (
