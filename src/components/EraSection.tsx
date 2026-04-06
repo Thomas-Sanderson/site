@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useMemo } from "react";
+import { useRef, useEffect, useMemo, useState, useCallback } from "react";
 import { useScrollCard, lerp } from "@/lib/useScrollCard";
 import type { Era } from "@/data/eras";
 import galleryData from "@/data/gallery.json";
@@ -17,6 +17,7 @@ interface GalleryImage {
 export default function EraSection({ era }: { era: Era }) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const progress = useScrollCard(sentinelRef);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
   // Dispatch era-highlight event for TimelineBar
   useEffect(() => {
@@ -63,8 +64,8 @@ export default function EraSection({ era }: { era: Era }) {
         className="px-6 md:px-12 max-w-[960px] mx-auto flex flex-col justify-start pt-8 sm:justify-center sm:pt-0"
         style={{
           position: "sticky",
-          top: "60px",
-          height: "calc(100vh - 60px)",
+          top: "90px",
+          height: "calc(100vh - 90px)",
           zIndex: 30,
           overflow: "hidden",
         }}
@@ -139,18 +140,18 @@ export default function EraSection({ era }: { era: Era }) {
         {/* Gallery grid (if this era has a galleryFilter) */}
         {galleryImages.length > 0 && (
           <div
-            className="flex gap-2 overflow-x-auto pb-2 mt-4"
+            className="grid grid-cols-3 gap-2 mt-4 max-w-[400px]"
             style={{
               opacity: fadeIn(narrativeEnter) * fadeOut,
               transform: `translateY(${slideIn(narrativeEnter) + slideOut}px)`,
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
             }}
           >
-            {galleryImages.slice(0, 6).map((img) => (
+            {galleryImages.slice(0, 5).map((img) => (
               <div
                 key={img.slug}
-                className="shrink-0 rounded-lg overflow-hidden w-[100px] h-[75px] sm:w-[120px] sm:h-[90px]"
+                className="rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                style={{ aspectRatio: "4/3" }}
+                onClick={() => setLightboxSrc(`/images/gallery/${img.cropped}`)}
               >
                 <img
                   src={`/images/gallery/${img.cropped}`}
@@ -160,20 +161,37 @@ export default function EraSection({ era }: { era: Era }) {
                 />
               </div>
             ))}
-            {galleryImages.length > 6 && (
+            {galleryImages.length > 5 && (
               <div
-                className="shrink-0 rounded-lg flex items-center justify-center font-mono text-xs w-[100px] h-[75px] sm:w-[120px] sm:h-[90px]"
+                className="rounded-lg flex items-center justify-center font-mono text-xs cursor-pointer hover:opacity-80 transition-opacity"
                 style={{
+                  aspectRatio: "4/3",
                   backgroundColor: "rgba(45, 42, 38, 0.05)",
                   color: "var(--color-muted)",
                 }}
               >
-                +{galleryImages.length - 6} more
+                +{galleryImages.length - 5} more
               </div>
             )}
           </div>
         )}
       </section>
+
+      {/* Lightbox */}
+      {lightboxSrc && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
+          onClick={() => setLightboxSrc(null)}
+        >
+          <img
+            src={lightboxSrc}
+            alt=""
+            className="max-w-full max-h-full object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }
