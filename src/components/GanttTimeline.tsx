@@ -88,6 +88,26 @@ export default function GanttTimeline() {
   const maxWidth = isMobile ? "100%" : `${lerp(1250, 1200, collapseProgress)}px`;
   const hoverEnabled = revealProgress >= 1 && collapseProgress < 0.05;
 
+  // Auto-select most recent role once reveal finishes
+  const prevReveal = useRef(0);
+  useEffect(() => {
+    if (prevReveal.current < 1 && revealProgress >= 1 && !hoveredCompany) {
+      setHoveredCompany("Recovery Unplugged");
+      // Measure row position for the hover card
+      if (ganttRef.current) {
+        const rows = ganttRef.current.querySelectorAll("[data-company]");
+        rows.forEach((row) => {
+          if ((row as HTMLElement).dataset.company === "Recovery Unplugged") {
+            const rect = ganttRef.current!.getBoundingClientRect();
+            const rowRect = row.getBoundingClientRect();
+            setHoveredRowTop(rowRect.bottom - rect.top);
+          }
+        });
+      }
+    }
+    prevReveal.current = revealProgress;
+  }, [revealProgress, hoveredCompany]);
+
   // Desktop: hover. Mobile: tap to toggle.
   const handleRowEnter = useCallback(
     (company: string, e: React.MouseEvent) => {
@@ -201,6 +221,7 @@ export default function GanttTimeline() {
                   return (
                     <div
                       key={company}
+                      data-company={company}
                       className="flex items-center px-1 -mx-1"
                       style={{
                         gap: isMobile ? "6px" : "12px",
@@ -210,6 +231,7 @@ export default function GanttTimeline() {
                         backgroundColor: isRowActive
                           ? "rgba(45, 42, 38, 0.03)"
                           : "transparent",
+                        pointerEvents: hoverEnabled ? "auto" : "none",
                       }}
                       onMouseEnter={(e) => handleRowEnter(company, e)}
                       onMouseLeave={handleRowLeave}
