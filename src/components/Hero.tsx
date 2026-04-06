@@ -44,7 +44,11 @@ export default function Hero() {
   const [headingHeight, setHeadingHeight] = useState(0);
   const [headingWidth, setHeadingWidth] = useState(0);
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    // Scroll to top on mount so element measurements are correct
+    window.scrollTo(0, 0);
+    setMounted(true);
+  }, []);
 
   // Track scrollY directly
   useEffect(() => {
