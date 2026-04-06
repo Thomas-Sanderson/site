@@ -17,6 +17,8 @@ export default function GanttTimeline() {
 
   const [hoveredCompany, setHoveredCompany] = useState<string | null>(null);
   const [hoveredRowTop, setHoveredRowTop] = useState(0);
+  const [tooltipAbove, setTooltipAbove] = useState(false);
+  const [caretLeft, setCaretLeft] = useState<number | null>(null);
 
   // Responsive scroll fuel
   const scrollFuel = isMobile ? 700 : 1200;
@@ -88,36 +90,43 @@ export default function GanttTimeline() {
   const maxWidth = isMobile ? "100%" : `${lerp(1250, 1200, collapseProgress)}px`;
   const hoverEnabled = revealProgress >= 1 && collapseProgress < 0.05;
 
-  // Auto-select most recent role once reveal finishes
   const prevReveal = useRef(0);
-  useEffect(() => {
-    if (prevReveal.current < 1 && revealProgress >= 1 && !hoveredCompany) {
-      setHoveredCompany("Recovery Unplugged");
-      // Measure row position for the hover card
-      if (ganttRef.current) {
-        const rows = ganttRef.current.querySelectorAll("[data-company]");
-        rows.forEach((row) => {
-          if ((row as HTMLElement).dataset.company === "Recovery Unplugged") {
-            const rect = ganttRef.current!.getBoundingClientRect();
-            const rowRect = row.getBoundingClientRect();
-            setHoveredRowTop(rowRect.bottom - rect.top);
-          }
+
+  // Measure tooltip position from a row element
+  const measureTooltip = useCallback((rowEl: Element) => {
+    const ganttRect = ganttRef.current?.getBoundingClientRect();
+    if (!ganttRect) return;
+    const rowRect = rowEl.getBoundingClientRect();
+    const ganttMidY = ganttRect.top + ganttRect.height / 2;
+    const isAbove = rowRect.top > ganttMidY;
+    setTooltipAbove(isAbove);
+    setHoveredRowTop(isAbove ? rowRect.top - ganttRect.top : rowRect.bottom - ganttRect.top);
+
+    // Find the bar container inside the row and compute its visual center
+    const barsContainer = rowEl.querySelector(".flex-1.relative") as HTMLElement | null;
+    if (barsContainer) {
+      const bars = barsContainer.querySelectorAll(".absolute.h-full");
+      if (bars.length > 0) {
+        let minLeft = Infinity, maxRight = -Infinity;
+        bars.forEach((bar) => {
+          const br = bar.getBoundingClientRect();
+          if (br.left < minLeft) minLeft = br.left;
+          if (br.right > maxRight) maxRight = br.right;
         });
+        const centerX = (minLeft + maxRight) / 2 - ganttRect.left;
+        setCaretLeft(centerX);
       }
     }
-    prevReveal.current = revealProgress;
-  }, [revealProgress, hoveredCompany]);
+  }, []);
 
   // Desktop: hover. Mobile: tap to toggle.
   const handleRowEnter = useCallback(
     (company: string, e: React.MouseEvent) => {
       if (isMobile || !hoverEnabled) return;
       setHoveredCompany(company);
-      const rect = ganttRef.current?.getBoundingClientRect();
-      const rowRect = e.currentTarget.getBoundingClientRect();
-      if (rect) setHoveredRowTop(rowRect.bottom - rect.top);
+      measureTooltip(e.currentTarget);
     },
-    [hoverEnabled, isMobile]
+    [hoverEnabled, isMobile, measureTooltip]
   );
 
   const handleRowLeave = useCallback(() => {
@@ -130,12 +139,23 @@ export default function GanttTimeline() {
       if (!isMobile || !hoverEnabled) return;
       e.stopPropagation();
       setHoveredCompany((prev) => (prev === company ? null : company));
-      const rect = ganttRef.current?.getBoundingClientRect();
-      const rowRect = e.currentTarget.getBoundingClientRect();
-      if (rect) setHoveredRowTop(rowRect.bottom - rect.top);
+      measureTooltip(e.currentTarget);
     },
-    [hoverEnabled, isMobile]
+    [hoverEnabled, isMobile, measureTooltip]
   );
+
+  // Auto-select most recent role once reveal finishes
+  useEffect(() => {
+    if (prevReveal.current < 1 && revealProgress >= 1 && !hoveredCompany) {
+      const target = "Recovery Unplugged (Consultant)";
+      setHoveredCompany(target);
+      if (ganttRef.current) {
+        const row = ganttRef.current.querySelector(`[data-company="${target}"]`);
+        if (row) measureTooltip(row);
+      }
+    }
+    prevReveal.current = revealProgress;
+  }, [revealProgress, hoveredCompany, measureTooltip]);
 
   const padL = lerp(isMobile ? 12 : 24, isMobile ? 8 : 16, collapseProgress);
   const padR = padL;
@@ -554,27 +574,39 @@ export default function GanttTimeline() {
                   );
                   if (!group) return null;
                   const color = getColor(hoveredCompany);
+                  const caretStyle: React.CSSProperties = caretLeft != null
+                    ? { position: "absolute", left: `${caretLeft}px`, transform: "translateX(-50%)" }
+                    : { marginLeft: isMobile ? "16px" : "48px" };
                   return (
                     <div
                       className="absolute z-30 left-0 right-0"
                       style={{
-                        top: `${hoveredRowTop + 8}px`,
+                        ...(tooltipAbove
+                          ? { bottom: `calc(100% - ${hoveredRowTop}px + 8px)` }
+                          : { top: `${hoveredRowTop + 8}px` }),
                         pointerEvents: isMobile ? "auto" : "none",
+                        display: "flex",
+                        flexDirection: tooltipAbove ? "column-reverse" : "column",
                       }}
                     >
                       <div
-                        className="sm:ml-12 ml-4 w-0 h-0"
+                        className="w-0 h-0"
                         style={{
+                          ...caretStyle,
                           borderLeft: "8px solid transparent",
                           borderRight: "8px solid transparent",
-                          borderBottom: `8px solid ${color.vivid}`,
+                          ...(tooltipAbove
+                            ? { borderTop: `8px solid ${color.vivid}` }
+                            : { borderBottom: `8px solid ${color.vivid}` }),
                         }}
                       />
                       <div
                         className="bg-warm-white rounded-xl shadow-lg px-4 py-4 sm:px-8 sm:py-6 border w-full"
                         style={{
                           borderColor: "rgba(45, 42, 38, 0.06)",
-                          borderTop: `2px solid ${color.vivid}`,
+                          ...(tooltipAbove
+                            ? { borderBottom: `2px solid ${color.vivid}` }
+                            : { borderTop: `2px solid ${color.vivid}` }),
                         }}
                       >
                         <div className="flex items-baseline justify-between mb-4">
