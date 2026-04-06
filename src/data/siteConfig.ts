@@ -3,10 +3,11 @@ export const siteConfig = {
   title: "Design Technologist",
   email: "hello@thomas.dev",
   navItems: [
-    { label: "Timeline", href: "#gantt-sentinel" },
-    { label: "Map", href: "#map" },
-    { label: "Work", href: "#era-acceleration" },
-    { label: "Contact", href: "#contact" },
+    { label: "Employment", href: "#gantt-sentinel" },
+    { label: "World", href: "#map" },
+    { label: "Eras", href: "#era-consulting" },
+    { label: "Case Studies", href: "#case-studies" },
+    { label: "Resume", href: "#resume" },
   ],
   colors: {
     cream: "#F5F0EB",

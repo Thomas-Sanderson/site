@@ -9,6 +9,7 @@ export interface CaseStudy {
   matters: string;
   extra?: { label: string; text: string };
   images?: { src: string; alt: string; clipped?: boolean }[];
+  videos?: { src: string; alt: string }[];
   imagePlaceholders: string[];
 }
 
@@ -25,6 +26,9 @@ export const caseStudies: CaseStudy[] = [
       "A 954-line conversational flow specification with state machine architecture. Deterministic routing with LLM flexibility where appropriate. PHI compliance gaps identified and remediated. Guardrails that actually guard.",
     matters:
       'This is what responsible AI deployment looks like in a regulated environment — not "we added ChatGPT to our website" but a system designed to know what it doesn\'t know.',
+    videos: [
+      { src: "/images/melody/demo.mp4", alt: "Melody chatbot demo — deterministic conversational flow in action" },
+    ],
     imagePlaceholders: ["architecture diagram / flow excerpt"],
   },
   {
