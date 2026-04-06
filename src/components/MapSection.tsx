@@ -12,6 +12,7 @@ import {
 } from "@/data/locations";
 import { buildContentItems } from "@/data/content";
 import { useScrollCard, lerp } from "@/lib/useScrollCard";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 const WORLD_TOPO_URL =
   "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
@@ -90,6 +91,7 @@ export default function MapSection() {
   const svgRef = useRef<SVGSVGElement>(null);
   const progress = useScrollCard(sentinelRef);
 
+  const isMobile = useIsMobile();
   const [worldData, setWorldData] = useState<GeoJSON.FeatureCollection | null>(null);
   const [activePill, setActivePill] = useState<PillKey | null>(null);
   const [hoveredCluster, setHoveredCluster] = useState<Cluster | null>(null);
@@ -183,6 +185,16 @@ export default function MapSection() {
     setTooltipPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   }, []);
 
+  // Position tooltip relative to SVG coordinates (for mobile tap)
+  const setTooltipFromSvgCoords = useCallback((cx: number, cy: number) => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const scaleX = rect.width / width;
+    const scaleY = rect.height / height;
+    setTooltipPos({ x: cx * scaleX, y: cy * scaleY });
+  }, []);
+
   const handlePillClick = useCallback((key: PillKey) => {
     setActivePill((prev) => (prev === key ? null : key));
     setExpandedCluster(null);
@@ -231,6 +243,13 @@ export default function MapSection() {
             viewBox={`0 0 ${width} ${height}`}
             className="w-full h-auto"
             style={{ maxHeight: "70vh" }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setHoveredPin(null);
+                setHoveredCluster(null);
+                setExpandedCluster(null);
+              }
+            }}
           >
             {/* Country shapes */}
             {worldData?.features.map((feat, i) => (
@@ -263,10 +282,15 @@ export default function MapSection() {
                           key={pin.id}
                           className="cursor-pointer"
                           onMouseEnter={(e) => {
-                            setHoveredPin(pin);
-                            setTooltipFromEvent(e);
+                            if (!isMobile) { setHoveredPin(pin); setTooltipFromEvent(e); }
                           }}
-                          onMouseLeave={() => setHoveredPin(null)}
+                          onMouseLeave={() => { if (!isMobile) setHoveredPin(null); }}
+                          onClick={() => {
+                            if (isMobile) {
+                              setHoveredPin((prev) => prev?.id === pin.id ? null : pin);
+                              setTooltipFromSvgCoords(px, py);
+                            }
+                          }}
                         >
                           <circle cx={px} cy={py} r={6} fill={meta.color} opacity={0.25} />
                           <circle
@@ -303,10 +327,15 @@ export default function MapSection() {
                     className="cursor-pointer"
                     style={{ transformOrigin: `${cluster.cx}px ${cluster.cy}px` }}
                     onMouseEnter={(e) => {
-                      setHoveredPin(pin);
-                      setTooltipFromEvent(e);
+                      if (!isMobile) { setHoveredPin(pin); setTooltipFromEvent(e); }
                     }}
-                    onMouseLeave={() => setHoveredPin(null)}
+                    onMouseLeave={() => { if (!isMobile) setHoveredPin(null); }}
+                    onClick={() => {
+                      if (isMobile) {
+                        setHoveredPin((prev) => prev?.id === pin.id ? null : pin);
+                        setTooltipFromSvgCoords(cluster.cx, cluster.cy);
+                      }
+                    }}
                   >
                     <circle cx={cluster.cx} cy={cluster.cy} r={6} fill={meta.color} opacity={0.2}>
                       <animate attributeName="r" from="2" to="6" dur="0.3s" fill="freeze" />
@@ -335,10 +364,9 @@ export default function MapSection() {
                   key={cluster.id}
                   className="cursor-pointer"
                   onMouseEnter={(e) => {
-                    setHoveredCluster(cluster);
-                    setTooltipFromEvent(e);
+                    if (!isMobile) { setHoveredCluster(cluster); setTooltipFromEvent(e); }
                   }}
-                  onMouseLeave={() => setHoveredCluster(null)}
+                  onMouseLeave={() => { if (!isMobile) setHoveredCluster(null); }}
                   onClick={() => handleClusterClick(cluster)}
                 >
                   {/* Multi-category ring */}

@@ -60,11 +60,11 @@ export default function EraSection({ era }: { era: Era }) {
     <div ref={sentinelRef} style={{ height: "200vh", position: "relative" }}>
       <section
         id={`era-${era.id}`}
-        className="px-6 md:px-12 max-w-[960px] mx-auto flex flex-col justify-center"
+        className="px-6 md:px-12 max-w-[960px] mx-auto flex flex-col justify-start pt-8 sm:justify-center sm:pt-0"
         style={{
           position: "sticky",
-          top: 0,
-          height: "100vh",
+          top: "60px",
+          height: "calc(100vh - 60px)",
           zIndex: 30,
           overflow: "hidden",
         }}
@@ -143,13 +143,14 @@ export default function EraSection({ era }: { era: Era }) {
             style={{
               opacity: fadeIn(narrativeEnter) * fadeOut,
               transform: `translateY(${slideIn(narrativeEnter) + slideOut}px)`,
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
             }}
           >
             {galleryImages.slice(0, 6).map((img) => (
               <div
                 key={img.slug}
-                className="shrink-0 rounded-lg overflow-hidden"
-                style={{ width: "120px", height: "90px" }}
+                className="shrink-0 rounded-lg overflow-hidden w-[100px] h-[75px] sm:w-[120px] sm:h-[90px]"
               >
                 <img
                   src={`/images/gallery/${img.cropped}`}
@@ -161,10 +162,8 @@ export default function EraSection({ era }: { era: Era }) {
             ))}
             {galleryImages.length > 6 && (
               <div
-                className="shrink-0 rounded-lg flex items-center justify-center font-mono text-xs"
+                className="shrink-0 rounded-lg flex items-center justify-center font-mono text-xs w-[100px] h-[75px] sm:w-[120px] sm:h-[90px]"
                 style={{
-                  width: "120px",
-                  height: "90px",
                   backgroundColor: "rgba(45, 42, 38, 0.05)",
                   color: "var(--color-muted)",
                 }}
