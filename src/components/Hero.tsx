@@ -5,6 +5,13 @@ import { siteConfig } from "@/data/siteConfig";
 import { lerp } from "@/lib/useScrollCard";
 import { useIsMobile } from "@/lib/useIsMobile";
 
+const navLinks = [
+  { label: "Timeline", href: "#gantt-sentinel" },
+  { label: "Map", href: "#map" },
+  { label: "Work", href: "#era-acceleration" },
+  { label: "Contact", href: "#contact" },
+];
+
 /*
   Hero animation — driven by raw scrollY, NOT useScrollCard.
 
@@ -192,8 +199,30 @@ export default function Hero() {
               : "1px solid transparent",
             transition: "background-color 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease",
             pointerEvents: phases.riseT >= 1 ? "auto" : "none",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
           }}
-        />
+        >
+          <nav
+            className="max-w-[960px] w-full mx-auto px-6 md:px-12 flex justify-end gap-5"
+            style={{
+              opacity: phases.riseT >= 1 ? 1 : 0,
+              transition: "opacity 0.3s ease",
+            }}
+          >
+            {navLinks.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="font-mono text-[10px] tracking-wide hover:opacity-70 transition-opacity"
+                style={{ color: "rgba(45, 42, 38, 0.5)" }}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </div>
 
         {/* Content — initial centered layout */}
         <div

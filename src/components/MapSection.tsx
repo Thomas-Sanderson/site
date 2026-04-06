@@ -225,13 +225,16 @@ export default function MapSection() {
   // On mobile, scroll the map container so it starts with Alaska off-screen left
   useEffect(() => {
     if (!isMobile || !mapScrollRef.current) return;
-    // Scroll ~15% into the 180vw map to hide Alaska/far-west
+    // Scroll just enough to push Alaska barely off-screen left
     const el = mapScrollRef.current;
-    const timer = setTimeout(() => {
+    const setScroll = () => {
       el.scrollLeft = el.scrollWidth * 0.12;
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [isMobile]);
+    };
+    setScroll();
+    const t1 = setTimeout(setScroll, 50);
+    const t2 = setTimeout(setScroll, 200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [isMobile, worldData]);
 
   const handlePillClick = useCallback((key: PillKey) => {
     setActivePill((prev) => (prev === key ? null : key));
@@ -267,9 +270,9 @@ export default function MapSection() {
           style={{
             // During animation: no overflow capture, touches pass through for page scroll
             // After pills appear: horizontal scroll enabled for map panning
-            overflowX: isMobile && progress >= 0.99 ? "auto" : "visible",
+            overflowX: isMobile ? "auto" : "visible",
             overflowY: "visible",
-            touchAction: isMobile && progress >= 0.99 ? "pan-x" : "auto",
+            touchAction: isMobile ? (progress >= 0.99 ? "pan-x" : "pan-y") : "auto",
             WebkitOverflowScrolling: "touch",
             scrollbarWidth: "none",
             msOverflowStyle: "none",
