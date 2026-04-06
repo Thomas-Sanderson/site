@@ -59,7 +59,7 @@ export default function Hero() {
       history.scrollRestoration = "manual";
     }
     // Force scroll to top so element measurements are correct
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: "instant" });
     setMounted(true);
   }, []);
 
@@ -86,14 +86,14 @@ export default function Hero() {
     const measure = () => {
       if (labelRef.current) {
         const r = labelRef.current.getBoundingClientRect();
-        // Adjust for current scroll position to get initial (unscrolled) position
-        setLabelTop(r.top + window.scrollY);
+        // Fixed element — r.top is already viewport-relative, no scrollY needed
+        setLabelTop(r.top);
         setLabelLeft(r.left);
         setLabelWidth(r.width);
       }
       if (headingRef.current) {
         const r = headingRef.current.getBoundingClientRect();
-        setHeadingTop(r.top + window.scrollY);
+        setHeadingTop(r.top);
         setHeadingLeft(r.left);
         setHeadingHeight(r.height);
         if (headingTextRef.current) {
@@ -101,8 +101,7 @@ export default function Hero() {
         }
       }
     };
-    // Delay measurement to ensure scroll-to-top has completed (iOS Safari needs more time)
-    const timer = setTimeout(measure, 150);
+    const timer = setTimeout(measure, 50);
     window.addEventListener("resize", measure);
     return () => {
       clearTimeout(timer);
@@ -199,7 +198,7 @@ export default function Hero() {
             left: 0,
             right: 0,
             height: "52px",
-            backgroundColor: `rgba(245, 240, 235, ${phases.riseT >= 1 ? 0.95 : 0})`,
+            backgroundColor: `rgba(245, 240, 235, ${phases.riseT >= 1 ? 1 : 0})`,
             backdropFilter: phases.riseT >= 1 ? "blur(12px)" : "none",
             borderBottom: phases.riseT >= 1
               ? "1px solid rgba(45, 42, 38, 0.08)"
