@@ -101,12 +101,11 @@ export default function Hero() {
         }
       }
     };
+    // Measure once on mount only — do NOT re-measure on resize, because
+    // getBoundingClientRect returns the transformed position during animation,
+    // which corrupts the animation targets (iOS address bar hide triggers resize)
     const timer = setTimeout(measure, 50);
-    window.addEventListener("resize", measure);
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener("resize", measure);
-    };
+    return () => clearTimeout(timer);
   }, []);
 
   const phases = useMemo(() => {
