@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import { siteConfig } from "@/data/siteConfig";
 import { lerp } from "@/lib/useScrollCard";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 /*
   Hero animation — driven by raw scrollY, NOT useScrollCard.
@@ -33,7 +34,7 @@ export default function Hero() {
   const [progress, setProgress] = useState(0);
 
   const [mounted, setMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useIsMobile();
 
   const [labelTop, setLabelTop] = useState(0);
   const [labelLeft, setLabelLeft] = useState(0);
@@ -44,13 +45,6 @@ export default function Hero() {
   const [headingWidth, setHeadingWidth] = useState(0);
 
   useEffect(() => { setMounted(true); }, []);
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 640);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
 
   // Track scrollY directly
   useEffect(() => {
@@ -118,9 +112,12 @@ export default function Hero() {
     // Heading Y — uses initial (unscrolled) position
     const headingMoveY = lerp(0, -(headingTop - HEADER_TOP), riseT);
 
-    // Label X
-    const gapFull = 16;
-    const slideTargetX = headingWidth + gapFull;
+    // Label X — clamp on small screens so label doesn't overflow viewport
+    const gapFull = isMobile ? 8 : 16;
+    const maxSlide = typeof window !== "undefined"
+      ? window.innerWidth - labelLeft - labelWidth - 24
+      : Infinity;
+    const slideTargetX = Math.min(headingWidth + gapFull, maxSlide);
     const labelSlideX = lerp(0, slideTargetX, slideT);
 
     const gapFinal = 10;
@@ -198,7 +195,7 @@ export default function Hero() {
         <div
           className="max-w-[960px] mx-auto px-6 md:px-12"
           style={{
-            height: "100vh",
+            height: "100dvh",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
@@ -233,7 +230,7 @@ export default function Hero() {
           </h1>
 
           <p
-            className="text-lg md:text-xl leading-relaxed max-w-[640px] mb-12 text-charcoal/80"
+            className="text-base sm:text-lg md:text-xl leading-relaxed max-w-[640px] mb-12 text-charcoal/80"
             style={{
               opacity: phases.bioOpacity,
               transform: `translateY(${phases.bioSlide}px)`,
