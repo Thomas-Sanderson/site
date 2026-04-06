@@ -8,24 +8,11 @@ export interface CaseStudy {
   built: string;
   matters: string;
   extra?: { label: string; text: string };
+  images?: { src: string; alt: string; clipped?: boolean }[];
   imagePlaceholders: string[];
 }
 
 export const caseStudies: CaseStudy[] = [
-  {
-    slug: "sudsy",
-    title: "Sudsy",
-    subtitle: "Behavioral Health EMR Concept",
-    context:
-      "The behavioral health industry runs on fragmented, outdated EHR/EMR systems that weren't designed for the complexity of addiction treatment and mental health care.",
-    problem:
-      "Patient financial responsibility estimation is broken, verification of benefits is unreliable, and clinical teams are stuck working around systems that don't talk to each other.",
-    built:
-      "An end-to-end behavioral health EMR concept — from intake to billing — designed around how these organizations actually operate. Started as a design vision, evolved into working prototypes for VOB accuracy and PFR estimation.",
-    matters:
-      "This isn't a redesign. It's a rethinking of what the system should be when you start from the patient and clinician experience rather than the billing code.",
-    imagePlaceholders: ["screenshots / mockups"],
-  },
   {
     slug: "melody",
     title: "Melody",
@@ -39,6 +26,20 @@ export const caseStudies: CaseStudy[] = [
     matters:
       'This is what responsible AI deployment looks like in a regulated environment — not "we added ChatGPT to our website" but a system designed to know what it doesn\'t know.',
     imagePlaceholders: ["architecture diagram / flow excerpt"],
+  },
+  {
+    slug: "sudsy",
+    title: "Sudsy",
+    subtitle: "Behavioral Health EMR Concept",
+    context:
+      "The behavioral health industry runs on fragmented, outdated EHR/EMR systems that weren't designed for the complexity of addiction treatment and mental health care.",
+    problem:
+      "Patient financial responsibility estimation is broken, verification of benefits is unreliable, and clinical teams are stuck working around systems that don't talk to each other.",
+    built:
+      "An end-to-end behavioral health EMR concept — from intake to billing — designed around how these organizations actually operate. Started as a design vision, evolved into working prototypes for VOB accuracy and PFR estimation.",
+    matters:
+      "This isn't a redesign. It's a rethinking of what the system should be when you start from the patient and clinician experience rather than the billing code.",
+    imagePlaceholders: ["screenshots / mockups"],
   },
   {
     slug: "paper-cannon",
@@ -57,10 +58,12 @@ export const caseStudies: CaseStudy[] = [
       label: "The Reindeer Moment",
       text: "The containment agent (Reindeer) operates in detection-only mode, issuing CLEAR or DRIFT assessments per agent. During testing, Reindeer caught the Red-Team agent drifting during the challenge phase — the system policing itself in real time.",
     },
-    imagePlaceholders: [
-      "Newsroom GUI screenshot",
-      "pipeline architecture diagram",
-      "Reindeer CLEAR/DRIFT screenshot",
+    images: [
+      { src: "/images/paper-cannon/newsroom.png", alt: "Paper Cannon Newsroom GUI — pixel-art interface showing agents in the Challenge phase" },
+      { src: "/images/paper-cannon/architecture.svg", alt: "Paper Cannon pipeline architecture — 14-agent multi-agent research synthesis system" },
+      { src: "/images/paper-cannon/stacks.png", alt: "The Stacks — pre-flight phase extracting thesis, scope, claims, and correction candidates", clipped: true },
+      { src: "/images/paper-cannon/distillation.png", alt: "Chat log distillation — session dynamics, counter-arguments, and trigger candidates", clipped: true },
     ],
+    imagePlaceholders: [],
   },
 ];

@@ -5,7 +5,7 @@ import { timelineEntries, timelineEras, eraLabels } from "@/data/timeline";
 import { pct, groupByCompany, getColor } from "@/lib/timeline";
 import { lerp } from "@/lib/useScrollCard";
 import { useIsMobile } from "@/lib/useIsMobile";
-import { siteConfig } from "@/data/siteConfig";
+
 
 const HEADER_HEIGHT = 52;
 
@@ -80,7 +80,7 @@ export default function GanttTimeline() {
   // Visual interpolations
   const backdropOpacity = lerp(0, 0.92, revealProgress);
   const revealAxisOpacity = lerp(0, 1, Math.max(0, (revealProgress - 0.5) / 0.5));
-  const navRowOpacity = lerp(0, 1, Math.max(0, (collapseProgress - 0.3) / 0.7));
+
   const verticalPadding = lerp(isMobile ? 16 : 24, 8, collapseProgress);
   const tickHeight = lerp(8, 4, collapseProgress);
   const minorTickHeight = lerp(5, 3, collapseProgress);
@@ -159,32 +159,6 @@ export default function GanttTimeline() {
               paddingBottom: `${verticalPadding}px`,
             }}
           >
-            {/* Nav links — fade in during collapse */}
-            {navRowOpacity > 0.01 && (
-              <div
-                className="flex gap-5 items-center justify-end"
-                style={{
-                  position: "fixed",
-                  top: "18px",
-                  right: "16px",
-                  zIndex: 46,
-                  opacity: navRowOpacity,
-                  pointerEvents: navRowOpacity > 0.3 ? "auto" : "none",
-                }}
-              >
-                {siteConfig.navItems.map((item) => (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    className="font-mono text-[10px] tracking-wide hover:opacity-70 transition-opacity hidden sm:block"
-                    style={{ color: "rgba(45, 42, 38, 0.5)" }}
-                  >
-                    {item.label}
-                  </a>
-                ))}
-              </div>
-            )}
-
             {/* Gantt rows */}
             <div className="relative">
               <div
@@ -437,7 +411,7 @@ export default function GanttTimeline() {
                 className="flex items-start px-1 -mx-1"
                 style={{
                   gap: `${lerp(12, 0, collapseProgress)}px`,
-                  opacity: revealProgress < 1 ? revealAxisOpacity : 1,
+                  opacity: revealProgress < 1 ? revealAxisOpacity : lerp(1, 0, collapseProgress * 2),
                 }}
               >
                 <div

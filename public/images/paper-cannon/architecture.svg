@@ -1,0 +1,229 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" font-family="'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <style>
+      .phase-label { font-size: 13px; font-weight: 600; fill: #1a1a2e; letter-spacing: 0.02em; }
+      .phase-sub { font-size: 9.5px; fill: #555; }
+      .agent-tag { font-size: 8.5px; fill: #fff; font-weight: 500; }
+      .tier-label { font-size: 10px; font-weight: 600; fill: #1a1a2e; }
+      .tier-sub { font-size: 8.5px; fill: #666; }
+      .title { font-size: 22px; font-weight: 700; fill: #1a1a2e; letter-spacing: -0.01em; }
+      .subtitle { font-size: 11px; fill: #666; font-weight: 400; letter-spacing: 0.03em; }
+      .reindeer-label { font-size: 10px; font-weight: 600; fill: #b91c1c; }
+      .reindeer-sub { font-size: 8.5px; fill: #991b1b; }
+      .operator-label { font-size: 10px; font-weight: 600; fill: #1e40af; }
+      .operator-sub { font-size: 8.5px; fill: #1e40af; }
+      .arrow { fill: none; stroke: #94a3b8; stroke-width: 1.5; }
+      .arrow-head { fill: #94a3b8; }
+      .cycle-arrow { fill: none; stroke: #e11d48; stroke-width: 1.2; stroke-dasharray: 4,3; }
+      .cycle-head { fill: #e11d48; }
+      .cycle-label { font-size: 8px; fill: #e11d48; font-weight: 500; font-style: italic; }
+      .category-label { font-size: 7.5px; fill: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="520" fill="#fafafa" rx="8"/>
+
+  <!-- Title -->
+  <text x="60" y="44" class="title">Paper Cannon</text>
+  <text x="60" y="62" class="subtitle">MULTI-AGENT RESEARCH SYNTHESIS PIPELINE</text>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- OPERATOR BAR -->
+  <!-- ═══════════════════════════════════════════ -->
+  <rect x="60" y="82" width="1080" height="32" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+  <text x="80" y="102" class="operator-label">OPERATOR — EDITORIAL AUTHORITY</text>
+  <text x="340" y="102" class="operator-sub">Approves gates · Confirms corrections · Maintains thesis · Decides what the data says</text>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- THREE-TIER DATA MODEL (left column) -->
+  <!-- ═══════════════════════════════════════════ -->
+  <rect x="60" y="130" width="130" height="130" rx="6" fill="#fff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="125" y="148" text-anchor="middle" class="category-label">DATA MODEL</text>
+
+  <!-- Sources -->
+  <rect x="72" y="156" width="106" height="28" rx="3" fill="#fef3c7" stroke="#fbbf24" stroke-width="0.8"/>
+  <text x="125" y="170" text-anchor="middle" class="tier-label">Sources</text>
+  <text x="125" y="180" text-anchor="middle" class="tier-sub">raw evidence</text>
+
+  <!-- Context -->
+  <rect x="72" y="190" width="106" height="28" rx="3" fill="#dbeafe" stroke="#60a5fa" stroke-width="0.8"/>
+  <text x="125" y="204" text-anchor="middle" class="tier-label">Context</text>
+  <text x="125" y="214" text-anchor="middle" class="tier-sub">thesis · scope · config</text>
+
+  <!-- Distilled -->
+  <rect x="72" y="224" width="106" height="28" rx="3" fill="#d1fae5" stroke="#34d399" stroke-width="0.8"/>
+  <text x="125" y="238" text-anchor="middle" class="tier-label">Distilled</text>
+  <text x="125" y="248" text-anchor="middle" class="tier-sub">insights + provenance</text>
+
+  <!-- Arrow from data to pipeline -->
+  <line x1="190" y1="195" x2="216" y2="195" class="arrow"/>
+  <polygon points="216,192 222,195 216,198" class="arrow-head"/>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PHASE 1: PRE-FLIGHT -->
+  <!-- ═══════════════════════════════════════════ -->
+  <rect x="224" y="130" width="150" height="130" rx="6" fill="#fff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="299" y="148" text-anchor="middle" class="category-label">PHASE 1</text>
+  <text x="299" y="166" text-anchor="middle" class="phase-label">Pre-flight</text>
+  <text x="299" y="180" text-anchor="middle" class="phase-sub">Map the evidence landscape</text>
+
+  <!-- Agent pills -->
+  <rect x="240" y="192" width="64" height="18" rx="9" fill="#7c3aed"/>
+  <text x="272" y="204" text-anchor="middle" class="agent-tag">Librarian</text>
+  <rect x="310" y="192" width="54" height="18" rx="9" fill="#7c3aed"/>
+  <text x="337" y="204" text-anchor="middle" class="agent-tag">Surveyor</text>
+  <rect x="256" y="216" width="84" height="18" rx="9" fill="#7c3aed"/>
+  <text x="298" y="228" text-anchor="middle" class="agent-tag">Lit Reviewer</text>
+
+  <!-- Arrow -->
+  <line x1="374" y1="195" x2="400" y2="195" class="arrow"/>
+  <polygon points="400,192 406,195 400,198" class="arrow-head"/>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PHASE 2: WATER COOLER -->
+  <!-- ═══════════════════════════════════════════ -->
+  <rect x="408" y="130" width="150" height="130" rx="6" fill="#fff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="483" y="148" text-anchor="middle" class="category-label">PHASE 2</text>
+  <text x="483" y="166" text-anchor="middle" class="phase-label">Water Cooler</text>
+  <text x="483" y="180" text-anchor="middle" class="phase-sub">All 14 agents react to thesis</text>
+
+  <rect x="420" y="192" width="126" height="18" rx="9" fill="#475569"/>
+  <text x="483" y="204" text-anchor="middle" class="agent-tag">All agents on fast tier</text>
+  <rect x="430" y="216" width="106" height="18" rx="9" fill="#0d9488"/>
+  <text x="483" y="228" text-anchor="middle" class="agent-tag">Dashboard gate check</text>
+
+  <!-- Arrow -->
+  <line x1="558" y1="195" x2="584" y2="195" class="arrow"/>
+  <polygon points="584,192 590,195 584,198" class="arrow-head"/>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PHASE 3: WRITE -->
+  <!-- ═══════════════════════════════════════════ -->
+  <rect x="592" y="130" width="130" height="130" rx="6" fill="#fff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="657" y="148" text-anchor="middle" class="category-label">PHASE 3</text>
+  <text x="657" y="166" text-anchor="middle" class="phase-label">Write</text>
+  <text x="657" y="180" text-anchor="middle" class="phase-sub">Draft from distilled context</text>
+
+  <rect x="618" y="192" width="78" height="18" rx="9" fill="#2563eb"/>
+  <text x="657" y="204" text-anchor="middle" class="agent-tag">Writer (opus)</text>
+  <text x="657" y="232" text-anchor="middle" style="font-size:8px;fill:#94a3b8;font-style:italic;">never touches sources</text>
+
+  <!-- Arrow -->
+  <line x1="722" y1="195" x2="748" y2="195" class="arrow"/>
+  <polygon points="748,192 754,195 748,198" class="arrow-head"/>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PHASE 4: REVIEW -->
+  <!-- ═══════════════════════════════════════════ -->
+  <rect x="756" y="130" width="150" height="130" rx="6" fill="#fff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="831" y="148" text-anchor="middle" class="category-label">PHASE 4</text>
+  <text x="831" y="166" text-anchor="middle" class="phase-label">Review</text>
+  <text x="831" y="180" text-anchor="middle" class="phase-sub">Parallel verification</text>
+
+  <rect x="768" y="192" width="48" height="18" rx="9" fill="#0891b2"/>
+  <text x="792" y="204" text-anchor="middle" class="agent-tag">Editor</text>
+  <rect x="822" y="192" width="72" height="18" rx="9" fill="#0891b2"/>
+  <text x="858" y="204" text-anchor="middle" class="agent-tag">Fact-Check</text>
+  <rect x="768" y="216" width="60" height="18" rx="9" fill="#0891b2"/>
+  <text x="798" y="228" text-anchor="middle" class="agent-tag">Seq-Check</text>
+  <rect x="834" y="216" width="60" height="18" rx="9" fill="#0891b2"/>
+  <text x="864" y="228" text-anchor="middle" class="agent-tag">Auditor</text>
+
+  <!-- Arrow -->
+  <line x1="906" y1="195" x2="932" y2="195" class="arrow"/>
+  <polygon points="932,192 938,195 932,198" class="arrow-head"/>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PHASE 5: CHALLENGE -->
+  <!-- ═══════════════════════════════════════════ -->
+  <rect x="940" y="130" width="150" height="130" rx="6" fill="#fff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="1015" y="148" text-anchor="middle" class="category-label">PHASE 5</text>
+  <text x="1015" y="166" text-anchor="middle" class="phase-label">Challenge</text>
+  <text x="1015" y="180" text-anchor="middle" class="phase-sub">Adversarial pressure testing</text>
+
+  <rect x="952" y="192" width="106" height="18" rx="9" fill="#dc2626"/>
+  <text x="1005" y="204" text-anchor="middle" class="agent-tag">Devil's Advocate</text>
+  <rect x="964" y="216" width="82" height="18" rx="9" fill="#dc2626"/>
+  <text x="1005" y="228" text-anchor="middle" class="agent-tag">Red-Team</text>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- ITERATION LOOP (Write ← Challenge) -->
+  <!-- ═══════════════════════════════════════════ -->
+  <path d="M 1015,260 L 1015,280 Q 1015,290 1005,290 L 667,290 Q 657,290 657,280 L 657,264" class="cycle-arrow"/>
+  <polygon points="654,264 657,258 660,264" class="cycle-head"/>
+  <text x="838" y="303" text-anchor="middle" class="cycle-label">iterate until red-team can't kill it</text>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- OUTPUT -->
+  <!-- ═══════════════════════════════════════════ -->
+  <line x1="1090" y1="195" x2="1110" y2="195" class="arrow"/>
+  <polygon points="1110,192 1116,195 1110,198" class="arrow-head"/>
+  <rect x="1118" y="182" width="36" height="26" rx="3" fill="#1a1a2e"/>
+  <text x="1136" y="200" text-anchor="middle" style="font-size:10px;fill:#fff;font-weight:700;">OUT</text>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- REINDEER CONTAINMENT BAR -->
+  <!-- ═══════════════════════════════════════════ -->
+  <rect x="224" y="320" width="866" height="36" rx="4" fill="#fef2f2" stroke="#fecaca" stroke-width="1"/>
+
+  <!-- Reindeer icon - simple antler silhouette -->
+  <g transform="translate(244, 328)">
+    <circle cx="8" cy="12" r="6" fill="none" stroke="#b91c1c" stroke-width="1.2"/>
+    <line x1="4" y1="7" x2="1" y2="1" stroke="#b91c1c" stroke-width="1.2" stroke-linecap="round"/>
+    <line x1="1" y1="1" x2="-2" y2="-1" stroke="#b91c1c" stroke-width="1" stroke-linecap="round"/>
+    <line x1="1" y1="1" x2="3" y2="-2" stroke="#b91c1c" stroke-width="1" stroke-linecap="round"/>
+    <line x1="12" y1="7" x2="15" y2="1" stroke="#b91c1c" stroke-width="1.2" stroke-linecap="round"/>
+    <line x1="15" y1="1" x2="13" y2="-2" stroke="#b91c1c" stroke-width="1" stroke-linecap="round"/>
+    <line x1="15" y1="1" x2="18" y2="-1" stroke="#b91c1c" stroke-width="1" stroke-linecap="round"/>
+  </g>
+
+  <text x="274" y="337" class="reindeer-label">REINDEER — CONTAINMENT MONITOR</text>
+  <text x="274" y="350" class="reindeer-sub">Watches every agent output · Issues CLEAR / DRIFT assessments · Detection-only mode · Cannot modify — only flag</text>
+
+  <!-- Dashed lines from reindeer to phases 3-5 -->
+  <line x1="657" y1="320" x2="657" y2="264" stroke="#fca5a5" stroke-width="0.8" stroke-dasharray="3,3"/>
+  <line x1="831" y1="320" x2="831" y2="264" stroke="#fca5a5" stroke-width="0.8" stroke-dasharray="3,3"/>
+  <line x1="1015" y1="320" x2="1015" y2="264" stroke="#fca5a5" stroke-width="0.8" stroke-dasharray="3,3"/>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- DASHBOARD / OPERATIONS BAR -->
+  <!-- ═══════════════════════════════════════════ -->
+  <rect x="224" y="370" width="866" height="36" rx="4" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1"/>
+  <text x="244" y="390" style="font-size:10px;font-weight:600;fill:#166534;">DASHBOARD — EDITOR-IN-CHIEF</text>
+  <text x="244" y="402" style="font-size:8.5px;fill:#166534;">Status · Gate enforcement · Correction compliance · Epistemic pressure scoring · Distillation · Burn rate tracking</text>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- KEY PRINCIPLES (bottom) -->
+  <!-- ═══════════════════════════════════════════ -->
+  <line x1="60" y1="430" x2="1140" y2="430" stroke="#e2e8f0" stroke-width="1"/>
+
+  <g transform="translate(60, 450)">
+    <rect width="10" height="10" rx="2" fill="#2563eb"/>
+    <text x="16" y="9" style="font-size:9px;font-weight:600;fill:#1a1a2e;">No single agent accumulates enough context to lose objectivity</text>
+  </g>
+  <g transform="translate(420, 450)">
+    <rect width="10" height="10" rx="2" fill="#dc2626"/>
+    <text x="16" y="9" style="font-size:9px;font-weight:600;fill:#1a1a2e;">Adversarial agents are architecturally required to disagree</text>
+  </g>
+  <g transform="translate(770, 450)">
+    <rect width="10" height="10" rx="2" fill="#b91c1c"/>
+    <text x="16" y="9" style="font-size:9px;font-weight:600;fill:#1a1a2e;">The system polices itself in real time</text>
+  </g>
+
+  <g transform="translate(60, 474)">
+    <rect width="10" height="10" rx="2" fill="#0d9488"/>
+    <text x="16" y="9" style="font-size:9px;font-weight:600;fill:#1a1a2e;">Writer never touches raw sources — evidence flows through librarian</text>
+  </g>
+  <g transform="translate(420, 474)">
+    <rect width="10" height="10" rx="2" fill="#fbbf24"/>
+    <text x="16" y="9" style="font-size:9px;font-weight:600;fill:#1a1a2e;">Every claim traceable to source with provenance chain</text>
+  </g>
+  <g transform="translate(770, 474)">
+    <rect width="10" height="10" rx="2" fill="#1e40af"/>
+    <text x="16" y="9" style="font-size:9px;font-weight:600;fill:#1a1a2e;">Operator retains full editorial authority at every gate</text>
+  </g>
+
+  <!-- Credit line -->
+  <text x="1140" y="510" text-anchor="end" style="font-size:7.5px;fill:#94a3b8;">14 agents · 16 skills · 10 tools · Iterative adversarial review</text>
+</svg>
