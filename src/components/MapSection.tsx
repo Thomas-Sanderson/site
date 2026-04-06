@@ -259,7 +259,7 @@ export default function MapSection() {
             // After pills appear: horizontal scroll enabled for map panning
             overflowX: isMobile ? "auto" : "visible",
             overflowY: "visible",
-            touchAction: isMobile ? (progress >= 0.99 ? "pan-x" : "pan-y") : "auto",
+            touchAction: isMobile ? (progress >= 0.99 ? "pan-x pan-y" : "pan-y") : "auto",
             WebkitOverflowScrolling: "touch",
             scrollbarWidth: "none",
             msOverflowStyle: "none",
@@ -323,6 +323,7 @@ export default function MapSection() {
                     onMouseEnter={() => {
                       setHoveredPin(pin);
                       setHoveredCluster(null);
+                      setTooltipFromSvgCoords(cluster.cx, cluster.cy);
                     }}
                     onMouseLeave={() => { setHoveredPin(null); }}
                     onClick={() => {
@@ -360,6 +361,7 @@ export default function MapSection() {
                   onMouseEnter={() => {
                     setHoveredCluster(cluster);
                     setHoveredPin(null);
+                    setTooltipFromSvgCoords(cluster.cx, cluster.cy);
                   }}
                   onMouseLeave={() => { setHoveredCluster(null); }}
                   onClick={() => {

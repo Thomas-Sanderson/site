@@ -47,12 +47,6 @@ export default function Footer() {
               <div className="overflow-hidden">
                 <div className="pt-4 text-left max-w-[360px] ml-auto flex flex-col gap-3">
                   <p className="text-xs leading-relaxed" style={{ color: "var(--color-muted)" }}>
-                    This site was built on a work machine with no admin rights. No global Node install, no sudo, no IT ticket.
-                  </p>
-                  <p className="text-xs leading-relaxed" style={{ color: "var(--color-muted)" }}>
-                    Node runs from a portable binary in the repo. The entire dev environment fits in a folder.
-                  </p>
-                  <p className="text-xs leading-relaxed" style={{ color: "var(--color-muted)" }}>
                     Every push to GitHub auto-deploys to Vercel. The pipeline is: write code, commit, refresh the live URL.
                   </p>
                   <p className="text-xs leading-relaxed" style={{ color: "var(--color-muted)" }}>
