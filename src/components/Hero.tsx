@@ -160,8 +160,9 @@ export default function Hero() {
     // Label scale
     const labelTotalScale = lerp(1, 10 / 14, Math.max(slideT, riseT));
 
-    // Once rise is mostly done, snap to final state
-    const settled = riseT >= 0.85;
+    // On mobile only: once rise is mostly done, snap to fixed position
+    // (bypasses iOS Safari dynamic toolbar issues). Desktop keeps transforms.
+    const settled = isMobile && riseT >= 0.85;
 
     return {
       bioOpacity, bioSlide,
@@ -296,7 +297,7 @@ export default function Hero() {
             style={phases.settled ? {
               color: "var(--color-terracotta)",
               position: "fixed",
-              top: `${HEADER_TOP + 4}px`,
+              top: `${HEADER_TOP + 7}px`,
               left: `${labelLeft + phases.labelTotalX}px`,
               fontSize: "10px",
               zIndex: 46,
