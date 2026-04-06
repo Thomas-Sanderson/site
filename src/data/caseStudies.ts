@@ -29,7 +29,10 @@ export const caseStudies: CaseStudy[] = [
     videos: [
       { src: "/images/melody/demo.mp4", alt: "Melody chatbot demo — deterministic conversational flow in action" },
     ],
-    imagePlaceholders: ["architecture diagram / flow excerpt"],
+    images: [
+      { src: "/images/melody/architecture.svg", alt: "Melody architecture — deterministic state machine with LLM flexibility layers" },
+    ],
+    imagePlaceholders: [],
   },
   {
     slug: "sudsy",
