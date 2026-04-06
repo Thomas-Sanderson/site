@@ -45,6 +45,7 @@ export default function Hero() {
   const isMobile = useIsMobile();
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [safeAreaTop, setSafeAreaTop] = useState(0);
   const [labelTop, setLabelTop] = useState(0);
   const [labelLeft, setLabelLeft] = useState(0);
   const [labelWidth, setLabelWidth] = useState(0);
@@ -54,8 +55,15 @@ export default function Hero() {
   const [headingWidth, setHeadingWidth] = useState(0);
 
   useEffect(() => {
-    // Scroll to top on mount so element measurements are correct
+    // Prevent iOS Safari from restoring scroll position on reload/back
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
+    // Force scroll to top so element measurements are correct
     window.scrollTo(0, 0);
+    // Read safe area inset for animation targets
+    const sat = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--safe-area-top")) || 0;
+    setSafeAreaTop(sat);
     setMounted(true);
   }, []);
 
@@ -97,7 +105,8 @@ export default function Hero() {
         }
       }
     };
-    const timer = setTimeout(measure, 50);
+    // Delay measurement to ensure scroll-to-top has completed (iOS Safari needs more time)
+    const timer = setTimeout(measure, 150);
     window.addEventListener("resize", measure);
     return () => {
       clearTimeout(timer);
@@ -123,7 +132,8 @@ export default function Hero() {
     const headingScale = lerp(1, headingTargetScale, riseT);
 
     // Heading Y — uses initial (unscrolled) position
-    const headingMoveY = lerp(0, -(headingTop - HEADER_TOP), riseT);
+    const headerTop = HEADER_TOP + safeAreaTop;
+    const headingMoveY = lerp(0, -(headingTop - headerTop), riseT);
 
     // Label X — clamp on small screens so label doesn't overflow viewport
     const gapFull = isMobile ? 8 : 16;
@@ -143,7 +153,7 @@ export default function Hero() {
     const labelSlideTargetY = headingBottom - 14 - labelTop;
     const labelSlideY = lerp(0, labelSlideTargetY, slideT);
 
-    const labelFinalY = HEADER_TOP + 4;
+    const labelFinalY = headerTop + 4;
     const labelAfterSlide = labelTop + labelSlideTargetY;
     const labelRiseTargetY = -(labelAfterSlide - labelFinalY);
     const labelRiseY = lerp(0, labelRiseTargetY, riseT);
@@ -158,7 +168,7 @@ export default function Hero() {
       headingScale, headingMoveY,
       slideT, riseT,
     };
-  }, [progress, isMobile, labelTop, labelLeft, labelWidth,
+  }, [progress, isMobile, safeAreaTop, labelTop, labelLeft, labelWidth,
       headingTop, headingLeft, headingHeight, headingWidth]);
 
   // Sentinel height: just enough so the Gantt starts right after the animation.
@@ -182,7 +192,7 @@ export default function Hero() {
           right: 0,
           zIndex: 45,
           pointerEvents: "none",
-          opacity: mounted ? 1 : 0,
+          opacity: mounted && headingTop > 0 ? 1 : 0,
           transition: "opacity 0.8s ease",
         }}
       >
