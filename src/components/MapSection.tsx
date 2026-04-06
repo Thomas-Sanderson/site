@@ -19,7 +19,7 @@ const WORLD_TOPO_URL =
 
 type PillKey = LocationCategory;
 
-const pillKeys: PillKey[] = ["work", "art", "volunteer", "travel", "want-to-visit"];
+const pillKeys: PillKey[] = ["work", "art", "volunteer", "travel"];
 
 // ── Clustering ──────────────────────────────────────────────────────
 
@@ -251,10 +251,11 @@ export default function MapSection() {
         className="px-0 sm:px-4"
         style={{
           position: "sticky",
-          top: 0,
-          height: "100vh",
+          top: "60px",
+          height: "calc(100vh - 60px)",
           zIndex: 20,
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           overflow: "hidden",
@@ -265,10 +266,10 @@ export default function MapSection() {
           className="relative w-full max-w-[1200px]"
           style={{
             // On mobile: allow horizontal scroll, map is wider than viewport
-            overflowX: isMobile ? "auto" : "visible",
+            overflowX: isMobile && progress >= 0.99 ? "auto" : "hidden",
             overflowY: "hidden",
             // pan-x: horizontal touch scrolls the map, vertical touch scrolls the page
-            touchAction: isMobile ? "pan-x" : "auto",
+            touchAction: isMobile && progress >= 0.99 ? "pan-x" : "auto",
             WebkitOverflowScrolling: "touch",
             scrollbarWidth: "none",
             msOverflowStyle: "none",
@@ -542,58 +543,62 @@ export default function MapSection() {
             </div>
           )}
 
-          {/* Category pills — only appear after rapid-fire completes */}
-          {progress >= 0.99 && (
-            <div
-              className="absolute bottom-3 right-3 flex flex-col-reverse gap-1.5 z-10"
-            >
-              {pillKeys.map((key) => {
-                const meta = categoryMeta[key];
-                const isActive = activePill === key;
-                const dimmed = activePill !== null && !isActive;
-                return (
-                  <button
-                    key={key}
-                    onClick={() => handlePillClick(key)}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full font-mono text-[10px] transition-all duration-300 border backdrop-blur-sm"
-                    style={{
-                      borderColor: dimmed ? "var(--color-muted)" : meta.color,
-                      backgroundColor: isActive
-                        ? `${meta.color}20`
-                        : "rgba(245, 240, 235, 0.8)",
-                      color: dimmed ? "var(--color-muted)" : meta.color,
-                      opacity: dimmed ? 0.35 : 1,
-                    }}
-                  >
-                    <span
-                      className="w-1.5 h-1.5 rounded-full transition-colors duration-300"
-                      style={{
-                        backgroundColor: dimmed ? "var(--color-muted)" : meta.color,
-                      }}
-                    />
-                    {meta.label}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Progress indicator */}
-          {progress > 0.01 && progress < 0.99 && (
-            <div className="absolute bottom-3 left-3 z-10">
-              <div
-                className="font-mono text-[10px] px-2 py-1 rounded-full"
-                style={{
-                  backgroundColor: "rgba(245, 240, 235, 0.8)",
-                  color: "var(--color-muted)",
-                  border: "1px solid rgba(45, 42, 38, 0.08)",
-                }}
-              >
-                {visibleCount} / {filteredPins.length}
-              </div>
-            </div>
-          )}
         </div>
+
+        {/* Category pills — right below the map, space always reserved */}
+        <div
+          className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mt-3 z-10"
+          style={{
+            opacity: progress >= 0.99 ? 1 : 0,
+            pointerEvents: progress >= 0.99 ? "auto" : "none",
+            transition: "opacity 0.3s ease",
+          }}
+        >
+            {pillKeys.map((key) => {
+              const meta = categoryMeta[key];
+              const isActive = activePill === key;
+              const dimmed = activePill !== null && !isActive;
+              return (
+                <button
+                  key={key}
+                  onClick={() => handlePillClick(key)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full font-mono text-[10px] transition-all duration-300 border backdrop-blur-sm"
+                  style={{
+                    borderColor: dimmed ? "var(--color-muted)" : meta.color,
+                    backgroundColor: isActive
+                      ? `${meta.color}20`
+                      : "rgba(245, 240, 235, 0.8)",
+                    color: dimmed ? "var(--color-muted)" : meta.color,
+                    opacity: dimmed ? 0.35 : 1,
+                  }}
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full transition-colors duration-300"
+                    style={{
+                      backgroundColor: dimmed ? "var(--color-muted)" : meta.color,
+                    }}
+                  />
+                  {meta.label}
+                </button>
+              );
+            })}
+          </div>
+
+        {/* Progress indicator — outside scroll container */}
+        {progress > 0.01 && progress < 0.99 && (
+          <div className="absolute bottom-3 left-3 z-10">
+            <div
+              className="font-mono text-[10px] px-2 py-1 rounded-full"
+              style={{
+                backgroundColor: "rgba(245, 240, 235, 0.8)",
+                color: "var(--color-muted)",
+                border: "1px solid rgba(45, 42, 38, 0.08)",
+              }}
+            >
+              {visibleCount} / {filteredPins.length}
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );

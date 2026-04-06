@@ -84,7 +84,7 @@ export default function EraSection({ era }: { era: Era }) {
         />
 
         <p
-          className="font-mono text-sm tracking-widest uppercase mb-4"
+          className="font-mono text-xs sm:text-sm tracking-widest uppercase mb-2 sm:mb-4"
           style={{
             color: era.color,
             opacity: fadeIn(dateEnter) * fadeOut,
@@ -95,7 +95,7 @@ export default function EraSection({ era }: { era: Era }) {
         </p>
 
         <h2
-          className="font-serif text-4xl md:text-5xl font-bold mb-2"
+          className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold mb-1 sm:mb-2"
           style={{
             opacity: fadeIn(titleEnter) * fadeOut,
             transform: `translateY(${slideIn(titleEnter) + slideOut}px)`,
@@ -105,7 +105,7 @@ export default function EraSection({ era }: { era: Era }) {
         </h2>
 
         <p
-          className="font-mono text-sm mb-12"
+          className="font-mono text-xs sm:text-sm mb-6 sm:mb-12"
           style={{
             color: "var(--color-muted)",
             opacity: fadeIn(subtitleEnter) * fadeOut,
@@ -115,7 +115,7 @@ export default function EraSection({ era }: { era: Era }) {
           {era.subtitle}
         </p>
 
-        <div className="flex flex-col gap-6 mb-8">
+        <div className="flex flex-col gap-3 sm:gap-6 mb-4 sm:mb-8">
           {era.narrative.map((paragraph, i) => {
             const paraT = Math.max(
               0,
@@ -124,7 +124,7 @@ export default function EraSection({ era }: { era: Era }) {
             return (
               <p
                 key={i}
-                className="text-lg leading-relaxed max-w-[640px] text-charcoal/80"
+                className="text-sm sm:text-lg leading-relaxed max-w-[640px] text-charcoal/80"
                 style={{
                   opacity: fadeIn(paraT) * fadeOut,
                   transform: `translateY(${slideIn(paraT) + slideOut}px)`,
