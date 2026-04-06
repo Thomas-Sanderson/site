@@ -325,7 +325,7 @@ export default function MapSection() {
                       setHoveredCluster(null);
                       setTooltipFromSvgCoords(cluster.cx, cluster.cy);
                     }}
-                    onMouseLeave={() => { setHoveredPin(null); }}
+                    onMouseLeave={() => { if (!isMobile) setHoveredPin(null); }}
                     onClick={() => {
                       setHoveredPin((prev) => prev?.id === pin.id ? null : pin);
                       setHoveredCluster(null);
@@ -363,7 +363,7 @@ export default function MapSection() {
                     setHoveredPin(null);
                     setTooltipFromSvgCoords(cluster.cx, cluster.cy);
                   }}
-                  onMouseLeave={() => { setHoveredCluster(null); }}
+                  onMouseLeave={() => { if (!isMobile) setHoveredCluster(null); }}
                   onClick={() => {
                     setHoveredCluster((prev) => prev?.id === cluster.id ? null : cluster);
                     setHoveredPin(null);

@@ -139,6 +139,7 @@ export default function GanttTimeline() {
             left: 0,
             right: 0,
             zIndex: 39,
+            pointerEvents: "none",
             backgroundColor: `rgba(255, 255, 255, ${backdropOpacity})`,
             backdropFilter: revealProgress > 0 ? "blur(12px)" : "none",
             borderBottom:
