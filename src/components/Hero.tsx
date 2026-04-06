@@ -193,7 +193,8 @@ export default function Hero() {
             top: 0,
             left: 0,
             right: 0,
-            height: "52px",
+            height: "calc(52px + env(safe-area-inset-top, 0px))",
+            paddingTop: "env(safe-area-inset-top, 0px)",
             backgroundColor: `rgba(245, 240, 235, ${phases.riseT >= 1 ? 0.95 : 0})`,
             backdropFilter: phases.riseT >= 1 ? "blur(12px)" : "none",
             borderBottom: phases.riseT >= 1
@@ -242,7 +243,7 @@ export default function Hero() {
           <div
             className="sm:hidden absolute left-0 right-0"
             style={{
-              top: "52px",
+              top: "calc(52px + env(safe-area-inset-top, 0px))",
               backgroundColor: "rgba(245, 240, 235, 0.98)",
               backdropFilter: "blur(12px)",
               borderBottom: "1px solid rgba(45, 42, 38, 0.08)",

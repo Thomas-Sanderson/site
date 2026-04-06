@@ -46,7 +46,14 @@ export const caseStudies: CaseStudy[] = [
       "An end-to-end behavioral health EMR concept — from intake to billing — designed around how these organizations actually operate. Started as a design vision, evolved into working prototypes for VOB accuracy and PFR estimation.",
     matters:
       "This isn't a redesign. It's a rethinking of what the system should be when you start from the patient and clinician experience rather than the billing code.",
-    imagePlaceholders: ["screenshots / mockups"],
+    videos: [
+      { src: "/images/sudsy/demo.mp4", alt: "Sudsy EMR concept — intake to billing workflow demo" },
+    ],
+    images: [
+      { src: "/images/sudsy/census.png", alt: "Sudsy Census — real-time patient census with filtering by state, level of care, and group", clipped: true },
+      { src: "/images/sudsy/attendance.png", alt: "Sudsy Attendance — virtual IOP attendance tracking with AM/PM group management", clipped: true },
+    ],
+    imagePlaceholders: [],
   },
   {
     slug: "paper-cannon",

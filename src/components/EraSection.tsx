@@ -63,8 +63,8 @@ export default function EraSection({ era }: { era: Era }) {
         className="px-6 md:px-12 max-w-[960px] mx-auto flex flex-col justify-start pt-8 sm:justify-center sm:pt-0"
         style={{
           position: "sticky",
-          top: "60px",
-          height: "calc(100vh - 60px)",
+          top: "calc(60px + env(safe-area-inset-top, 0px))",
+          height: "calc(100vh - 60px - env(safe-area-inset-top, 0px))",
           zIndex: 30,
           overflow: "hidden",
         }}
