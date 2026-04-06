@@ -139,7 +139,7 @@ export default function GanttTimeline() {
             left: 0,
             right: 0,
             zIndex: 39,
-            backgroundColor: `rgba(245, 240, 235, ${backdropOpacity})`,
+            backgroundColor: `rgba(255, 255, 255, ${backdropOpacity})`,
             backdropFilter: revealProgress > 0 ? "blur(12px)" : "none",
             borderBottom:
               collapseProgress > 0.1
@@ -156,7 +156,7 @@ export default function GanttTimeline() {
               paddingLeft: `${padL}px`,
               paddingRight: `${padR}px`,
               paddingTop: `${verticalPadding}px`,
-              paddingBottom: `${verticalPadding}px`,
+              paddingBottom: `${lerp(isMobile ? 28 : 36, 8, collapseProgress)}px`,
             }}
           >
             {/* Gantt rows */}
@@ -341,7 +341,7 @@ export default function GanttTimeline() {
 
               {/* Era labels — above the year axis line */}
               <div
-                className="flex items-end px-1 -mx-1 mt-1"
+                className="flex items-end px-1 -mx-1"
                 style={{
                   gap: `${lerp(12, 0, collapseProgress)}px`,
                   opacity:
