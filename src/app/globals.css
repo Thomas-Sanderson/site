@@ -55,6 +55,7 @@
 
 html {
   scroll-behavior: smooth;
+  --safe-area-top: env(safe-area-inset-top, 0px);
 }
 
 body {
