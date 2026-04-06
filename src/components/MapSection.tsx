@@ -11,7 +11,7 @@ import {
   type LocationCategory,
 } from "@/data/locations";
 import { buildContentItems } from "@/data/content";
-import { useScrollCard, lerp } from "@/lib/useScrollCard";
+import { lerp } from "@/lib/useScrollCard";
 import { useIsMobile } from "@/lib/useIsMobile";
 
 const WORLD_TOPO_URL =
@@ -89,7 +89,34 @@ function clusterPins(pins: Pin[], projection: (coords: [number, number]) => [num
 export default function MapSection() {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const progress = useScrollCard(sentinelRef);
+  const mapScrollRef = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState(0);
+
+  // Animation range: rapid-fire pins fill over this many px of scroll.
+  // The sentinel is taller to add a hold period after.
+  const ANIM_RANGE = 600; // px of scroll for the rapid-fire animation
+
+  useEffect(() => {
+    let raf = 0;
+    const handleScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const el = sentinelRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const scrollInto = -rect.top;
+        // Progress 0→1 over ANIM_RANGE, then clamps at 1 for the hold period
+        setProgress(Math.max(0, Math.min(1, scrollInto / ANIM_RANGE)));
+      });
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
 
   const isMobile = useIsMobile();
   const [worldData, setWorldData] = useState<GeoJSON.FeatureCollection | null>(null);
@@ -195,6 +222,17 @@ export default function MapSection() {
     setTooltipPos({ x: cx * scaleX, y: cy * scaleY });
   }, []);
 
+  // On mobile, scroll the map container so it starts with Alaska off-screen left
+  useEffect(() => {
+    if (!isMobile || !mapScrollRef.current) return;
+    // Scroll ~15% into the 180vw map to hide Alaska/far-west
+    const el = mapScrollRef.current;
+    const timer = setTimeout(() => {
+      el.scrollLeft = el.scrollWidth * 0.12;
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [isMobile]);
+
   const handlePillClick = useCallback((key: PillKey) => {
     setActivePill((prev) => (prev === key ? null : key));
     setExpandedCluster(null);
@@ -207,10 +245,10 @@ export default function MapSection() {
   }, []);
 
   return (
-    <div ref={sentinelRef} style={{ height: "150vh", position: "relative" }}>
+    <div ref={sentinelRef} style={{ height: "calc(100vh + 600px + 80vh)", position: "relative" }}>
       <section
         id="map"
-        className="px-4"
+        className="px-0 sm:px-4"
         style={{
           position: "sticky",
           top: 0,
@@ -222,7 +260,20 @@ export default function MapSection() {
           overflow: "hidden",
         }}
       >
-        <div className="relative w-full max-w-[1200px]">
+        <div
+          ref={mapScrollRef}
+          className="relative w-full max-w-[1200px]"
+          style={{
+            // On mobile: allow horizontal scroll, map is wider than viewport
+            overflowX: isMobile ? "auto" : "visible",
+            overflowY: "hidden",
+            // pan-x: horizontal touch scrolls the map, vertical touch scrolls the page
+            touchAction: isMobile ? "pan-x" : "auto",
+            WebkitOverflowScrolling: "touch",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
+        >
           {/* Date scrubber */}
           {currentDateLabel && progress > 0.01 && progress < 0.99 && (
             <div
@@ -241,8 +292,12 @@ export default function MapSection() {
           <svg
             ref={svgRef}
             viewBox={`0 0 ${width} ${height}`}
-            className="w-full h-auto"
-            style={{ maxHeight: "70vh" }}
+            className="h-auto"
+            style={{
+              maxHeight: isMobile ? "none" : "70vh",
+              width: isMobile ? "180vw" : "100%",
+              minWidth: isMobile ? "180vw" : undefined,
+            }}
             onClick={(e) => {
               if (e.target === e.currentTarget) {
                 setHoveredPin(null);
@@ -487,37 +542,41 @@ export default function MapSection() {
             </div>
           )}
 
-          {/* Category pills */}
-          <div className="absolute bottom-3 right-3 flex flex-col-reverse gap-1.5 z-10">
-            {pillKeys.map((key) => {
-              const meta = categoryMeta[key];
-              const isActive = activePill === key;
-              const dimmed = activePill !== null && !isActive;
-              return (
-                <button
-                  key={key}
-                  onClick={() => handlePillClick(key)}
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full font-mono text-[10px] transition-all duration-300 border backdrop-blur-sm"
-                  style={{
-                    borderColor: dimmed ? "var(--color-muted)" : meta.color,
-                    backgroundColor: isActive
-                      ? `${meta.color}20`
-                      : "rgba(245, 240, 235, 0.8)",
-                    color: dimmed ? "var(--color-muted)" : meta.color,
-                    opacity: dimmed ? 0.35 : 1,
-                  }}
-                >
-                  <span
-                    className="w-1.5 h-1.5 rounded-full transition-colors duration-300"
+          {/* Category pills — only appear after rapid-fire completes */}
+          {progress >= 0.99 && (
+            <div
+              className="absolute bottom-3 right-3 flex flex-col-reverse gap-1.5 z-10"
+            >
+              {pillKeys.map((key) => {
+                const meta = categoryMeta[key];
+                const isActive = activePill === key;
+                const dimmed = activePill !== null && !isActive;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => handlePillClick(key)}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full font-mono text-[10px] transition-all duration-300 border backdrop-blur-sm"
                     style={{
-                      backgroundColor: dimmed ? "var(--color-muted)" : meta.color,
+                      borderColor: dimmed ? "var(--color-muted)" : meta.color,
+                      backgroundColor: isActive
+                        ? `${meta.color}20`
+                        : "rgba(245, 240, 235, 0.8)",
+                      color: dimmed ? "var(--color-muted)" : meta.color,
+                      opacity: dimmed ? 0.35 : 1,
                     }}
-                  />
-                  {meta.label}
-                </button>
-              );
-            })}
-          </div>
+                  >
+                    <span
+                      className="w-1.5 h-1.5 rounded-full transition-colors duration-300"
+                      style={{
+                        backgroundColor: dimmed ? "var(--color-muted)" : meta.color,
+                      }}
+                    />
+                    {meta.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {/* Progress indicator */}
           {progress > 0.01 && progress < 0.99 && (
