@@ -205,8 +205,8 @@ export default function Hero() {
             top: "-100px",
             left: 0,
             right: 0,
-            height: "152px",
-            paddingTop: "100px",
+            height: "calc(152px + env(safe-area-inset-top, 0px))",
+            paddingTop: "calc(100px + env(safe-area-inset-top, 0px))",
             backgroundColor: `rgba(245, 240, 235, ${phases.riseT >= 1 ? 1 : 0})`,
             backdropFilter: phases.riseT >= 1 ? "blur(12px)" : "none",
             borderBottom: phases.riseT >= 1
@@ -257,7 +257,7 @@ export default function Hero() {
           <div
             className="sm:hidden absolute left-0 right-0"
             style={{
-              top: "52px",
+              top: "calc(52px + env(safe-area-inset-top, 0px))",
               backgroundColor: "rgba(245, 240, 235, 0.98)",
               backdropFilter: "blur(12px)",
               borderBottom: "1px solid rgba(45, 42, 38, 0.08)",
@@ -297,7 +297,7 @@ export default function Hero() {
             style={phases.settled ? {
               color: "var(--color-terracotta)",
               position: "fixed",
-              top: `${HEADER_TOP + 7}px`,
+              top: `calc(${HEADER_TOP + 7}px + env(safe-area-inset-top, 0px))`,
               left: `${labelLeft + phases.labelTotalX}px`,
               fontSize: "10px",
               zIndex: 46,
@@ -322,7 +322,7 @@ export default function Hero() {
             className="font-serif text-5xl md:text-7xl font-bold mb-8 leading-tight"
             style={phases.settled ? {
               position: "fixed",
-              top: `${HEADER_TOP}px`,
+              top: `calc(${HEADER_TOP}px + env(safe-area-inset-top, 0px))`,
               left: `${headingLeft}px`,
               fontSize: "22px",
               lineHeight: 1,

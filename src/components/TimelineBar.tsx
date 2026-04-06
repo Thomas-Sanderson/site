@@ -37,7 +37,7 @@ export default function TimelineBar() {
     <div
       style={{
         position: "fixed",
-        top: `${HEADER_HEIGHT}px`,
+        top: `calc(${HEADER_HEIGHT}px + env(safe-area-inset-top, 0px))`,
         left: 0,
         right: 0,
         zIndex: 44,
