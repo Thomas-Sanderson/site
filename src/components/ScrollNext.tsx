@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 
 const GANTT_OFFSET = () => (window.innerWidth < 640 ? 700 : 1200) * 0.5;
-const MAP_OFFSET = () => window.innerHeight + 600; // 100vh lead-in + 600px anim range
+const MAP_OFFSET = () => 600; // animation completes at scrollInto = ANIM_RANGE (600px)
 const ERA_OFFSET = () => window.innerHeight * 0.5; // mid-hold of 200vh sentinel
 
 const sections = [
