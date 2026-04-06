@@ -44,7 +44,15 @@ export default function TimelineBar() {
         pointerEvents: "none",
       }}
     >
-      <div className="max-w-[1200px] mx-auto px-4" style={{ paddingTop: "4px" }}>
+      <div
+        className="max-w-[1200px] mx-auto px-4"
+        style={{
+          height: "28px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
         {/* Era segments — colored bars */}
         <div className="relative w-full" style={{ height: "2px", marginBottom: "1px" }}>
           {eraLabels.map((era) => {

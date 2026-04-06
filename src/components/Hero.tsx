@@ -287,6 +287,7 @@ export default function Hero() {
               position: "relative",
               zIndex: 46,
               whiteSpace: "nowrap",
+              pointerEvents: "none",
             }}
           >
             {siteConfig.title}
@@ -300,6 +301,7 @@ export default function Hero() {
               transformOrigin: "top left",
               position: "relative",
               zIndex: 46,
+              pointerEvents: "none",
             }}
           >
             <span ref={headingTextRef}>{siteConfig.name}</span>
