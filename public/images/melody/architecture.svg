@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 420" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.12"/>
+    </filter>
+    <filter id="glow-gold" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#d4a843" flood-opacity="0.35"/>
+    </filter>
+    <filter id="glow-green" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#4caf88" flood-opacity="0.35"/>
+    </filter>
+    <filter id="glow-red" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#e05555" flood-opacity="0.35"/>
+    </filter>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#141820"/>
+      <stop offset="100%" stop-color="#1a1f2c"/>
+    </linearGradient>
+    <linearGradient id="gold-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c9993a"/>
+      <stop offset="100%" stop-color="#e0b85c"/>
+    </linearGradient>
+    <linearGradient id="green-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3d9e74"/>
+      <stop offset="100%" stop-color="#5cbb94"/>
+    </linearGradient>
+    <linearGradient id="red-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#cc4444"/>
+      <stop offset="100%" stop-color="#e06060"/>
+    </linearGradient>
+    <marker id="arrowGray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#3a3f50" stroke-width="1"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#cc4444" stroke-width="1"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="420" rx="16" fill="url(#bg)"/>
+
+  <!-- Title -->
+  <text x="640" y="34" text-anchor="middle" fill="#f0ead6" font-size="20" font-weight="600" letter-spacing="0.5">Care Navigator Architecture</text>
+  <text x="640" y="52" text-anchor="middle" fill="#8a8e99" font-size="11" letter-spacing="2">THREE-LAYER CONTROL MODEL</text>
+
+  <!-- ════════ USER INPUT (left) ════════ -->
+  <rect x="30" y="168" width="120" height="84" rx="42" fill="#252a38" stroke="#3a3f50" stroke-width="1" filter="url(#shadow)"/>
+  <text x="90" y="206" text-anchor="middle" fill="#c8cad0" font-size="13" font-weight="500">User</text>
+  <text x="90" y="222" text-anchor="middle" fill="#c8cad0" font-size="13" font-weight="500">Input</text>
+
+  <!-- Arrow: Input → Guardrail -->
+  <line x1="150" y1="210" x2="180" y2="210" stroke="#3a3f50" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+
+  <!-- ════════ LAYER 1: GUARDRAIL (RED) ════════ -->
+  <rect x="184" y="72" width="220" height="276" rx="12" fill="#1e1215" stroke="#cc4444" stroke-width="1" stroke-opacity="0.4" filter="url(#glow-red)"/>
+  <rect x="184" y="72" width="220" height="6" rx="3" fill="url(#red-grad)"/>
+
+  <text x="294" y="100" text-anchor="middle" fill="#e06060" font-size="11" font-weight="700" letter-spacing="1.5">GUARDRAIL</text>
+  <text x="294" y="116" text-anchor="middle" fill="#8a6666" font-size="10">Always checked first</text>
+  <text x="294" y="130" text-anchor="middle" fill="#8a6666" font-size="10">Hard-coded patterns</text>
+
+  <!-- Crisis box -->
+  <rect x="204" y="148" width="180" height="44" rx="8" fill="#2a1520" stroke="#cc4444" stroke-width="0.8"/>
+  <circle cx="222" cy="170" r="5" fill="#cc4444" opacity="0.8"/>
+  <text x="234" y="174" fill="#e8a0a0" font-size="12" font-weight="500">Crisis Detection</text>
+
+  <!-- Jailbreak box -->
+  <rect x="204" y="204" width="180" height="44" rx="8" fill="#2a1520" stroke="#cc4444" stroke-width="0.8"/>
+  <circle cx="222" cy="226" r="5" fill="#d49040" opacity="0.8"/>
+  <text x="234" y="230" fill="#e8a0a0" font-size="12" font-weight="500">Jailbreak Detection</text>
+
+  <!-- Crisis route (down) -->
+  <rect x="204" y="264" width="180" height="36" rx="8" fill="#2a1520" stroke="#cc4444" stroke-width="0.5"/>
+  <text x="294" y="278" text-anchor="middle" fill="#cc6666" font-size="10" font-weight="600">N-999 Crisis Route</text>
+  <text x="294" y="292" text-anchor="middle" fill="#8a6666" font-size="9">Immediate safety override</text>
+
+  <!-- Arrow from crisis to route -->
+  <line x1="294" y1="248" x2="294" y2="264" stroke="#cc4444" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrowRed)"/>
+
+  <!-- Arrow: Guardrail → Deterministic -->
+  <line x1="404" y1="210" x2="434" y2="210" stroke="#3a3f50" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+
+  <!-- ════════ LAYER 2: DETERMINISTIC (GOLD) ════════ -->
+  <rect x="438" y="72" width="370" height="276" rx="12" fill="#1a1812" stroke="#c9993a" stroke-width="1" stroke-opacity="0.4" filter="url(#glow-gold)"/>
+  <rect x="438" y="72" width="370" height="6" rx="3" fill="url(#gold-grad)"/>
+
+  <text x="623" y="100" text-anchor="middle" fill="#e0b85c" font-size="11" font-weight="700" letter-spacing="1.5">DETERMINISTIC</text>
+  <text x="623" y="116" text-anchor="middle" fill="#8a8660" font-size="10">56-node state machine  ·  The model is the voice, not the brain</text>
+
+  <!-- State Machine -->
+  <rect x="458" y="134" width="160" height="80" rx="8" fill="#252015" stroke="#c9993a" stroke-width="0.8"/>
+  <text x="538" y="154" text-anchor="middle" fill="#e0c878" font-size="11" font-weight="600">State Machine</text>
+  <text x="538" y="170" text-anchor="middle" fill="#9a9070" font-size="10">Navigation</text>
+  <text x="538" y="184" text-anchor="middle" fill="#9a9070" font-size="10">Transition validation</text>
+  <text x="538" y="198" text-anchor="middle" fill="#9a9070" font-size="10">Re-entry detection</text>
+
+  <!-- Paths -->
+  <rect x="632" y="134" width="160" height="80" rx="8" fill="#252015" stroke="#c9993a" stroke-width="0.8"/>
+  <text x="712" y="154" text-anchor="middle" fill="#e0c878" font-size="11" font-weight="600">3 Paths</text>
+  <text x="712" y="170" text-anchor="middle" fill="#9a9070" font-size="10">Admission</text>
+  <text x="712" y="184" text-anchor="middle" fill="#9a9070" font-size="10">Explore / Info</text>
+  <text x="712" y="198" text-anchor="middle" fill="#9a9070" font-size="10">Verify Insurance</text>
+
+  <!-- Data Capture -->
+  <rect x="458" y="226" width="160" height="80" rx="8" fill="#252015" stroke="#c9993a" stroke-width="0.8"/>
+  <text x="538" y="246" text-anchor="middle" fill="#e0c878" font-size="11" font-weight="600">Data Capture</text>
+  <text x="538" y="262" text-anchor="middle" fill="#9a9070" font-size="10">5 tiered forms</text>
+  <text x="538" y="276" text-anchor="middle" fill="#9a9070" font-size="10">6 structured widgets</text>
+  <text x="538" y="290" text-anchor="middle" fill="#9a9070" font-size="10">Skip logic + validation</text>
+
+  <!-- Content Store -->
+  <rect x="632" y="226" width="160" height="80" rx="8" fill="#252015" stroke="#c9993a" stroke-width="0.8"/>
+  <text x="712" y="246" text-anchor="middle" fill="#e0c878" font-size="11" font-weight="600">Content Store</text>
+  <text x="712" y="262" text-anchor="middle" fill="#9a9070" font-size="10">8 facilities · 4 LOCs</text>
+  <text x="712" y="276" text-anchor="middle" fill="#9a9070" font-size="10">6 topic capabilities</text>
+  <text x="712" y="290" text-anchor="middle" fill="#9a9070" font-size="10">Anti-hallucination</text>
+
+  <!-- Arrow: Deterministic → LLM -->
+  <line x1="808" y1="210" x2="838" y2="210" stroke="#3a3f50" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+
+  <!-- ════════ LAYER 3: LLM (GREEN) ════════ -->
+  <rect x="842" y="72" width="220" height="276" rx="12" fill="#121a16" stroke="#3d9e74" stroke-width="1" stroke-opacity="0.4" filter="url(#glow-green)"/>
+  <rect x="842" y="72" width="220" height="6" rx="3" fill="url(#green-grad)"/>
+
+  <text x="952" y="100" text-anchor="middle" fill="#5cbb94" font-size="11" font-weight="700" letter-spacing="1.5">LLM</text>
+  <text x="952" y="116" text-anchor="middle" fill="#608a70" font-size="10">Claude Haiku</text>
+  <text x="952" y="130" text-anchor="middle" fill="#608a70" font-size="10">Voice and warmth only</text>
+
+  <!-- Wrap -->
+  <rect x="862" y="148" width="180" height="40" rx="8" fill="#152018" stroke="#3d9e74" stroke-width="0.8"/>
+  <text x="952" y="164" text-anchor="middle" fill="#88d4aa" font-size="11" font-weight="500">Tone Wrapping</text>
+  <text x="952" y="178" text-anchor="middle" fill="#608a70" font-size="9">Contextual, warm replies</text>
+
+  <!-- Off-topic -->
+  <rect x="862" y="198" width="180" height="40" rx="8" fill="#152018" stroke="#3d9e74" stroke-width="0.8"/>
+  <text x="952" y="214" text-anchor="middle" fill="#88d4aa" font-size="11" font-weight="500">Off-Topic Handler</text>
+  <text x="952" y="228" text-anchor="middle" fill="#608a70" font-size="9">Acknowledge + redirect</text>
+
+  <!-- Micro-capture -->
+  <rect x="862" y="248" width="180" height="40" rx="8" fill="#152018" stroke="#3d9e74" stroke-width="0.8"/>
+  <text x="952" y="264" text-anchor="middle" fill="#88d4aa" font-size="11" font-weight="500">Micro-Capture</text>
+  <text x="952" y="278" text-anchor="middle" fill="#608a70" font-size="9">Volunteered data extraction</text>
+
+  <!-- Multi-field -->
+  <rect x="862" y="298" width="180" height="40" rx="8" fill="#152018" stroke="#3d9e74" stroke-width="0.8"/>
+  <text x="952" y="314" text-anchor="middle" fill="#88d4aa" font-size="11" font-weight="500">Multi-Field Parse</text>
+  <text x="952" y="328" text-anchor="middle" fill="#608a70" font-size="9">Single input, many fields</text>
+
+  <!-- Arrow: LLM → Output -->
+  <line x1="1062" y1="210" x2="1092" y2="210" stroke="#3a3f50" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+
+  <!-- ════════ OUTPUT (right) ════════ -->
+  <rect x="1096" y="148" width="154" height="124" rx="14" fill="#252a38" stroke="#3a3f50" stroke-width="1" filter="url(#shadow)"/>
+  <text x="1173" y="192" text-anchor="middle" fill="#c8cad0" font-size="12" font-weight="500">Conversational</text>
+  <text x="1173" y="208" text-anchor="middle" fill="#c8cad0" font-size="12" font-weight="500">Response</text>
+  <text x="1173" y="230" text-anchor="middle" fill="#6a6e78" font-size="9">Reply buttons</text>
+  <text x="1173" y="244" text-anchor="middle" fill="#6a6e78" font-size="9">Resource cards</text>
+  <text x="1173" y="258" text-anchor="middle" fill="#6a6e78" font-size="9">Suggested prompts</text>
+
+  <!-- Persona badge (top right) -->
+  <rect x="1130" y="72" width="120" height="42" rx="10" fill="#252a38" stroke="#3a3f50" stroke-width="0.8"/>
+  <text x="1190" y="90" text-anchor="middle" fill="#8a8e99" font-size="9" font-weight="600" letter-spacing="1">PERSONA</text>
+  <text x="1190" y="106" text-anchor="middle" fill="#c8cad0" font-size="11">White-label ready</text>
+
+  <!-- Legend -->
+  <text x="50" y="394" fill="#6a6e78" font-size="9" letter-spacing="0.5">
+    <tspan fill="#cc4444">&#9679;</tspan> Guardrail — safety first
+    <tspan dx="18" fill="#e0b85c">&#9679;</tspan> Deterministic — flow authority
+    <tspan dx="18" fill="#5cbb94">&#9679;</tspan> LLM — voice, not brain
+    <tspan dx="18" fill="#6a6e78">&#9679;</tspan> 56 nodes  ·  3 paths  ·  5 capture tiers  ·  0 hallucination
+  </text>
+</svg>
