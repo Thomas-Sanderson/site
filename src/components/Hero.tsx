@@ -146,7 +146,7 @@ export default function Hero() {
     const labelSlideTargetY = headingBottom - 14 - labelTop;
     const labelSlideY = lerp(0, labelSlideTargetY, slideT);
 
-    const labelFinalY = HEADER_TOP + 4;
+    const labelFinalY = HEADER_TOP + 6;
     const labelAfterSlide = labelTop + labelSlideTargetY;
     const labelRiseTargetY = -(labelAfterSlide - labelFinalY);
     const labelRiseY = lerp(0, labelRiseTargetY, riseT);
@@ -193,10 +193,11 @@ export default function Hero() {
         <div
           style={{
             position: "absolute",
-            top: 0,
+            top: "-100px",
             left: 0,
             right: 0,
-            height: "52px",
+            height: "152px",
+            paddingTop: "100px",
             backgroundColor: `rgba(245, 240, 235, ${phases.riseT >= 1 ? 1 : 0})`,
             backdropFilter: phases.riseT >= 1 ? "blur(12px)" : "none",
             borderBottom: phases.riseT >= 1
