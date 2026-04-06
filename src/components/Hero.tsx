@@ -56,12 +56,9 @@ export default function Hero() {
   const [headingWidth, setHeadingWidth] = useState(0);
 
   useEffect(() => {
-    // Prevent iOS Safari from restoring scroll position on reload/back
-    if ("scrollRestoration" in history) {
-      history.scrollRestoration = "manual";
-    }
-    // Force scroll to top so element measurements are correct
-    window.scrollTo({ top: 0, behavior: "instant" });
+    // Scroll reset is handled by the inline script in layout.tsx (runs before hydration).
+    // This is a safety net for client-side navigations.
+    window.scrollTo(0, 0);
     setMounted(true);
   }, []);
 
@@ -355,6 +352,7 @@ export default function Hero() {
             figured out are possible yet.
           </p>
         </div>
+
       </div>
     </>
   );

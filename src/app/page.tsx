@@ -6,6 +6,7 @@ import EraSection from "@/components/EraSection";
 import CaseStudySection from "@/components/CaseStudySection";
 import ResumeSection from "@/components/ResumeSection";
 import Footer from "@/components/Footer";
+import ScrollNext from "@/components/ScrollNext";
 import { eras } from "@/data/eras";
 
 export default function Home() {
@@ -23,6 +24,7 @@ export default function Home() {
         <CaseStudySection />
         <ResumeSection />
       </main>
+      <ScrollNext />
       <Footer />
     </>
   );
