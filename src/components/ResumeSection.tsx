@@ -35,7 +35,7 @@ export default function ResumeSection() {
         >
           Work History
         </h3>
-        <div className="overflow-x-auto">
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr
@@ -73,6 +73,17 @@ export default function ResumeSection() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="sm:hidden flex flex-col gap-3">
+          {workEntries.map((entry, i) => (
+            <div key={i} className="py-3 border-t text-sm" style={{ borderColor: "rgba(45, 42, 38, 0.08)" }}>
+              <p className="font-bold">{entry.role}</p>
+              <p>{entry.company}</p>
+              <p style={{ color: "var(--color-muted)" }}>
+                {entry.start} – {entry.end}{entry.location ? ` · ${entry.location}` : ""}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
 

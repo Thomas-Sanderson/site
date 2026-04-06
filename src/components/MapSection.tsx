@@ -122,7 +122,6 @@ export default function MapSection() {
   const [worldData, setWorldData] = useState<GeoJSON.FeatureCollection | null>(null);
   const [activePill, setActivePill] = useState<PillKey | null>(null);
   const [hoveredCluster, setHoveredCluster] = useState<Cluster | null>(null);
-  const [expandedCluster, setExpandedCluster] = useState<string | null>(null);
   const [hoveredPin, setHoveredPin] = useState<Pin | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
@@ -205,14 +204,7 @@ export default function MapSection() {
     [visiblePins, projectionFn]
   );
 
-  const setTooltipFromEvent = useCallback((e: React.MouseEvent) => {
-    const svg = svgRef.current;
-    if (!svg) return;
-    const rect = svg.getBoundingClientRect();
-    setTooltipPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  }, []);
-
-  // Position tooltip relative to SVG coordinates (for mobile tap)
+  // Position tooltip relative to SVG coordinates
   const setTooltipFromSvgCoords = useCallback((cx: number, cy: number) => {
     const svg = svgRef.current;
     if (!svg) return;
@@ -238,13 +230,8 @@ export default function MapSection() {
 
   const handlePillClick = useCallback((key: PillKey) => {
     setActivePill((prev) => (prev === key ? null : key));
-    setExpandedCluster(null);
     setHoveredCluster(null);
     setHoveredPin(null);
-  }, []);
-
-  const handleClusterClick = useCallback((cluster: Cluster) => {
-    setExpandedCluster((prev) => (prev === cluster.id ? null : cluster.id));
   }, []);
 
   return (
@@ -254,8 +241,8 @@ export default function MapSection() {
         className="px-0 sm:px-4"
         style={{
           position: "sticky",
-          top: "60px",
-          height: "calc(100vh - 60px)",
+          top: "calc(60px + env(safe-area-inset-top, 0px))",
+          height: "calc(100vh - 60px - env(safe-area-inset-top, 0px))",
           zIndex: 20,
           display: "flex",
           flexDirection: "column",
@@ -306,7 +293,6 @@ export default function MapSection() {
               if (e.target === e.currentTarget) {
                 setHoveredPin(null);
                 setHoveredCluster(null);
-                setExpandedCluster(null);
               }
             }}
           >
@@ -323,58 +309,7 @@ export default function MapSection() {
 
             {/* Clusters / pins */}
             {clusters.map((cluster) => {
-              const isExpanded = expandedCluster === cluster.id;
               const isSingle = cluster.pins.length === 1;
-
-              if (isExpanded && !isSingle) {
-                // Expanded: fan out individual pins
-                const fanRadius = 18;
-                return (
-                  <g key={cluster.id}>
-                    {cluster.pins.map((pin, i) => {
-                      const angle = (i / cluster.pins.length) * Math.PI * 2 - Math.PI / 2;
-                      const px = cluster.cx + Math.cos(angle) * fanRadius;
-                      const py = cluster.cy + Math.sin(angle) * fanRadius;
-                      const meta = categoryMeta[pin.category as LocationCategory] || { color: "#A89F95" };
-                      return (
-                        <g
-                          key={pin.id}
-                          className="cursor-pointer"
-                          onMouseEnter={(e) => {
-                            if (!isMobile) { setHoveredPin(pin); setTooltipFromEvent(e); }
-                          }}
-                          onMouseLeave={() => { if (!isMobile) setHoveredPin(null); }}
-                          onClick={() => {
-                            if (isMobile) {
-                              setHoveredPin((prev) => prev?.id === pin.id ? null : pin);
-                              setTooltipFromSvgCoords(px, py);
-                            }
-                          }}
-                        >
-                          <circle cx={px} cy={py} r={6} fill={meta.color} opacity={0.25} />
-                          <circle
-                            cx={px}
-                            cy={py}
-                            r={3.5}
-                            fill={meta.color}
-                            stroke="var(--color-cream)"
-                            strokeWidth={1.5}
-                          />
-                        </g>
-                      );
-                    })}
-                    {/* Close button */}
-                    <circle
-                      cx={cluster.cx}
-                      cy={cluster.cy}
-                      r={5}
-                      fill="rgba(45, 42, 38, 0.3)"
-                      className="cursor-pointer"
-                      onClick={() => setExpandedCluster(null)}
-                    />
-                  </g>
-                );
-              }
 
               if (isSingle) {
                 // Single pin — simple dot
@@ -385,15 +320,15 @@ export default function MapSection() {
                     key={cluster.id}
                     className="cursor-pointer"
                     style={{ transformOrigin: `${cluster.cx}px ${cluster.cy}px` }}
-                    onMouseEnter={(e) => {
-                      if (!isMobile) { setHoveredPin(pin); setTooltipFromEvent(e); }
+                    onMouseEnter={() => {
+                      setHoveredPin(pin);
+                      setHoveredCluster(null);
                     }}
-                    onMouseLeave={() => { if (!isMobile) setHoveredPin(null); }}
+                    onMouseLeave={() => { setHoveredPin(null); }}
                     onClick={() => {
-                      if (isMobile) {
-                        setHoveredPin((prev) => prev?.id === pin.id ? null : pin);
-                        setTooltipFromSvgCoords(cluster.cx, cluster.cy);
-                      }
+                      setHoveredPin((prev) => prev?.id === pin.id ? null : pin);
+                      setHoveredCluster(null);
+                      setTooltipFromSvgCoords(cluster.cx, cluster.cy);
                     }}
                   >
                     <circle cx={cluster.cx} cy={cluster.cy} r={6} fill={meta.color} opacity={0.2}>
@@ -422,11 +357,16 @@ export default function MapSection() {
                 <g
                   key={cluster.id}
                   className="cursor-pointer"
-                  onMouseEnter={(e) => {
-                    if (!isMobile) { setHoveredCluster(cluster); setTooltipFromEvent(e); }
+                  onMouseEnter={() => {
+                    setHoveredCluster(cluster);
+                    setHoveredPin(null);
                   }}
-                  onMouseLeave={() => { if (!isMobile) setHoveredCluster(null); }}
-                  onClick={() => handleClusterClick(cluster)}
+                  onMouseLeave={() => { setHoveredCluster(null); }}
+                  onClick={() => {
+                    setHoveredCluster((prev) => prev?.id === cluster.id ? null : cluster);
+                    setHoveredPin(null);
+                    setTooltipFromSvgCoords(cluster.cx, cluster.cy);
+                  }}
                 >
                   {/* Multi-category ring */}
                   {categories.size > 1 && (
@@ -509,7 +449,7 @@ export default function MapSection() {
           )}
 
           {/* Tooltip — cluster summary */}
-          {hoveredCluster && !expandedCluster && (
+          {hoveredCluster && (
             <div
               className="absolute pointer-events-none z-10 bg-warm-white rounded-xl shadow-lg px-5 py-4 max-w-[280px] border"
               style={{
