@@ -63,19 +63,6 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Notch cover — paints cream behind the status bar on viewport-fit:cover devices */
-body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: env(safe-area-inset-top, 0px);
-  background-color: var(--color-cream);
-  z-index: 50;
-  pointer-events: none;
-}
-
 /* Subtle paper grain texture via CSS */
 body::before {
   content: "";
