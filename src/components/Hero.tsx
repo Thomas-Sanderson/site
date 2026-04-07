@@ -425,7 +425,7 @@ export default function Hero() {
             the world&rsquo;s largest banks, insurers, and healthcare systems. Then I
             left to make art in Portugal for two years. After that, I went where the
             work mattered most: behavioral health, where I designed systems for
-            people in crisis. Now I build things with AI that most teams haven&rsquo;t
+            people in crisis. Now I am trying to build things with AI that most teams haven&rsquo;t
             figured out are possible yet.
           </p>
         </div>
