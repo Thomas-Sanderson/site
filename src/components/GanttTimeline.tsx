@@ -607,35 +607,25 @@ export default function GanttTimeline() {
                           {group.entries[group.entries.length - 1].end}
                         </p>
                       </div>
-                      <div className="grid gap-2 sm:gap-3">
+                      <div className="grid gap-1">
                         {group.entries.map((entry, i) => (
                           <div
                             key={i}
-                            className="flex items-start gap-2 sm:gap-3"
+                            className="flex items-center gap-2"
                           >
                             <div
-                              className="w-2 h-2 rounded-full shrink-0 mt-[5px]"
+                              className="w-1.5 h-1.5 rounded-full shrink-0"
                               style={{ backgroundColor: color.vivid }}
                             />
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-baseline justify-between gap-2 sm:gap-4">
-                                <p className="text-xs sm:text-sm font-medium leading-snug">
-                                  {entry.role}
-                                </p>
-                                <p className="font-mono text-[9px] sm:text-[10px] text-charcoal/40 shrink-0">
-                                  {entry.duration}
-                                </p>
-                              </div>
-                              <p className="font-mono text-[9px] sm:text-[10px] text-charcoal/35 mt-0.5">
-                                {entry.type} · {entry.location}
-                              </p>
-                              {entry.highlights &&
-                                entry.highlights.length > 0 && (
-                                  <p className="text-[11px] sm:text-xs text-charcoal/50 mt-1 leading-relaxed hidden sm:block">
-                                    {entry.highlights[0]}
-                                  </p>
-                                )}
-                            </div>
+                            <p className="text-xs sm:text-sm font-medium leading-snug flex-1 min-w-0 truncate">
+                              {entry.role}
+                            </p>
+                            <p className="font-mono text-[9px] sm:text-[10px] text-charcoal/35 shrink-0">
+                              {entry.location}
+                            </p>
+                            <p className="font-mono text-[9px] sm:text-[10px] text-charcoal/40 shrink-0">
+                              {entry.duration}
+                            </p>
                           </div>
                         ))}
                       </div>
