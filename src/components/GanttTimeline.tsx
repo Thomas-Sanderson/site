@@ -98,7 +98,7 @@ export default function GanttTimeline() {
     if (!ganttRect) return;
     const rowRect = rowEl.getBoundingClientRect();
     const ganttMidY = ganttRect.top + ganttRect.height / 2;
-    const isAbove = rowRect.top > ganttMidY;
+    const isAbove = rowRect.top < ganttMidY;
     setTooltipAbove(isAbove);
     setHoveredRowTop(isAbove ? rowRect.top - ganttRect.top : rowRect.bottom - ganttRect.top);
 
@@ -113,8 +113,12 @@ export default function GanttTimeline() {
           if (br.left < minLeft) minLeft = br.left;
           if (br.right > maxRight) maxRight = br.right;
         });
-        const centerX = (minLeft + maxRight) / 2 - ganttRect.left;
-        setCaretLeft(centerX);
+        // Relative to the rows parent (.relative div), clamped within bounds
+        const rowsParent = rowEl.parentElement?.parentElement;
+        const parentRect = rowsParent?.getBoundingClientRect() ?? ganttRect;
+        const centerX = (minLeft + maxRight) / 2 - parentRect.left;
+        const clamped = Math.max(24, Math.min(centerX, parentRect.width - 24));
+        setCaretLeft(clamped);
       }
     }
   }, []);
