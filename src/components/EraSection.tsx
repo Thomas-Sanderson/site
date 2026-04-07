@@ -48,12 +48,9 @@ export default function EraSection({ era }: { era: Era }) {
     return images;
   }, [era.id, era.galleryFilter]);
 
-  // Animation phases — mobile exits later so content lingers
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
-  const enterEnd = isMobile ? 0.25 : 0.3;
-  const exitStart = isMobile ? 0.82 : 0.7;
-  const enterT = Math.min(1, progress / enterEnd);
-  const exitT = Math.max(0, (progress - exitStart) / (1 - exitStart));
+  // Animation phases: Enter 0–0.3, Hold 0.3–0.7, Exit 0.7–1.0
+  const enterT = Math.min(1, progress / 0.3);
+  const exitT = Math.max(0, (progress - 0.7) / 0.3);
 
   const stagger = (index: number, total: number) => {
     const delay = (index / total) * 0.5;
@@ -68,7 +65,7 @@ export default function EraSection({ era }: { era: Era }) {
   const fadeIn = (t: number) => lerp(0, 1, t);
   const slideIn = (t: number) => lerp(30, 0, t);
   const fadeOut = lerp(1, 0, exitT);
-  const slideOut = lerp(0, isMobile ? -20 : -40, exitT);
+  const slideOut = lerp(0, -40, exitT);
 
   return (
     <div ref={sentinelRef} style={{ height: "200vh", position: "relative" }}>

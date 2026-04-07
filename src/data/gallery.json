@@ -81,7 +81,8 @@
     "date": "2017",
     "lat": 37.2638,
     "lng": -122.023,
-    "category": "see"
+    "category": "see",
+    "era": "consulting"
   },
   {
     "slug": "fireworks-fort-bragg",
@@ -95,7 +96,8 @@
     "date": "2017",
     "lat": 39.4457,
     "lng": -123.8053,
-    "category": "see"
+    "category": "see",
+    "era": "behavioral-health"
   },
   {
     "slug": "milky-way-south-royalton",
@@ -497,8 +499,8 @@
     "slug": "plaster-rose-porto",
     "source": "whatsapp",
     "cropped": "cropped/plaster-rose-porto.jpg",
-    "width": 800,
-    "height": 800,
+    "width": 546,
+    "height": 699,
     "location": "Porto, Portugal",
     "date": "2022",
     "category": "make",
@@ -525,17 +527,6 @@
     "date": "2022",
     "category": "see",
     "era": "art"
-  },
-  {
-    "slug": "facility-bed-board",
-    "source": "whatsapp",
-    "cropped": "cropped/facility-bed-board.jpg",
-    "width": 800,
-    "height": 800,
-    "location": "Austin, Texas",
-    "date": "2023",
-    "category": "work",
-    "era": "behavioral-health"
   },
   {
     "slug": "stone-path-austin",
@@ -653,18 +644,6 @@
     "era": "consulting"
   },
   {
-    "slug": "cavalry-bw",
-    "source": "instagram",
-    "account": "thomas.w.sanderson",
-    "cropped": "cropped/cavalry-bw.png",
-    "width": 687,
-    "height": 860,
-    "location": "New York, New York",
-    "date": "2020",
-    "category": "see",
-    "era": "consulting"
-  },
-  {
     "slug": "gold-fingers-denver",
     "source": "instagram",
     "account": "thomas.w.sanderson",
@@ -674,7 +653,7 @@
     "location": "Denver, Colorado",
     "date": "2016",
     "category": "see",
-    "era": "consulting"
+    "era": "art"
   },
   {
     "slug": "lv-building-sf",
@@ -689,30 +668,6 @@
     "era": "consulting"
   },
   {
-    "slug": "graffiti-wall-denver",
-    "source": "instagram",
-    "account": "thomas.w.sanderson",
-    "cropped": "cropped/graffiti-wall-denver.png",
-    "width": 686,
-    "height": 702,
-    "location": "Denver, Colorado",
-    "date": "2016",
-    "category": "see",
-    "era": "consulting"
-  },
-  {
-    "slug": "woodburning-art",
-    "source": "instagram",
-    "account": "thomas.w.sanderson",
-    "cropped": "cropped/woodburning-art.png",
-    "width": 859,
-    "height": 854,
-    "location": "Memphis, Tennessee",
-    "date": "2020",
-    "category": "see",
-    "era": "consulting"
-  },
-  {
     "slug": "poetry-red",
     "source": "instagram",
     "account": "thomas.w.sanderson",
@@ -722,19 +677,7 @@
     "location": "Porto, Portugal",
     "date": "2022",
     "category": "see",
-    "era": "consulting"
-  },
-  {
-    "slug": "gundam-model",
-    "source": "instagram",
-    "account": "thomas.w.sanderson",
-    "cropped": "cropped/gundam-model.png",
-    "width": 856,
-    "height": 856,
-    "location": "Porto, Portugal",
-    "date": "2022",
-    "category": "see",
-    "era": "consulting"
+    "era": "art"
   },
   {
     "slug": "pink-elephant-portland",
@@ -821,30 +764,6 @@
     "era": "consulting"
   },
   {
-    "slug": "selfie-dreads",
-    "source": "instagram",
-    "account": "thomas.w.sanderson",
-    "cropped": "cropped/selfie-dreads.png",
-    "width": 857,
-    "height": 857,
-    "location": "Porto, Portugal",
-    "date": "2022",
-    "category": "see",
-    "era": "consulting"
-  },
-  {
-    "slug": "porto-bw",
-    "source": "instagram",
-    "account": "thomas.w.sanderson",
-    "cropped": "cropped/porto-bw.png",
-    "width": 857,
-    "height": 854,
-    "location": "Porto, Portugal",
-    "date": "2022",
-    "category": "see",
-    "era": "consulting"
-  },
-  {
     "slug": "cubataxi",
     "source": "instagram",
     "account": "thomas.w.sanderson",
@@ -855,5 +774,175 @@
     "date": "2017",
     "category": "see",
     "era": "consulting"
+  },
+  {
+    "slug": "bus-india",
+    "cropped": "cropped/bus-india.png",
+    "width": 800,
+    "height": 800,
+    "location": "Bangalore, India",
+    "date": "2018",
+    "category": "see",
+    "era": "consulting"
+  },
+  {
+    "slug": "temple-india",
+    "cropped": "cropped/temple-india.png",
+    "width": 800,
+    "height": 800,
+    "location": "Bangalore, India",
+    "date": "2018",
+    "category": "see",
+    "era": "consulting"
+  },
+  {
+    "slug": "motorcycle-india",
+    "cropped": "cropped/motorcycle-india.png",
+    "width": 800,
+    "height": 800,
+    "location": "Bangalore, India",
+    "date": "2018",
+    "category": "see",
+    "era": "consulting"
+  },
+  {
+    "slug": "crane-saopaulo",
+    "cropped": "cropped/crane-saopaulo.png",
+    "width": 800,
+    "height": 800,
+    "location": "São Paulo, Brazil",
+    "date": "2015",
+    "category": "see",
+    "era": "consulting"
+  },
+  {
+    "slug": "skyscraper-saopaulo",
+    "cropped": "cropped/skyscraper-saopaulo.png",
+    "width": 800,
+    "height": 800,
+    "location": "São Paulo, Brazil",
+    "date": "2015",
+    "category": "see",
+    "era": "consulting"
+  },
+  {
+    "slug": "porthole-saopaulo",
+    "cropped": "cropped/porthole-saopaulo.png",
+    "width": 800,
+    "height": 800,
+    "location": "São Paulo, Brazil",
+    "date": "2015",
+    "category": "see",
+    "era": "consulting"
+  },
+  {
+    "slug": "buddha-sign-austin",
+    "source": "whatsapp",
+    "cropped": "cropped/buddha-sign-austin.jpg",
+    "width": 1200,
+    "height": 1600,
+    "location": "Austin, Texas",
+    "date": "2024",
+    "category": "work",
+    "era": "behavioral-health"
+  },
+  {
+    "slug": "floor-leak-austin",
+    "source": "whatsapp",
+    "cropped": "cropped/floor-leak-austin.jpg",
+    "width": 1200,
+    "height": 1600,
+    "location": "Austin, Texas",
+    "date": "2024",
+    "category": "work",
+    "era": "behavioral-health"
+  },
+  {
+    "slug": "plumbing-pipes-austin",
+    "source": "whatsapp",
+    "cropped": "cropped/plumbing-pipes-austin.jpg",
+    "width": 1200,
+    "height": 1600,
+    "location": "Austin, Texas",
+    "date": "2024",
+    "category": "work",
+    "era": "behavioral-health"
+  },
+  {
+    "slug": "grocery-list-austin",
+    "source": "whatsapp",
+    "cropped": "cropped/grocery-list-austin.jpg",
+    "width": 1200,
+    "height": 1600,
+    "location": "Austin, Texas",
+    "date": "2024",
+    "category": "work",
+    "era": "behavioral-health"
+  },
+  {
+    "slug": "checklist-clipboard-austin",
+    "source": "whatsapp",
+    "cropped": "cropped/checklist-clipboard-austin.jpg",
+    "width": 1200,
+    "height": 1600,
+    "location": "Austin, Texas",
+    "date": "2024",
+    "category": "work",
+    "era": "behavioral-health"
+  },
+  {
+    "slug": "test-strips-austin",
+    "source": "whatsapp",
+    "cropped": "cropped/test-strips-austin.jpg",
+    "width": 1200,
+    "height": 1600,
+    "location": "Austin, Texas",
+    "date": "2024",
+    "category": "work",
+    "era": "behavioral-health"
+  },
+  {
+    "slug": "medication-tray-austin",
+    "source": "whatsapp",
+    "cropped": "cropped/medication-tray-austin.jpg",
+    "width": 1200,
+    "height": 1600,
+    "location": "Austin, Texas",
+    "date": "2024",
+    "category": "work",
+    "era": "behavioral-health"
+  },
+  {
+    "slug": "pen-needles-austin",
+    "source": "whatsapp",
+    "cropped": "cropped/pen-needles-austin.jpg",
+    "width": 1200,
+    "height": 1600,
+    "location": "Austin, Texas",
+    "date": "2024",
+    "category": "work",
+    "era": "behavioral-health"
+  },
+  {
+    "slug": "woven-fan-austin",
+    "source": "whatsapp",
+    "cropped": "cropped/woven-fan-austin.jpg",
+    "width": 1200,
+    "height": 1600,
+    "location": "Austin, Texas",
+    "date": "2024",
+    "category": "work",
+    "era": "behavioral-health"
+  },
+  {
+    "slug": "yard-portrait-austin",
+    "source": "whatsapp",
+    "cropped": "cropped/yard-portrait-austin.jpg",
+    "width": 578,
+    "height": 761,
+    "location": "Austin, Texas",
+    "date": "2024",
+    "category": "work",
+    "era": "behavioral-health"
   }
 ]
