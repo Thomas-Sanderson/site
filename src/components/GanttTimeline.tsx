@@ -609,7 +609,7 @@ export default function GanttTimeline() {
                         </p>
                       </div>
                       <div className="grid gap-1">
-                        {group.entries.map((entry, i) => (
+                        {[...group.entries].reverse().map((entry, i) => (
                           <div
                             key={i}
                             className="flex items-center gap-2"
@@ -623,9 +623,6 @@ export default function GanttTimeline() {
                             </p>
                             <p className="font-mono text-[9px] sm:text-[10px] text-charcoal/35 shrink-0">
                               {entry.location}
-                            </p>
-                            <p className="font-mono text-[9px] sm:text-[10px] text-charcoal/40 shrink-0">
-                              {entry.duration}
                             </p>
                           </div>
                         ))}
