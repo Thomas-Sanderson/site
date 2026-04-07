@@ -274,13 +274,15 @@ export default function Hero() {
           }}
         >
           <button
-            className="flex flex-col gap-[3px] p-1"
+            className="p-1"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label="Menu"
           >
-            <span className="block w-4 h-[1.5px] rounded-full" style={{ backgroundColor: "rgba(45, 42, 38, 0.5)" }} />
-            <span className="block w-4 h-[1.5px] rounded-full" style={{ backgroundColor: "rgba(45, 42, 38, 0.5)" }} />
-            <span className="block w-4 h-[1.5px] rounded-full" style={{ backgroundColor: "rgba(45, 42, 38, 0.5)" }} />
+            <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+              <line x1="0" y1="1" x2="18" y2="1" stroke="rgba(45, 42, 38, 0.5)" strokeWidth="2" />
+              <line x1="0" y1="7" x2="18" y2="7" stroke="rgba(45, 42, 38, 0.5)" strokeWidth="2" />
+              <line x1="0" y1="13" x2="18" y2="13" stroke="rgba(45, 42, 38, 0.5)" strokeWidth="2" />
+            </svg>
           </button>
         </div>
 
