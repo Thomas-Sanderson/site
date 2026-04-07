@@ -633,17 +633,16 @@ export default function GanttTimeline() {
                   );
 
                   const caret = (
-                    <div className="relative" style={{ height: "8px" }}>
+                    <div className="relative" style={{ height: "6px" }}>
                       <div
-                        className="absolute w-0 h-0"
+                        className="absolute"
                         style={{
                           left: caretX,
                           transform: "translateX(-50%)",
-                          borderLeft: "8px solid transparent",
-                          borderRight: "8px solid transparent",
-                          ...(tooltipAbove
-                            ? { borderTop: `8px solid ${color.vivid}`, top: 0 }
-                            : { borderBottom: `8px solid ${color.vivid}`, bottom: 0 }),
+                          width: "16px",
+                          height: "6px",
+                          backgroundColor: color.vivid,
+                          ...(tooltipAbove ? { top: 0 } : { bottom: 0 }),
                         }}
                       />
                     </div>
