@@ -307,7 +307,7 @@ export default function Hero() {
         >
           {/* Headshot — fades out with bio */}
           <div
-            className="absolute right-6 md:right-12 bottom-[15%] md:top-1/2 md:bottom-auto md:-translate-y-1/2"
+            className="absolute right-6 md:right-12 bottom-[5%] md:top-1/2 md:bottom-auto md:-translate-y-1/2"
             style={{
               opacity: phases.bioOpacity * 0.28,
               transform: `translateY(${phases.bioSlide}px)`,
