@@ -18,7 +18,7 @@ interface GalleryImage {
 export default function EraSection({ era }: { era: Era }) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const progress = useScrollCard(sentinelRef);
-  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   // Dispatch era-highlight event for TimelineBar
   useEffect(() => {
@@ -151,12 +151,12 @@ export default function EraSection({ era }: { era: Era }) {
               transform: `translateY(${slideIn(narrativeEnter) + slideOut}px)`,
             }}
           >
-            {galleryImages.slice(0, 5).map((img) => (
+            {galleryImages.slice(0, 5).map((img, i) => (
               <div
                 key={img.slug}
                 className="rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
                 style={{ aspectRatio: "4/3" }}
-                onClick={() => setLightboxSrc(`/images/gallery/${img.cropped}`)}
+                onClick={() => setLightboxIndex(i)}
               >
                 <img
                   src={`/images/gallery/${img.cropped}`}
@@ -174,6 +174,7 @@ export default function EraSection({ era }: { era: Era }) {
                   backgroundColor: "rgba(45, 42, 38, 0.05)",
                   color: "var(--color-muted)",
                 }}
+                onClick={() => setLightboxIndex(5)}
               >
                 +{galleryImages.length - 5} more
               </div>
@@ -182,19 +183,58 @@ export default function EraSection({ era }: { era: Era }) {
         )}
       </section>
 
-      {/* Lightbox */}
-      {lightboxSrc && (
+      {/* Lightbox with prev/next */}
+      {lightboxIndex !== null && galleryImages[lightboxIndex] && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
-          onClick={() => setLightboxSrc(null)}
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.85)" }}
+          onClick={() => setLightboxIndex(null)}
         >
+          {/* Prev button */}
+          {lightboxIndex > 0 && (
+            <button
+              className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+              onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex - 1); }}
+              aria-label="Previous"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+          )}
+
+          {/* Image */}
           <img
-            src={lightboxSrc}
-            alt=""
+            src={`/images/gallery/${galleryImages[lightboxIndex].cropped}`}
+            alt={galleryImages[lightboxIndex].slug.replace(/-/g, " ")}
             className="max-w-full max-h-full object-contain"
             onClick={(e) => e.stopPropagation()}
           />
+
+          {/* Next button */}
+          {lightboxIndex < galleryImages.length - 1 && (
+            <button
+              className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+              onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex + 1); }}
+              aria-label="Next"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M8 4l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+          )}
+
+          {/* Counter */}
+          <span
+            className="absolute bottom-4 left-1/2 -translate-x-1/2 font-mono text-xs text-white/50"
+          >
+            {lightboxIndex + 1} / {galleryImages.length}
+          </span>
+
+          {/* Close */}
+          <button
+            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+            onClick={() => setLightboxIndex(null)}
+            aria-label="Close"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+          </button>
         </div>
       )}
     </div>
