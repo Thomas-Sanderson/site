@@ -28,15 +28,28 @@ export const categoryMeta: Record<
 };
 
 export const locations: Location[] = [
-  // WORK
+  // EDUCATION
+  {
+    city: "New York City",
+    country: "USA",
+    lat: 40.8075,
+    lng: -73.9626,
+    category: "work",
+    dateRange: "2010–2014",
+    industries: ["Education"],
+    description: "Columbia University — B.A. Sustainable Development, Biology concentration",
+  },
+
+  // WORK — McKinsey travel (2013–2019)
   {
     city: "San Francisco",
     country: "USA",
     lat: 37.7749,
     lng: -122.4194,
     category: "work",
+    dateRange: "2014–2019",
     industries: ["Consumer Banking", "Utilities", "Healthcare"],
-    description: "Enterprise consulting across banking, utilities, and health systems",
+    description: "McKinsey — enterprise consulting across banking, utilities, and health systems",
   },
   {
     city: "New York City",
@@ -44,14 +57,9 @@ export const locations: Location[] = [
     lat: 40.7128,
     lng: -74.006,
     category: "work",
-    industries: [
-      "Investment Banking",
-      "Entertainment",
-      "Venture Capital",
-      "Healthcare",
-    ],
-    description:
-      "Investment banking platforms, entertainment, venture capital, and healthcare",
+    dateRange: "2013–2014",
+    industries: ["Investment Banking", "Entertainment", "Venture Capital"],
+    description: "McKinsey — investment banking platforms, entertainment, and venture capital",
   },
   {
     city: "Antwerp",
@@ -59,8 +67,9 @@ export const locations: Location[] = [
     lat: 51.2194,
     lng: 4.4025,
     category: "work",
+    dateRange: "2017",
     industries: ["Lean Management"],
-    description: "Lean management transformation for European operations",
+    description: "McKinsey — lean management transformation for European operations",
   },
   {
     city: "São Paulo",
@@ -68,8 +77,9 @@ export const locations: Location[] = [
     lat: -23.5505,
     lng: -46.6333,
     category: "work",
+    dateRange: "2015",
     industries: ["Consumer Banking"],
-    description: "Consumer banking experience design in Brazil",
+    description: "McKinsey — consumer banking experience design",
   },
   {
     city: "Boulder",
@@ -77,8 +87,9 @@ export const locations: Location[] = [
     lat: 40.015,
     lng: -105.2705,
     category: "work",
+    dateRange: "2016",
     industries: ["Agriculture"],
-    description: "Agricultural technology and operations",
+    description: "McKinsey — agricultural technology and operations",
   },
   {
     city: "Toronto",
@@ -86,8 +97,9 @@ export const locations: Location[] = [
     lat: 43.6532,
     lng: -79.3832,
     category: "work",
+    dateRange: "2015",
     industries: ["Consumer Banking"],
-    description: "Consumer banking for Canadian financial institutions",
+    description: "McKinsey — consumer banking for Canadian financial institutions",
   },
   {
     city: "Bangalore",
@@ -95,18 +107,9 @@ export const locations: Location[] = [
     lat: 12.9716,
     lng: 77.5946,
     category: "work",
+    dateRange: "2018",
     industries: ["Lean Management"],
-    description: "Lean management consulting in India",
-  },
-  {
-    city: "Fort Lauderdale",
-    country: "USA",
-    lat: 26.1224,
-    lng: -80.1373,
-    category: "work",
-    industries: ["Recovery / Behavioral Health", "LLM Chatbots"],
-    description:
-      "Behavioral health EMR design and LLM chatbot architecture for healthcare admissions",
+    description: "McKinsey — lean management consulting",
   },
   {
     city: "Little Rock",
@@ -114,8 +117,9 @@ export const locations: Location[] = [
     lat: 34.7465,
     lng: -92.2896,
     category: "work",
+    dateRange: "2016",
     industries: ["Agriculture"],
-    description: "Agricultural industry technology",
+    description: "McKinsey — agricultural industry technology",
   },
   {
     city: "Indianapolis",
@@ -123,8 +127,9 @@ export const locations: Location[] = [
     lat: 39.7684,
     lng: -86.1581,
     category: "work",
+    dateRange: "2017",
     industries: ["Lean Management"],
-    description: "Lean management for Midwest operations",
+    description: "McKinsey — lean management for Midwest operations",
   },
   {
     city: "Minneapolis",
@@ -132,8 +137,9 @@ export const locations: Location[] = [
     lat: 44.9778,
     lng: -93.265,
     category: "work",
+    dateRange: "2016",
     industries: ["Life Insurance", "Credit Unions"],
-    description: "Life insurance and credit union product design",
+    description: "McKinsey — life insurance and credit union product design",
   },
   {
     city: "Atlanta",
@@ -141,8 +147,9 @@ export const locations: Location[] = [
     lat: 33.749,
     lng: -84.388,
     category: "work",
+    dateRange: "2018",
     industries: ["Home Services"],
-    description: "Home services marketplace design",
+    description: "McKinsey — home services marketplace design",
   },
   {
     city: "Stamford",
@@ -150,17 +157,41 @@ export const locations: Location[] = [
     lat: 41.0534,
     lng: -73.5387,
     category: "work",
+    dateRange: "2015",
     industries: ["Banking"],
-    description: "Banking technology consulting",
+    description: "McKinsey — banking technology consulting",
   },
+
+  // WORK — Post-McKinsey
   {
     city: "Sunnyvale",
     country: "USA",
     lat: 37.3688,
     lng: -122.0363,
     category: "work",
+    dateRange: "2019–2020",
     industries: ["Data Management"],
-    description: "Enterprise data management platforms",
+    description: "Workforce Logiq (NetApp) — enterprise data management platforms",
+  },
+  {
+    city: "Austin",
+    country: "USA",
+    lat: 30.2672,
+    lng: -97.7431,
+    category: "work",
+    dateRange: "2023–2024",
+    industries: ["Behavioral Health"],
+    description: "Recovery Unplugged — clinical operations and facility management",
+  },
+  {
+    city: "Fort Lauderdale",
+    country: "USA",
+    lat: 26.1224,
+    lng: -80.1373,
+    category: "work",
+    dateRange: "2025–present",
+    industries: ["Behavioral Health", "LLM Chatbots"],
+    description: "Recovery Unplugged — EMR design and LLM chatbot architecture for admissions",
   },
 
   // ART
@@ -170,8 +201,8 @@ export const locations: Location[] = [
     lat: 41.1579,
     lng: -8.6291,
     category: "art",
-    dateRange: "March 2021 – March 2023",
-    description: "Two years of independent art practice in Portugal",
+    dateRange: "2021–2023",
+    description: "Two years of independent art practice and guest house work",
   },
   {
     city: "Barcelona",
@@ -180,7 +211,7 @@ export const locations: Location[] = [
     lng: 2.1686,
     category: "art",
     dateRange: "2014",
-    description: "Art and creative work in Barcelona",
+    description: "Brand and digital strategy for Tipic i Catala wine shop",
   },
 
   // VOLUNTEER
@@ -190,8 +221,9 @@ export const locations: Location[] = [
     lat: 8.9824,
     lng: -79.5199,
     category: "volunteer",
+    dateRange: "2012",
     industries: ["Environmental"],
-    description: "Environmental volunteer work in Panama",
+    description: "Environmental conservation volunteer work",
   },
 
   // TRAVEL
@@ -201,6 +233,7 @@ export const locations: Location[] = [
     lat: 17.4986,
     lng: -88.1886,
     category: "travel",
+    dateRange: "2013",
   },
   {
     city: "Mexico City",
@@ -208,6 +241,7 @@ export const locations: Location[] = [
     lat: 19.4326,
     lng: -99.1332,
     category: "travel",
+    dateRange: "2019",
   },
   {
     city: "Marrakech",
@@ -215,6 +249,7 @@ export const locations: Location[] = [
     lat: 31.6295,
     lng: -7.9811,
     category: "travel",
+    dateRange: "2022",
   },
   {
     city: "Paris",
@@ -222,6 +257,7 @@ export const locations: Location[] = [
     lat: 48.8566,
     lng: 2.3522,
     category: "travel",
+    dateRange: "2022",
   },
   {
     city: "Edinburgh",
@@ -229,6 +265,7 @@ export const locations: Location[] = [
     lat: 55.9533,
     lng: -3.1883,
     category: "travel",
+    dateRange: "2022",
   },
   {
     city: "Copenhagen",
@@ -236,6 +273,7 @@ export const locations: Location[] = [
     lat: 55.6761,
     lng: 12.5683,
     category: "travel",
+    dateRange: "2022",
   },
   {
     city: "Stockholm",
@@ -243,6 +281,7 @@ export const locations: Location[] = [
     lat: 59.3293,
     lng: 18.0686,
     category: "travel",
+    dateRange: "2022",
   },
   {
     city: "Havana",
@@ -250,6 +289,7 @@ export const locations: Location[] = [
     lat: 23.1136,
     lng: -82.3666,
     category: "travel",
+    dateRange: "2016",
   },
   {
     city: "Basseterre",
@@ -257,5 +297,6 @@ export const locations: Location[] = [
     lat: 17.3026,
     lng: -62.7177,
     category: "travel",
+    dateRange: "2015",
   },
 ];
