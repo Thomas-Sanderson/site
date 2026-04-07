@@ -19,7 +19,7 @@ const WORLD_TOPO_URL =
 
 type PillKey = LocationCategory;
 
-const pillKeys: PillKey[] = ["work", "art", "volunteer", "travel"];
+const pillKeys: PillKey[] = ["work", "art", "travel"];
 
 // ── Clustering ──────────────────────────────────────────────────────
 
@@ -45,7 +45,8 @@ interface Cluster {
   lng: number;
 }
 
-function clusterPins(pins: Pin[], projection: (coords: [number, number]) => [number, number] | null, radius: number): Cluster[] {
+/** Project pins and push overlapping dots apart so they form loose clusters */
+function spreadPins(pins: Pin[], projection: (coords: [number, number]) => [number, number] | null, minDist: number): Cluster[] {
   const projected = pins
     .map((pin) => {
       const coords = projection([pin.lng, pin.lat]);
@@ -54,34 +55,39 @@ function clusterPins(pins: Pin[], projection: (coords: [number, number]) => [num
     })
     .filter(Boolean) as { pin: Pin; cx: number; cy: number }[];
 
-  const used = new Set<number>();
-  const clusters: Cluster[] = [];
-
-  for (let i = 0; i < projected.length; i++) {
-    if (used.has(i)) continue;
-    const group = [projected[i]];
-    used.add(i);
-    for (let j = i + 1; j < projected.length; j++) {
-      if (used.has(j)) continue;
-      const dx = projected[i].cx - projected[j].cx;
-      const dy = projected[i].cy - projected[j].cy;
-      if (Math.sqrt(dx * dx + dy * dy) < radius) {
-        group.push(projected[j]);
-        used.add(j);
+  // Force-push iterations: nudge overlapping dots apart
+  for (let iter = 0; iter < 8; iter++) {
+    for (let i = 0; i < projected.length; i++) {
+      for (let j = i + 1; j < projected.length; j++) {
+        const dx = projected[j].cx - projected[i].cx;
+        const dy = projected[j].cy - projected[i].cy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < minDist && dist > 0) {
+          const push = (minDist - dist) / 2;
+          const nx = dx / dist;
+          const ny = dy / dist;
+          projected[i].cx -= nx * push;
+          projected[i].cy -= ny * push;
+          projected[j].cx += nx * push;
+          projected[j].cy += ny * push;
+        } else if (dist === 0) {
+          // Identical positions — nudge randomly
+          projected[j].cx += minDist * 0.5;
+          projected[j].cy += minDist * 0.3;
+        }
       }
     }
-    const avgCx = group.reduce((s, g) => s + g.cx, 0) / group.length;
-    const avgCy = group.reduce((s, g) => s + g.cy, 0) / group.length;
-    clusters.push({
-      id: group.map((g) => g.pin.id).join("|"),
-      pins: group.map((g) => g.pin),
-      cx: avgCx,
-      cy: avgCy,
-      lat: group[0].pin.lat,
-      lng: group[0].pin.lng,
-    });
   }
-  return clusters;
+
+  // Each pin becomes its own "cluster" (single-pin) for rendering
+  return projected.map((p) => ({
+    id: p.pin.id,
+    pins: [p.pin],
+    cx: p.cx,
+    cy: p.cy,
+    lat: p.pin.lat,
+    lng: p.pin.lng,
+  }));
 }
 
 // ── Component ───────────────────────────────────────────────────────
@@ -203,7 +209,7 @@ export default function MapSection() {
     [projection]
   );
   const clusters = useMemo(
-    () => clusterPins(visiblePins, projectionFn, 30),
+    () => spreadPins(visiblePins, projectionFn, 14),
     [visiblePins, projectionFn]
   );
 
@@ -320,108 +326,48 @@ export default function MapSection() {
               />
             ))}
 
-            {/* Clusters / pins */}
+            {/* Pins — force-spread individual dots */}
             {clusters.map((cluster) => {
-              const isSingle = cluster.pins.length === 1;
-
-              if (isSingle) {
-                // Single pin — simple dot
-                const pin = cluster.pins[0];
-                const meta = categoryMeta[pin.category as LocationCategory] || { color: "#A89F95" };
-                return (
-                  <g
-                    key={cluster.id}
-                    className="cursor-pointer"
-                    style={{ transformOrigin: `${cluster.cx}px ${cluster.cy}px` }}
-                    onMouseEnter={() => {
-                      setHoveredPin(pin);
-                      setHoveredCluster(null);
-                      setTooltipFromSvgCoords(cluster.cx, cluster.cy);
-                    }}
-                    onMouseLeave={() => { if (!isMobile) setHoveredPin(null); }}
-                    onClick={() => {
-                      setHoveredPin((prev) => prev?.id === pin.id ? null : pin);
-                      setHoveredCluster(null);
-                      setTooltipFromSvgCoords(cluster.cx, cluster.cy);
-                    }}
-                  >
-                    <circle cx={cluster.cx} cy={cluster.cy} r={6} fill={meta.color} opacity={0.2}>
-                      <animate attributeName="r" from="2" to="6" dur="0.3s" fill="freeze" />
-                      <animate attributeName="opacity" from="0" to="0.2" dur="0.3s" fill="freeze" />
-                    </circle>
-                    <circle
-                      cx={cluster.cx}
-                      cy={cluster.cy}
-                      r={3.5}
-                      fill={meta.color}
-                      stroke="var(--color-cream)"
-                      strokeWidth={1.5}
-                    >
-                      <animate attributeName="r" from="0" to="3.5" dur="0.3s" fill="freeze" />
-                    </circle>
-                  </g>
-                );
-              }
-
-              // Multi-pin cluster — count badge
-              const categories = new Set(cluster.pins.map((p) => p.category));
-              const primaryCategory = cluster.pins[0].category as LocationCategory;
-              const color = categoryMeta[primaryCategory]?.color || "#A89F95";
+              const pin = cluster.pins[0];
+              const meta = categoryMeta[pin.category as LocationCategory] || { color: "#A89F95" };
               return (
                 <g
                   key={cluster.id}
                   className="cursor-pointer"
+                  style={{ transformOrigin: `${cluster.cx}px ${cluster.cy}px` }}
                   onMouseEnter={() => {
-                    setHoveredCluster(cluster);
-                    setHoveredPin(null);
+                    setHoveredPin(pin);
+                    setHoveredCluster(null);
                     setTooltipFromSvgCoords(cluster.cx, cluster.cy);
                   }}
-                  onMouseLeave={() => { if (!isMobile) setHoveredCluster(null); }}
+                  onMouseLeave={() => { if (!isMobile) setHoveredPin(null); }}
                   onClick={() => {
-                    setHoveredCluster((prev) => prev?.id === cluster.id ? null : cluster);
-                    setHoveredPin(null);
+                    setHoveredPin((prev) => prev?.id === pin.id ? null : pin);
+                    setHoveredCluster(null);
                     setTooltipFromSvgCoords(cluster.cx, cluster.cy);
                   }}
                 >
-                  {/* Multi-category ring */}
-                  {categories.size > 1 && (
-                    <circle
-                      cx={cluster.cx}
-                      cy={cluster.cy}
-                      r={14}
-                      fill="none"
-                      stroke="rgba(45, 42, 38, 0.15)"
-                      strokeWidth={1}
-                      strokeDasharray="3 2"
-                    />
-                  )}
-                  <circle cx={cluster.cx} cy={cluster.cy} r={11} fill={color} opacity={0.15} />
+                  <circle cx={cluster.cx} cy={cluster.cy} r={6} fill={meta.color} opacity={0.2}>
+                    <animate attributeName="r" from="2" to="6" dur="0.3s" fill="freeze" />
+                    <animate attributeName="opacity" from="0" to="0.2" dur="0.3s" fill="freeze" />
+                  </circle>
                   <circle
                     cx={cluster.cx}
                     cy={cluster.cy}
-                    r={8}
-                    fill="var(--color-cream)"
-                    stroke={color}
+                    r={3.5}
+                    fill={meta.color}
+                    stroke="var(--color-cream)"
                     strokeWidth={1.5}
-                  />
-                  <text
-                    x={cluster.cx}
-                    y={cluster.cy + 3.5}
-                    textAnchor="middle"
-                    fontSize={8}
-                    fontFamily="var(--font-mono)"
-                    fontWeight="bold"
-                    fill={color}
                   >
-                    {cluster.pins.length}
-                  </text>
+                    <animate attributeName="r" from="0" to="3.5" dur="0.3s" fill="freeze" />
+                  </circle>
                 </g>
               );
             })}
           </svg>
 
-          {/* Tooltip — single pin */}
-          {hoveredPin && !hoveredCluster && (
+          {/* Tooltip */}
+          {hoveredPin && (
             <div
               className="absolute pointer-events-none z-10 bg-warm-white rounded-xl shadow-lg px-5 py-4 max-w-[260px] border"
               style={{
@@ -463,43 +409,6 @@ export default function MapSection() {
             </div>
           )}
 
-          {/* Tooltip — cluster summary */}
-          {hoveredCluster && (
-            <div
-              className="absolute pointer-events-none z-10 bg-warm-white rounded-xl shadow-lg px-5 py-4 max-w-[280px] border"
-              style={{
-                left: tooltipPos.x,
-                top: tooltipPos.y < 120 ? tooltipPos.y + 20 : tooltipPos.y - 12,
-                transform: tooltipPos.y < 120 ? "translateX(-50%)" : "translate(-50%, -100%)",
-                borderColor: "rgba(45, 42, 38, 0.08)",
-              }}
-            >
-              <p className="font-serif font-bold text-base mb-1">
-                {hoveredCluster.pins.length} items
-              </p>
-              <div className="flex flex-col gap-1">
-                {hoveredCluster.pins.slice(0, 5).map((pin) => {
-                  const meta = categoryMeta[pin.category as LocationCategory] || { color: "#A89F95", label: pin.category };
-                  return (
-                    <div key={pin.id} className="flex items-center gap-1.5">
-                      <span
-                        className="w-1.5 h-1.5 rounded-full shrink-0"
-                        style={{ backgroundColor: meta.color }}
-                      />
-                      <span className="font-mono text-[10px] truncate">
-                        {pin.label}
-                      </span>
-                    </div>
-                  );
-                })}
-                {hoveredCluster.pins.length > 5 && (
-                  <p className="font-mono text-[10px] text-charcoal/40">
-                    +{hoveredCluster.pins.length - 5} more — click to expand
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
 
         </div>
 
