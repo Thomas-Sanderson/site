@@ -286,16 +286,16 @@ export default function Hero() {
           </button>
         </div>
 
-        {/* Mobile dropdown menu */}
+        {/* Mobile dropdown menu — outside overlay for correct z-stacking */}
         {menuOpen && (
           <div
-            className="sm:hidden absolute left-0 right-0"
+            className="sm:hidden fixed left-0 right-0"
             style={{
               top: "calc(52px + env(safe-area-inset-top, 0px))",
               backgroundColor: "rgba(245, 240, 235, 0.98)",
               backdropFilter: "blur(12px)",
               borderBottom: "1px solid rgba(45, 42, 38, 0.08)",
-              zIndex: 46,
+              zIndex: 9997,
               pointerEvents: "auto",
             }}
           >
