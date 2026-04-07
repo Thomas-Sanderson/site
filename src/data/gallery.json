@@ -96,7 +96,8 @@
     "date": "2017",
     "lat": 39.4457,
     "lng": -123.8053,
-    "category": "see"
+    "category": "see",
+    "era": "behavioral-health"
   },
   {
     "slug": "milky-way-south-royalton",
@@ -526,17 +527,6 @@
     "date": "2022",
     "category": "see",
     "era": "art"
-  },
-  {
-    "slug": "facility-bed-board",
-    "source": "whatsapp",
-    "cropped": "cropped/facility-bed-board.jpg",
-    "width": 800,
-    "height": 800,
-    "location": "Austin, Texas",
-    "date": "2023",
-    "category": "work",
-    "era": "behavioral-health"
   },
   {
     "slug": "stone-path-austin",
