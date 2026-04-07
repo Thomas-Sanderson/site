@@ -100,7 +100,12 @@ export default function GanttTimeline() {
     const ganttMidY = ganttRect.top + ganttRect.height / 2;
     const isAbove = rowRect.top < ganttMidY;
     setTooltipAbove(isAbove);
-    setHoveredRowTop(isAbove ? rowRect.top - ganttRect.top : rowRect.bottom - ganttRect.top);
+    // For above: anchor at the row's top edge. For below: anchor at the row's bottom edge.
+    const rowsParent = rowEl.parentElement;
+    const parentRect = rowsParent?.getBoundingClientRect() ?? ganttRect;
+    setHoveredRowTop(isAbove
+      ? rowRect.top - parentRect.top
+      : rowRect.bottom - parentRect.top);
 
     // Find the bar container inside the row and compute its visual center
     const barsContainer = rowEl.querySelector(".flex-1.relative") as HTMLElement | null;
@@ -578,85 +583,93 @@ export default function GanttTimeline() {
                   );
                   if (!group) return null;
                   const color = getColor(hoveredCompany);
-                  const caretStyle: React.CSSProperties = caretLeft != null
-                    ? { position: "absolute", left: `${caretLeft}px`, transform: "translateX(-50%)" }
-                    : { marginLeft: isMobile ? "16px" : "48px" };
+                  const caretX = caretLeft != null ? `${caretLeft}px` : isMobile ? "16px" : "48px";
+
+                  const cardContent = (
+                    <div
+                      className="bg-warm-white rounded-xl shadow-lg px-4 py-4 sm:px-8 sm:py-6 border w-full"
+                      style={{
+                        borderColor: "rgba(45, 42, 38, 0.06)",
+                        ...(tooltipAbove
+                          ? { borderBottom: `2px solid ${color.vivid}` }
+                          : { borderTop: `2px solid ${color.vivid}` }),
+                      }}
+                    >
+                      <div className="flex items-baseline justify-between mb-4">
+                        <h3 className="font-serif font-bold text-base sm:text-lg leading-tight">
+                          {hoveredCompany}
+                        </h3>
+                        <p className="font-mono text-[10px] sm:text-xs text-charcoal/40">
+                          {group.entries[0].start} –{" "}
+                          {group.entries[group.entries.length - 1].end}
+                        </p>
+                      </div>
+                      <div className="grid gap-2 sm:gap-3">
+                        {group.entries.map((entry, i) => (
+                          <div
+                            key={i}
+                            className="flex items-start gap-2 sm:gap-3"
+                          >
+                            <div
+                              className="w-2 h-2 rounded-full shrink-0 mt-[5px]"
+                              style={{ backgroundColor: color.vivid }}
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-baseline justify-between gap-2 sm:gap-4">
+                                <p className="text-xs sm:text-sm font-medium leading-snug">
+                                  {entry.role}
+                                </p>
+                                <p className="font-mono text-[9px] sm:text-[10px] text-charcoal/40 shrink-0">
+                                  {entry.duration}
+                                </p>
+                              </div>
+                              <p className="font-mono text-[9px] sm:text-[10px] text-charcoal/35 mt-0.5">
+                                {entry.type} · {entry.location}
+                              </p>
+                              {entry.highlights &&
+                                entry.highlights.length > 0 && (
+                                  <p className="text-[11px] sm:text-xs text-charcoal/50 mt-1 leading-relaxed hidden sm:block">
+                                    {entry.highlights[0]}
+                                  </p>
+                                )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+
+                  const caret = (
+                    <div className="relative" style={{ height: "8px" }}>
+                      <div
+                        className="absolute w-0 h-0"
+                        style={{
+                          left: caretX,
+                          transform: "translateX(-50%)",
+                          borderLeft: "8px solid transparent",
+                          borderRight: "8px solid transparent",
+                          ...(tooltipAbove
+                            ? { borderTop: `8px solid ${color.vivid}`, top: 0 }
+                            : { borderBottom: `8px solid ${color.vivid}`, bottom: 0 }),
+                        }}
+                      />
+                    </div>
+                  );
+
                   return (
                     <div
                       className="absolute z-30 left-0 right-0"
                       style={{
-                        ...(tooltipAbove
-                          ? { bottom: `calc(100% - ${hoveredRowTop}px + 8px)` }
-                          : { top: `${hoveredRowTop + 8}px` }),
+                        top: `${hoveredRowTop}px`,
+                        ...(tooltipAbove ? { transform: "translateY(-100%)" } : {}),
                         pointerEvents: isMobile ? "auto" : "none",
-                        display: "flex",
-                        flexDirection: tooltipAbove ? "column-reverse" : "column",
                       }}
                     >
-                      <div
-                        className="w-0 h-0"
-                        style={{
-                          ...caretStyle,
-                          borderLeft: "8px solid transparent",
-                          borderRight: "8px solid transparent",
-                          ...(tooltipAbove
-                            ? { borderTop: `8px solid ${color.vivid}` }
-                            : { borderBottom: `8px solid ${color.vivid}` }),
-                        }}
-                      />
-                      <div
-                        className="bg-warm-white rounded-xl shadow-lg px-4 py-4 sm:px-8 sm:py-6 border w-full"
-                        style={{
-                          borderColor: "rgba(45, 42, 38, 0.06)",
-                          ...(tooltipAbove
-                            ? { borderBottom: `2px solid ${color.vivid}` }
-                            : { borderTop: `2px solid ${color.vivid}` }),
-                        }}
-                      >
-                        <div className="flex items-baseline justify-between mb-4">
-                          <h3 className="font-serif font-bold text-base sm:text-lg leading-tight">
-                            {hoveredCompany}
-                          </h3>
-                          <p className="font-mono text-[10px] sm:text-xs text-charcoal/40">
-                            {group.entries[0].start} –{" "}
-                            {group.entries[group.entries.length - 1].end}
-                          </p>
-                        </div>
-                        <div className="grid gap-2 sm:gap-3">
-                          {group.entries.map((entry, i) => (
-                            <div
-                              key={i}
-                              className="flex items-start gap-2 sm:gap-3"
-                            >
-                              <div
-                                className="w-2 h-2 rounded-full shrink-0 mt-[5px]"
-                                style={{
-                                  backgroundColor: color.vivid,
-                                }}
-                              />
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-baseline justify-between gap-2 sm:gap-4">
-                                  <p className="text-xs sm:text-sm font-medium leading-snug">
-                                    {entry.role}
-                                  </p>
-                                  <p className="font-mono text-[9px] sm:text-[10px] text-charcoal/40 shrink-0">
-                                    {entry.duration}
-                                  </p>
-                                </div>
-                                <p className="font-mono text-[9px] sm:text-[10px] text-charcoal/35 mt-0.5">
-                                  {entry.type} · {entry.location}
-                                </p>
-                                {entry.highlights &&
-                                  entry.highlights.length > 0 && (
-                                    <p className="text-[11px] sm:text-xs text-charcoal/50 mt-1 leading-relaxed hidden sm:block">
-                                      {entry.highlights[0]}
-                                    </p>
-                                  )}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                      {tooltipAbove ? (
+                        <>{cardContent}{caret}</>
+                      ) : (
+                        <>{caret}{cardContent}</>
+                      )}
                     </div>
                   );
                 })()}
