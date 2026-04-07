@@ -649,17 +649,6 @@
     "era": "art"
   },
   {
-    "slug": "ru-desk-setup",
-    "source": "whatsapp",
-    "cropped": "cropped/ru-desk-setup.jpg",
-    "width": 800,
-    "height": 800,
-    "location": "Austin, Texas",
-    "date": "2024",
-    "category": "work",
-    "era": "behavioral-health"
-  },
-  {
     "slug": "facility-bed-board",
     "source": "whatsapp",
     "cropped": "cropped/facility-bed-board.jpg",
