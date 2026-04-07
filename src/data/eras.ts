@@ -65,8 +65,9 @@ export const eras: Era[] = [
     subtitle: "Building what the industry doesn't have yet",
     dateRange: "2025–present",
     narrative: [
-      "Everything converged. The consulting rigor, the creative instinct, the clinical domain knowledge — now I'm building the tools that behavioral health actually needs. Sudsy reimagines the EMR from the patient and clinician experience outward. Melody is a deterministic LLM chatbot that handles healthcare admissions without hallucinating or violating PHI. Paper Cannon is a 14-agent research synthesis pipeline with built-in adversarial quality control.",
-      "I'm not waiting for someone to hand me a brief. I'm identifying the gaps myself — because I've worked in the system — and building solutions that most teams haven't figured out are possible yet.",
+      "Everything converged. The consulting rigor, the creative instinct, the clinical domain knowledge — and a set of tools that finally make the gap between \"I see the problem\" and \"here's a working demo\" small enough to cross alone.",
+      "I've been exploring what becomes possible when you treat LLMs as deterministic components inside well-scoped systems rather than as the system itself. Sudsy reimagines behavioral health EMR workflows from the patient and clinician experience outward. Melody is a care navigator for healthcare admissions that stays inside its rails — no hallucination, no PHI exposure. Paper Cannon is a multi-agent research synthesis pipeline with adversarial quality control built into the process, not bolted on after.",
+      "The interesting part isn't the building. It's that the gaps I used to flag in problem solving sessions are now ones a small team — or one person with the right tools — can actually prototype against.",
     ],
     color: "#C4725A",
     companies: ["Recovery Unplugged (Consultant)", "Recovery Unplugged"],
