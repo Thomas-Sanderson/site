@@ -204,14 +204,24 @@ export default function MapSection() {
     [visiblePins, projectionFn]
   );
 
-  // Position tooltip relative to SVG coordinates
+  // Position tooltip relative to SVG coordinates, clamped to stay on-screen
   const setTooltipFromSvgCoords = useCallback((cx: number, cy: number) => {
     const svg = svgRef.current;
+    const scrollContainer = mapScrollRef.current;
     if (!svg) return;
     const rect = svg.getBoundingClientRect();
     const scaleX = rect.width / width;
     const scaleY = rect.height / height;
-    setTooltipPos({ x: cx * scaleX, y: cy * scaleY });
+    let x = cx * scaleX;
+    const y = cy * scaleY;
+    // On mobile, account for horizontal scroll offset and clamp within visible area
+    if (scrollContainer) {
+      const scrollLeft = scrollContainer.scrollLeft;
+      const visibleLeft = scrollLeft + 130; // half tooltip width
+      const visibleRight = scrollLeft + scrollContainer.clientWidth - 130;
+      x = Math.max(visibleLeft, Math.min(x, visibleRight));
+    }
+    setTooltipPos({ x, y });
   }, []);
 
   // On mobile, scroll the map container so it starts with Alaska off-screen left
@@ -413,8 +423,8 @@ export default function MapSection() {
               className="absolute pointer-events-none z-10 bg-warm-white rounded-xl shadow-lg px-5 py-4 max-w-[260px] border"
               style={{
                 left: tooltipPos.x,
-                top: tooltipPos.y - 12,
-                transform: "translate(-50%, -100%)",
+                top: tooltipPos.y < 120 ? tooltipPos.y + 20 : tooltipPos.y - 12,
+                transform: tooltipPos.y < 120 ? "translateX(-50%)" : "translate(-50%, -100%)",
                 borderColor: "rgba(45, 42, 38, 0.08)",
               }}
             >
@@ -456,8 +466,8 @@ export default function MapSection() {
               className="absolute pointer-events-none z-10 bg-warm-white rounded-xl shadow-lg px-5 py-4 max-w-[280px] border"
               style={{
                 left: tooltipPos.x,
-                top: tooltipPos.y - 12,
-                transform: "translate(-50%, -100%)",
+                top: tooltipPos.y < 120 ? tooltipPos.y + 20 : tooltipPos.y - 12,
+                transform: tooltipPos.y < 120 ? "translateX(-50%)" : "translate(-50%, -100%)",
                 borderColor: "rgba(45, 42, 38, 0.08)",
               }}
             >
