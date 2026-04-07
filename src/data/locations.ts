@@ -1,7 +1,6 @@
 export type LocationCategory =
   | "work"
   | "art"
-  | "volunteer"
   | "travel"
   | "want-to-visit";
 
@@ -22,8 +21,7 @@ export const categoryMeta: Record<
 > = {
   work: { label: "Work", color: "#C4725A" },
   art: { label: "Make", color: "#7B5EA7" },
-  volunteer: { label: "Volunteer", color: "#2A6B5A" },
-  travel: { label: "Travel", color: "#5A8FC4" },
+  travel: { label: "Live", color: "#5A8FC4" },
   "want-to-visit": { label: "Want to Visit", color: "#A89F95" },
 };
 
@@ -214,13 +212,13 @@ export const locations: Location[] = [
     description: "Brand and digital strategy for Tipic i Catala wine shop",
   },
 
-  // VOLUNTEER
+  // LIVE
   {
     city: "Panama City",
     country: "Panama",
     lat: 8.9824,
     lng: -79.5199,
-    category: "volunteer",
+    category: "travel",
     dateRange: "2012",
     industries: ["Environmental"],
     description: "Environmental conservation volunteer work",
