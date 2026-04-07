@@ -305,42 +305,29 @@ export default function Hero() {
             position: "relative",
           }}
         >
-          {/* Headshot — fades out with bio */}
+          {/* Hero background photo — fades out with bio */}
           <div
-            className="absolute right-6 md:right-12"
+            className="absolute inset-0 overflow-hidden"
             style={{
-              opacity: phases.bioOpacity * 0.18,
-              transform: `translateY(${phases.bioSlide}px)`,
-              transition: "opacity 0.3s ease",
+              opacity: phases.bioOpacity,
               pointerEvents: "none",
             }}
           >
             <img
-              src="/images/headshot.png"
+              src="/images/hero-bg.png"
               alt=""
-              className="hidden md:block"
               style={{
-                width: "280px",
-                height: "280px",
+                position: "absolute",
+                right: 0,
+                bottom: 0,
+                width: "65%",
+                height: "80%",
                 objectFit: "cover",
-                objectPosition: "center top",
-                borderRadius: "50%",
-                filter: "grayscale(1) contrast(0.9) brightness(1.1)",
-                mixBlendMode: "multiply",
-              }}
-            />
-            <img
-              src="/images/headshot.png"
-              alt=""
-              className="md:hidden"
-              style={{
-                width: "120px",
-                height: "120px",
-                objectFit: "cover",
-                objectPosition: "center top",
-                borderRadius: "50%",
-                filter: "grayscale(1) contrast(0.9) brightness(1.1)",
-                mixBlendMode: "multiply",
+                objectPosition: "left center",
+                transform: "scaleX(-1)",
+                filter: "grayscale(0.4) brightness(1.05) contrast(0.95)",
+                maskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.12) 30%, rgba(0,0,0,0.18) 100%)",
+                WebkitMaskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.12) 30%, rgba(0,0,0,0.18) 100%)",
               }}
             />
           </div>
