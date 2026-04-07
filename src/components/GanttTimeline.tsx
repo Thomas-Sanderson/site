@@ -79,6 +79,9 @@ export default function GanttTimeline() {
     ? `calc(${centerY} + (${finalY} - ${centerY}) * ${migrateT})`
     : finalY;
 
+  // Row height — 50% taller on mobile
+  const ROW_H = isMobile ? 21 : 14;
+
   // Visual interpolations
   const backdropOpacity = lerp(0, 0.92, revealProgress);
   const revealAxisOpacity = lerp(0, 1, Math.max(0, (revealProgress - 0.5) / 0.5));
@@ -242,8 +245,8 @@ export default function GanttTimeline() {
                     : lerp(1, 0, collapseT);
                   const heightT = Math.min(1, revealT / 0.4);
                   const rowHeight = isRevealing
-                    ? lerp(0, 14, heightT)
-                    : lerp(14, 0, collapseT);
+                    ? lerp(0, ROW_H, heightT)
+                    : lerp(ROW_H, 0, collapseT);
 
                   const isRowActive = hoveredCompany === company && hoverEnabled;
 
@@ -296,7 +299,7 @@ export default function GanttTimeline() {
                           <div
                             className="relative flex-1"
                             style={{
-                              height: "14px",
+                              height: `${ROW_H}px`,
                               clipPath:
                                 isRevealing && clipRight > 0.5
                                   ? `inset(0 ${clipRight}% 0 0)`
@@ -331,11 +334,11 @@ export default function GanttTimeline() {
                                         transform: "translateY(-50%)",
                                       }}
                                       width="8"
-                                      height="14"
-                                      viewBox="0 0 8 14"
+                                      height={ROW_H}
+                                      viewBox={`0 0 8 ${ROW_H}`}
                                     >
                                       <polygon
-                                        points="8,0 0,7 8,14"
+                                        points={`8,0 0,${ROW_H / 2} 8,${ROW_H}`}
                                         fill={
                                           isRowActive
                                             ? color.vivid
@@ -409,7 +412,7 @@ export default function GanttTimeline() {
                     minWidth: 0,
                   }}
                 />
-                <div className="relative flex-1" style={{ height: "14px" }}>
+                <div className="relative flex-1" style={{ height: `${ROW_H}px` }}>
                   {eraLabels.map((era) => {
                     const left = pct(era.startMonth);
                     const right = pct(era.endMonth);
