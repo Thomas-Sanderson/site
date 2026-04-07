@@ -6,11 +6,11 @@ import { lerp } from "@/lib/useScrollCard";
 import { useIsMobile } from "@/lib/useIsMobile";
 
 const navLinks = [
-  { label: "Employment", href: "#gantt-sentinel" },
-  { label: "World", href: "#map" },
-  { label: "Eras", href: "#era-consulting" },
-  { label: "Case Studies", href: "#case-studies" },
-  { label: "Resume", href: "#resume" },
+  { label: "Employment", id: "gantt-sentinel", scrollPx: () => (window.innerWidth < 640 ? 700 : 1200) * 0.5 },
+  { label: "World", id: "map", scrollPx: () => 600 },
+  { label: "Eras", id: "era-consulting", scrollPx: () => window.innerHeight * 0.5 },
+  { label: "Case Studies", id: "case-studies" },
+  { label: "Resume", id: "resume" },
 ];
 
 /*
@@ -46,6 +46,14 @@ export default function Hero() {
   const isMobile = useIsMobile();
 
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const scrollToSection = useCallback((item: typeof navLinks[number]) => {
+    const el = document.getElementById(item.id);
+    if (!el) return;
+    const px = item.scrollPx ? item.scrollPx() : 0;
+    const targetY = el.getBoundingClientRect().top + window.scrollY + px;
+    window.scrollTo({ top: targetY, behavior: "smooth" });
+  }, []);
   const [headerTargetTop, setHeaderTargetTop] = useState(0);
   const [labelTop, setLabelTop] = useState(0);
   const [labelLeft, setLabelLeft] = useState(0);
@@ -244,29 +252,40 @@ export default function Hero() {
             {/* Desktop links */}
             {navLinks.map((item) => (
               <a
-                key={item.href}
-                href={item.href}
+                key={item.id}
+                href={`#${item.id}`}
+                onClick={(e) => { e.preventDefault(); scrollToSection(item); }}
                 className="font-mono text-[10px] tracking-wide hover:opacity-70 transition-opacity hidden sm:block"
                 style={{ color: "rgba(45, 42, 38, 0.5)" }}
               >
                 {item.label}
               </a>
             ))}
-            {/* Mobile hamburger */}
-            <button
-              className="sm:hidden flex flex-col gap-[3px] p-1"
-              onClick={() => setMenuOpen((o) => !o)}
-              aria-label="Menu"
-            >
-              <span className="block w-4 h-[1.5px] rounded-full" style={{ backgroundColor: "rgba(45, 42, 38, 0.5)" }} />
-              <span className="block w-4 h-[1.5px] rounded-full" style={{ backgroundColor: "rgba(45, 42, 38, 0.5)" }} />
-              <span className="block w-4 h-[1.5px] rounded-full" style={{ backgroundColor: "rgba(45, 42, 38, 0.5)" }} />
-            </button>
           </nav>
         </div>
 
+        {/* Mobile hamburger — always visible */}
+        <div
+          className="sm:hidden absolute right-0 top-0 p-4"
+          style={{
+            top: "env(safe-area-inset-top, 0px)",
+            zIndex: 47,
+            pointerEvents: "auto",
+          }}
+        >
+          <button
+            className="flex flex-col gap-[3px] p-1"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label="Menu"
+          >
+            <span className="block w-4 h-[1.5px] rounded-full" style={{ backgroundColor: "rgba(45, 42, 38, 0.5)" }} />
+            <span className="block w-4 h-[1.5px] rounded-full" style={{ backgroundColor: "rgba(45, 42, 38, 0.5)" }} />
+            <span className="block w-4 h-[1.5px] rounded-full" style={{ backgroundColor: "rgba(45, 42, 38, 0.5)" }} />
+          </button>
+        </div>
+
         {/* Mobile dropdown menu */}
-        {menuOpen && phases.riseT >= 1 && (
+        {menuOpen && (
           <div
             className="sm:hidden absolute left-0 right-0"
             style={{
@@ -281,9 +300,9 @@ export default function Hero() {
             <div className="flex flex-col px-6 py-3 gap-1">
               {navLinks.map((item) => (
                 <a
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMenuOpen(false)}
+                  key={item.id}
+                  href={`#${item.id}`}
+                  onClick={(e) => { e.preventDefault(); setMenuOpen(false); scrollToSection(item); }}
                   className="font-mono text-xs tracking-wide py-2 hover:opacity-70 transition-opacity"
                   style={{ color: "rgba(45, 42, 38, 0.6)" }}
                 >
