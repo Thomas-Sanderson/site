@@ -103,11 +103,27 @@ export default function Hero() {
         setHeaderTargetTop(headerTargetRef.current.getBoundingClientRect().top);
       }
     };
-    // Measure once on mount only — do NOT re-measure on resize, because
-    // getBoundingClientRect returns the transformed position during animation,
-    // which corrupts the animation targets (iOS address bar hide triggers resize)
+    // Measure on mount
     const timer = setTimeout(measure, 50);
-    return () => clearTimeout(timer);
+
+    // Re-measure on desktop resize (e.g. dragging to a different monitor).
+    // Skip on mobile — iOS toolbar hide triggers resize and corrupts measurements.
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    const handleResize = () => {
+      if (window.innerWidth < 640) return; // mobile — skip
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        // Reset scroll to get clean measurements
+        window.scrollTo(0, 0);
+        setTimeout(measure, 50);
+      }, 200);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(resizeTimer);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   const phases = useMemo(() => {
@@ -286,8 +302,48 @@ export default function Hero() {
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
+            position: "relative",
           }}
         >
+          {/* Headshot — fades out with bio */}
+          <div
+            className="absolute right-6 md:right-12 bottom-[15%] md:top-1/2 md:bottom-auto md:-translate-y-1/2"
+            style={{
+              opacity: phases.bioOpacity * 0.28,
+              transform: `translateY(${phases.bioSlide}px)`,
+              pointerEvents: "none",
+            }}
+          >
+            <img
+              src="/images/headshot.png"
+              alt=""
+              className="hidden md:block"
+              style={{
+                width: "280px",
+                height: "280px",
+                objectFit: "cover",
+                objectPosition: "center top",
+                borderRadius: "50%",
+                filter: "grayscale(1) contrast(0.9) brightness(1.1)",
+                mixBlendMode: "multiply",
+              }}
+            />
+            <img
+              src="/images/headshot.png"
+              alt=""
+              className="md:hidden"
+              style={{
+                width: "140px",
+                height: "140px",
+                objectFit: "cover",
+                objectPosition: "center top",
+                borderRadius: "50%",
+                filter: "grayscale(1) contrast(0.9) brightness(1.1)",
+                mixBlendMode: "multiply",
+              }}
+            />
+          </div>
+
           <p
             ref={labelRef}
             className="font-mono text-sm tracking-widest uppercase mb-4"

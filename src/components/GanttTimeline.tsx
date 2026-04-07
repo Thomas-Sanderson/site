@@ -17,6 +17,8 @@ export default function GanttTimeline() {
 
   const [hoveredCompany, setHoveredCompany] = useState<string | null>(null);
   const [hoveredRowTop, setHoveredRowTop] = useState(0);
+  const [tooltipAbove, setTooltipAbove] = useState(false);
+  const [caretLeft, setCaretLeft] = useState<number | null>(null);
 
   // Responsive scroll fuel
   const scrollFuel = isMobile ? 700 : 1200;
@@ -77,6 +79,9 @@ export default function GanttTimeline() {
     ? `calc(${centerY} + (${finalY} - ${centerY}) * ${migrateT})`
     : finalY;
 
+  // Row height — 50% taller on mobile
+  const ROW_H = isMobile ? 21 : 14;
+
   // Visual interpolations
   const backdropOpacity = lerp(0, 0.92, revealProgress);
   const revealAxisOpacity = lerp(0, 1, Math.max(0, (revealProgress - 0.5) / 0.5));
@@ -88,16 +93,52 @@ export default function GanttTimeline() {
   const maxWidth = isMobile ? "100%" : `${lerp(1250, 1200, collapseProgress)}px`;
   const hoverEnabled = revealProgress >= 1 && collapseProgress < 0.05;
 
+  const prevReveal = useRef(0);
+
+  // Measure tooltip position from a row element
+  const measureTooltip = useCallback((rowEl: Element) => {
+    const ganttRect = ganttRef.current?.getBoundingClientRect();
+    if (!ganttRect) return;
+    const rowRect = rowEl.getBoundingClientRect();
+    const ganttMidY = ganttRect.top + ganttRect.height / 2;
+    const isAbove = rowRect.top < ganttMidY;
+    setTooltipAbove(isAbove);
+    // For above: anchor at the row's top edge. For below: anchor at the row's bottom edge.
+    const rowsParent = rowEl.parentElement;
+    const parentRect = rowsParent?.getBoundingClientRect() ?? ganttRect;
+    setHoveredRowTop(isAbove
+      ? rowRect.top - parentRect.top
+      : rowRect.bottom - parentRect.top);
+
+    // Find the bar container inside the row and compute its visual center
+    const barsContainer = rowEl.querySelector(".flex-1.relative") as HTMLElement | null;
+    if (barsContainer) {
+      const bars = barsContainer.querySelectorAll(".absolute.h-full");
+      if (bars.length > 0) {
+        let minLeft = Infinity, maxRight = -Infinity;
+        bars.forEach((bar) => {
+          const br = bar.getBoundingClientRect();
+          if (br.left < minLeft) minLeft = br.left;
+          if (br.right > maxRight) maxRight = br.right;
+        });
+        // Relative to the tooltip's positioned ancestor (.relative div wrapping all rows)
+        // That div is: rowEl -> parent (column-reverse flex) -> parent (.relative)
+        const tooltipAncestor = rowEl.closest(".relative");
+        const anchorRect = tooltipAncestor?.getBoundingClientRect() ?? ganttRect;
+        const centerX = (minLeft + maxRight) / 2 - anchorRect.left;
+        setCaretLeft(centerX);
+      }
+    }
+  }, []);
+
   // Desktop: hover. Mobile: tap to toggle.
   const handleRowEnter = useCallback(
     (company: string, e: React.MouseEvent) => {
       if (isMobile || !hoverEnabled) return;
       setHoveredCompany(company);
-      const rect = ganttRef.current?.getBoundingClientRect();
-      const rowRect = e.currentTarget.getBoundingClientRect();
-      if (rect) setHoveredRowTop(rowRect.bottom - rect.top);
+      measureTooltip(e.currentTarget);
     },
-    [hoverEnabled, isMobile]
+    [hoverEnabled, isMobile, measureTooltip]
   );
 
   const handleRowLeave = useCallback(() => {
@@ -110,12 +151,23 @@ export default function GanttTimeline() {
       if (!isMobile || !hoverEnabled) return;
       e.stopPropagation();
       setHoveredCompany((prev) => (prev === company ? null : company));
-      const rect = ganttRef.current?.getBoundingClientRect();
-      const rowRect = e.currentTarget.getBoundingClientRect();
-      if (rect) setHoveredRowTop(rowRect.bottom - rect.top);
+      measureTooltip(e.currentTarget);
     },
-    [hoverEnabled, isMobile]
+    [hoverEnabled, isMobile, measureTooltip]
   );
+
+  // Auto-select most recent role once reveal finishes
+  useEffect(() => {
+    if (prevReveal.current < 1 && revealProgress >= 1 && !hoveredCompany) {
+      const target = "Recovery Unplugged (Consultant)";
+      setHoveredCompany(target);
+      if (ganttRef.current) {
+        const row = ganttRef.current.querySelector(`[data-company="${target}"]`);
+        if (row) measureTooltip(row);
+      }
+    }
+    prevReveal.current = revealProgress;
+  }, [revealProgress, hoveredCompany, measureTooltip]);
 
   const padL = lerp(isMobile ? 12 : 24, isMobile ? 8 : 16, collapseProgress);
   const padR = padL;
@@ -193,14 +245,15 @@ export default function GanttTimeline() {
                     : lerp(1, 0, collapseT);
                   const heightT = Math.min(1, revealT / 0.4);
                   const rowHeight = isRevealing
-                    ? lerp(0, 14, heightT)
-                    : lerp(14, 0, collapseT);
+                    ? lerp(0, ROW_H, heightT)
+                    : lerp(ROW_H, 0, collapseT);
 
                   const isRowActive = hoveredCompany === company && hoverEnabled;
 
                   return (
                     <div
                       key={company}
+                      data-company={company}
                       className="flex items-center px-1 -mx-1"
                       style={{
                         gap: isMobile ? "6px" : "12px",
@@ -210,6 +263,7 @@ export default function GanttTimeline() {
                         backgroundColor: isRowActive
                           ? "rgba(45, 42, 38, 0.03)"
                           : "transparent",
+                        pointerEvents: hoverEnabled ? "auto" : "none",
                       }}
                       onMouseEnter={(e) => handleRowEnter(company, e)}
                       onMouseLeave={handleRowLeave}
@@ -245,7 +299,7 @@ export default function GanttTimeline() {
                           <div
                             className="relative flex-1"
                             style={{
-                              height: "14px",
+                              height: `${ROW_H}px`,
                               clipPath:
                                 isRevealing && clipRight > 0.5
                                   ? `inset(0 ${clipRight}% 0 0)`
@@ -280,11 +334,11 @@ export default function GanttTimeline() {
                                         transform: "translateY(-50%)",
                                       }}
                                       width="8"
-                                      height="14"
-                                      viewBox="0 0 8 14"
+                                      height={ROW_H}
+                                      viewBox={`0 0 8 ${ROW_H}`}
                                     >
                                       <polygon
-                                        points="8,0 0,7 8,14"
+                                        points={`8,0 0,${ROW_H / 2} 8,${ROW_H}`}
                                         fill={
                                           isRowActive
                                             ? color.vivid
@@ -358,7 +412,7 @@ export default function GanttTimeline() {
                     minWidth: 0,
                   }}
                 />
-                <div className="relative flex-1" style={{ height: "14px" }}>
+                <div className="relative flex-1" style={{ height: `${ROW_H}px` }}>
                   {eraLabels.map((era) => {
                     const left = pct(era.startMonth);
                     const right = pct(era.endMonth);
@@ -532,73 +586,80 @@ export default function GanttTimeline() {
                   );
                   if (!group) return null;
                   const color = getColor(hoveredCompany);
+                  const caretX = caretLeft != null ? `${caretLeft}px` : isMobile ? "16px" : "48px";
+
+                  const cardContent = (
+                    <div
+                      className="bg-warm-white shadow-lg px-4 py-4 sm:px-8 sm:py-6 border w-full"
+                      style={{
+                        borderColor: "rgba(45, 42, 38, 0.06)",
+                        ...(tooltipAbove
+                          ? { borderBottom: `2px solid ${color.vivid}` }
+                          : { borderTop: `2px solid ${color.vivid}` }),
+                      }}
+                    >
+                      <div className="flex items-baseline justify-between mb-4">
+                        <h3 className="font-serif font-bold text-base sm:text-lg leading-tight">
+                          {hoveredCompany}
+                        </h3>
+                        <p className="font-mono text-[10px] sm:text-xs text-charcoal/40">
+                          {group.entries[0].start} –{" "}
+                          {group.entries[group.entries.length - 1].end}
+                        </p>
+                      </div>
+                      <div className="grid gap-1">
+                        {[...group.entries].reverse().map((entry, i) => (
+                          <div
+                            key={i}
+                            className="flex items-center gap-2"
+                          >
+                            <div
+                              className="w-1.5 h-1.5 rounded-full shrink-0"
+                              style={{ backgroundColor: color.vivid }}
+                            />
+                            <p className="text-xs sm:text-sm font-medium leading-snug flex-1 min-w-0 truncate">
+                              {entry.role}
+                            </p>
+                            <p className="font-mono text-[9px] sm:text-[10px] text-charcoal/35 shrink-0">
+                              {entry.location}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+
+                  const caret = (
+                    <div className="relative" style={{ height: "8px" }}>
+                      <div
+                        className="absolute w-0 h-0"
+                        style={{
+                          left: caretX,
+                          transform: "translateX(-50%)",
+                          borderLeft: "8px solid transparent",
+                          borderRight: "8px solid transparent",
+                          ...(tooltipAbove
+                            ? { borderTop: `8px solid ${color.vivid}`, top: 0 }
+                            : { borderBottom: `8px solid ${color.vivid}`, bottom: 0 }),
+                        }}
+                      />
+                    </div>
+                  );
+
                   return (
                     <div
                       className="absolute z-30 left-0 right-0"
                       style={{
-                        top: `${hoveredRowTop + 8}px`,
+                        top: `${hoveredRowTop}px`,
+                        ...(tooltipAbove ? { transform: "translateY(-100%)" } : {}),
                         pointerEvents: isMobile ? "auto" : "none",
                       }}
                     >
-                      <div
-                        className="sm:ml-12 ml-4 w-0 h-0"
-                        style={{
-                          borderLeft: "8px solid transparent",
-                          borderRight: "8px solid transparent",
-                          borderBottom: `8px solid ${color.vivid}`,
-                        }}
-                      />
-                      <div
-                        className="bg-warm-white rounded-xl shadow-lg px-4 py-4 sm:px-8 sm:py-6 border w-full"
-                        style={{
-                          borderColor: "rgba(45, 42, 38, 0.06)",
-                          borderTop: `2px solid ${color.vivid}`,
-                        }}
-                      >
-                        <div className="flex items-baseline justify-between mb-4">
-                          <h3 className="font-serif font-bold text-base sm:text-lg leading-tight">
-                            {hoveredCompany}
-                          </h3>
-                          <p className="font-mono text-[10px] sm:text-xs text-charcoal/40">
-                            {group.entries[0].start} –{" "}
-                            {group.entries[group.entries.length - 1].end}
-                          </p>
-                        </div>
-                        <div className="grid gap-2 sm:gap-3">
-                          {group.entries.map((entry, i) => (
-                            <div
-                              key={i}
-                              className="flex items-start gap-2 sm:gap-3"
-                            >
-                              <div
-                                className="w-2 h-2 rounded-full shrink-0 mt-[5px]"
-                                style={{
-                                  backgroundColor: color.vivid,
-                                }}
-                              />
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-baseline justify-between gap-2 sm:gap-4">
-                                  <p className="text-xs sm:text-sm font-medium leading-snug">
-                                    {entry.role}
-                                  </p>
-                                  <p className="font-mono text-[9px] sm:text-[10px] text-charcoal/40 shrink-0">
-                                    {entry.duration}
-                                  </p>
-                                </div>
-                                <p className="font-mono text-[9px] sm:text-[10px] text-charcoal/35 mt-0.5">
-                                  {entry.type} · {entry.location}
-                                </p>
-                                {entry.highlights &&
-                                  entry.highlights.length > 0 && (
-                                    <p className="text-[11px] sm:text-xs text-charcoal/50 mt-1 leading-relaxed hidden sm:block">
-                                      {entry.highlights[0]}
-                                    </p>
-                                  )}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                      {tooltipAbove ? (
+                        <>{cardContent}{caret}</>
+                      ) : (
+                        <>{caret}{cardContent}</>
+                      )}
                     </div>
                   );
                 })()}
