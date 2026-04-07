@@ -537,5 +537,203 @@
     "date": "January 2017",
     "category": "see",
     "era": "consulting"
+  },
+  {
+    "slug": "wood-inlay-disc-memphis",
+    "source": "whatsapp",
+    "cropped": "cropped/wood-inlay-disc-memphis.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "Memphis, Tennessee",
+    "date": "2020",
+    "category": "make",
+    "era": "art"
+  },
+  {
+    "slug": "sphere-copper-memphis",
+    "source": "whatsapp",
+    "cropped": "cropped/sphere-copper-memphis.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "Memphis, Tennessee",
+    "date": "2020",
+    "category": "make",
+    "era": "art"
+  },
+  {
+    "slug": "twisted-spoon-memphis",
+    "source": "whatsapp",
+    "cropped": "cropped/twisted-spoon-memphis.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "Memphis, Tennessee",
+    "date": "2020",
+    "category": "make",
+    "era": "art"
+  },
+  {
+    "slug": "chainmail-earrings-memphis",
+    "source": "whatsapp",
+    "cropped": "cropped/chainmail-earrings-memphis.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "Memphis, Tennessee",
+    "date": "2020",
+    "category": "make",
+    "era": "art"
+  },
+  {
+    "slug": "plaster-rose-porto",
+    "source": "whatsapp",
+    "cropped": "cropped/plaster-rose-porto.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "Porto, Portugal",
+    "date": "2022",
+    "category": "make",
+    "era": "art"
+  },
+  {
+    "slug": "free-tarot-sign-porto",
+    "source": "whatsapp",
+    "cropped": "cropped/free-tarot-sign-porto.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "Porto, Portugal",
+    "date": "2022",
+    "category": "make",
+    "era": "art"
+  },
+  {
+    "slug": "street-spread-porto",
+    "source": "whatsapp",
+    "cropped": "cropped/street-spread-porto.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "Porto, Portugal",
+    "date": "2022",
+    "category": "make",
+    "era": "art"
+  },
+  {
+    "slug": "rune-carving-porto",
+    "source": "whatsapp",
+    "cropped": "cropped/rune-carving-porto.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "Porto, Portugal",
+    "date": "2022",
+    "category": "make",
+    "era": "art"
+  },
+  {
+    "slug": "relief-carving-memphis",
+    "source": "whatsapp",
+    "cropped": "cropped/relief-carving-memphis.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "Memphis, Tennessee",
+    "date": "2020",
+    "category": "make",
+    "era": "art"
+  },
+  {
+    "slug": "camino-marker-galicia",
+    "source": "whatsapp",
+    "cropped": "cropped/camino-marker-galicia.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "Galicia, Spain",
+    "date": "2022",
+    "category": "see",
+    "era": "art"
+  },
+  {
+    "slug": "ru-desk-setup",
+    "source": "whatsapp",
+    "cropped": "cropped/ru-desk-setup.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "Austin, Texas",
+    "date": "2024",
+    "category": "work",
+    "era": "behavioral-health"
+  },
+  {
+    "slug": "facility-bed-board",
+    "source": "whatsapp",
+    "cropped": "cropped/facility-bed-board.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "Austin, Texas",
+    "date": "2023",
+    "category": "work",
+    "era": "behavioral-health"
+  },
+  {
+    "slug": "stone-path-austin",
+    "source": "whatsapp",
+    "cropped": "cropped/stone-path-austin.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "Austin, Texas",
+    "date": "2024",
+    "category": "make",
+    "era": "behavioral-health"
+  },
+  {
+    "slug": "garden-landscaping",
+    "source": "whatsapp",
+    "cropped": "cropped/garden-landscaping.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "New Hampshire",
+    "date": "2025",
+    "category": "make",
+    "era": "acceleration"
+  },
+  {
+    "slug": "fountain-garden",
+    "source": "whatsapp",
+    "cropped": "cropped/fountain-garden.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "New Hampshire",
+    "date": "2025",
+    "category": "make",
+    "era": "acceleration"
+  },
+  {
+    "slug": "deck-plants",
+    "source": "whatsapp",
+    "cropped": "cropped/deck-plants.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "New Hampshire",
+    "date": "2025",
+    "category": "make",
+    "era": "acceleration"
+  },
+  {
+    "slug": "church-new-england",
+    "source": "whatsapp",
+    "cropped": "cropped/church-new-england.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "New Hampshire",
+    "date": "2025",
+    "category": "see",
+    "era": "acceleration"
+  },
+  {
+    "slug": "cats-cuddling",
+    "source": "whatsapp",
+    "cropped": "cropped/cats-cuddling.jpg",
+    "width": 800,
+    "height": 800,
+    "location": "New Hampshire",
+    "date": "2025",
+    "category": "see",
+    "era": "acceleration"
   }
 ]
