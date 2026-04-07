@@ -12,6 +12,7 @@ interface GalleryImage {
   height: number;
   location?: string;
   date?: string;
+  era?: string;
 }
 
 export default function EraSection({ era }: { era: Era }) {
@@ -29,14 +30,15 @@ export default function EraSection({ era }: { era: Era }) {
     );
   }, [progress, era.id]);
 
-  // Gallery images for this era (if galleryFilter set)
+  // Gallery images for this era — match by era tag or location filter
   const galleryImages = useMemo(() => {
-    if (!era.galleryFilter) return [];
     return (galleryData as GalleryImage[]).filter(
       (img) =>
-        img.location?.toLowerCase().includes(era.galleryFilter!.toLowerCase())
+        img.era === era.id ||
+        (era.galleryFilter &&
+          img.location?.toLowerCase().includes(era.galleryFilter.toLowerCase()))
     );
-  }, [era.galleryFilter]);
+  }, [era.id, era.galleryFilter]);
 
   // Animation phases: Enter 0–0.3, Hold 0.3–0.7, Exit 0.7–1.0
   const enterT = Math.min(1, progress / 0.3);
