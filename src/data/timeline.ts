@@ -79,7 +79,7 @@ export const timelineEntries: TimelineEntry[] = [
     category: "work",
   },
   {
-    role: "Digital Analyst Intern — Experience Design | Product Owner",
+    role: "Digital Analyst Intern",
     company: "McKinsey & Company",
     type: "Internship",
     start: "Jun 2013",
