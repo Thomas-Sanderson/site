@@ -24,37 +24,15 @@ export const skillGroups: SkillGroup[] = [
     ],
   },
   {
-    category: "Engineering",
-    skills: [
-      "TypeScript",
-      "React / Next.js",
-      "Node.js",
-      "Python",
-      "D3.js",
-      "HTML / CSS",
-      "Git",
-      "Vercel",
-    ],
-  },
-  {
-    category: "AI / ML",
-    skills: [
-      "LLM Architecture",
-      "Prompt Engineering",
-      "Multi-Agent Systems",
-      "Deterministic AI Pipelines",
-      "Claude / OpenAI APIs",
-    ],
-  },
-  {
     category: "Domain",
     skills: [
-      "Behavioral Health Operations",
+      "Healthcare",
+      "Behavioral Health",
+      "Agriculture",
+      "Banking",
+      "Insurance",
       "EMR / EHR Systems",
-      "Healthcare Compliance",
-      "Addiction Treatment",
-      "Intake & Admissions",
-      "VOB / PFR Estimation",
+      "Lean Management",
     ],
   },
 ];
