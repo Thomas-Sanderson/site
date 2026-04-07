@@ -302,8 +302,49 @@ export default function Hero() {
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
+            position: "relative",
           }}
         >
+          {/* Headshot — fades out with bio */}
+          <div
+            className="absolute right-6 md:right-12"
+            style={{
+              opacity: phases.bioOpacity * 0.18,
+              transform: `translateY(${phases.bioSlide}px)`,
+              transition: "opacity 0.3s ease",
+              pointerEvents: "none",
+            }}
+          >
+            <img
+              src="/images/headshot.png"
+              alt=""
+              className="hidden md:block"
+              style={{
+                width: "280px",
+                height: "280px",
+                objectFit: "cover",
+                objectPosition: "center top",
+                borderRadius: "50%",
+                filter: "grayscale(1) contrast(0.9) brightness(1.1)",
+                mixBlendMode: "multiply",
+              }}
+            />
+            <img
+              src="/images/headshot.png"
+              alt=""
+              className="md:hidden"
+              style={{
+                width: "120px",
+                height: "120px",
+                objectFit: "cover",
+                objectPosition: "center top",
+                borderRadius: "50%",
+                filter: "grayscale(1) contrast(0.9) brightness(1.1)",
+                mixBlendMode: "multiply",
+              }}
+            />
+          </div>
+
           <p
             ref={labelRef}
             className="font-mono text-sm tracking-widest uppercase mb-4"
