@@ -591,7 +591,7 @@ export default function GanttTimeline() {
 
                   const cardContent = (
                     <div
-                      className="bg-warm-white rounded-xl shadow-lg px-4 py-4 sm:px-8 sm:py-6 border w-full"
+                      className="bg-warm-white shadow-lg px-4 py-4 sm:px-8 sm:py-6 border w-full"
                       style={{
                         borderColor: "rgba(45, 42, 38, 0.06)",
                         ...(tooltipAbove
