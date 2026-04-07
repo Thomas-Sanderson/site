@@ -65,9 +65,9 @@ export const eras: Era[] = [
     subtitle: "Building what the industry doesn't have yet",
     dateRange: "2025–present",
     narrative: [
-      "Everything converged. The consulting rigor, the creative instinct, the clinical domain knowledge — and a set of tools that finally make the gap between \"I see the problem\" and \"here's a working demo\" small enough to cross alone.",
-      "I've been exploring what becomes possible when you treat LLMs as deterministic components inside well-scoped systems rather than as the system itself. Sudsy reimagines behavioral health EMR workflows from the patient and clinician experience outward. Melody is a care navigator for healthcare admissions that stays inside its rails — no hallucination, no PHI exposure. Paper Cannon is a multi-agent research synthesis pipeline with adversarial quality control built into the process, not bolted on after.",
-      "The interesting part isn't just building things. It's that the same risks and assumptions designers would flagged in problem solving sessions 10 years ago are now testable in real-time.",
+      "Everything converged \u2014 the consulting rigor, the creative instinct, the clinical domain knowledge, and a set of tools that finally close the gap between \u201cI see the problem\u201d and \u201chere\u2019s a working demo.\u201d",
+      "I\u2019ve been exploring what becomes possible when you treat LLMs as deterministic components inside well-scoped systems rather than as the system itself. Sudsy reimagines behavioral health EMR workflows from the patient and clinician experience outward. Melody is a care navigator for healthcare admissions that stays inside its rails \u2014 no hallucination, no PHI exposure. Paper Cannon is a multi-agent research synthesis pipeline with adversarial quality control built into the process, not bolted on after.",
+      "The interesting part isn\u2019t the building. It\u2019s that the risks and assumptions designers would have flagged in a problem-solving session ten years ago are now testable in real time.",
     ],
     color: "#C4725A",
     companies: ["Recovery Unplugged (Consultant)", "Recovery Unplugged"],
