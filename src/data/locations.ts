@@ -297,4 +297,22 @@ export const locations: Location[] = [
     category: "travel",
     dateRange: "2015",
   },
+  {
+    city: "New Hampshire",
+    country: "USA",
+    lat: 43.2,
+    lng: -71.55,
+    category: "travel",
+    dateRange: "2019–present",
+    description: "Home base",
+  },
+  {
+    city: "Santiago de Compostela",
+    country: "Spain",
+    lat: 42.8782,
+    lng: -8.5448,
+    category: "travel",
+    dateRange: "2024",
+    description: "Walked the Camino de Santiago from Serra do Courel",
+  },
 ];
