@@ -56,13 +56,10 @@ export default function ScrollNext() {
       const target = document.getElementById(current.next);
       if (!target) return;
 
-      if ("scrollPx" in current && current.scrollPx) {
-        const px = current.scrollPx();
-        const targetY = target.getBoundingClientRect().top + window.scrollY + px;
-        window.scrollTo({ top: targetY, behavior: "smooth" });
-      } else {
-        target.scrollIntoView({ behavior: "smooth" });
-      }
+      // Always use window.scrollTo — triggers mobile browser minimal UI (hides toolbar)
+      const px = "scrollPx" in current && current.scrollPx ? current.scrollPx() : 0;
+      const targetY = target.getBoundingClientRect().top + window.scrollY + px;
+      window.scrollTo({ top: targetY, behavior: "smooth" });
     },
     [current]
   );
@@ -72,8 +69,9 @@ export default function ScrollNext() {
   return (
     <button
       onClick={handleClick}
-      className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[48] flex items-center gap-2 font-mono text-[10px] tracking-widest uppercase px-4 py-2 rounded-full transition-all hover:scale-105 active:scale-95 cursor-pointer"
+      className="fixed left-1/2 -translate-x-1/2 z-[48] flex items-center gap-2 font-mono text-[10px] tracking-widest uppercase px-4 py-2 rounded-full transition-all hover:scale-105 active:scale-95 cursor-pointer"
       style={{
+        bottom: "calc(12px + env(safe-area-inset-bottom, 0px))",
         color: "var(--color-charcoal)",
         backgroundColor: "rgba(245, 240, 235, 0.85)",
         backdropFilter: "blur(12px)",
