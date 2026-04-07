@@ -187,11 +187,14 @@ export default function MapSection() {
   const visibleCount = Math.floor(progress * filteredPins.length);
   const visiblePins = filteredPins.slice(0, visibleCount);
 
-  // Current date label during scroll
+  // Current year label during scroll — extract just the year
   const currentDateLabel = useMemo(() => {
     if (visiblePins.length === 0) return "";
     const last = visiblePins[visiblePins.length - 1];
-    return last.dateRange || "";
+    const dr = last.dateRange || "";
+    // Extract the first 4-digit year from the dateRange
+    const match = dr.match(/\d{4}/);
+    return match ? match[0] : "";
   }, [visiblePins]);
 
   // Cluster visible pins
