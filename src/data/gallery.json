@@ -679,7 +679,7 @@
     "location": "New Hampshire",
     "date": "2025",
     "category": "make",
-    "era": "acceleration"
+    "era": "behavioral-health"
   },
   {
     "slug": "fountain-garden",
@@ -690,7 +690,7 @@
     "location": "New Hampshire",
     "date": "2025",
     "category": "make",
-    "era": "acceleration"
+    "era": "behavioral-health"
   },
   {
     "slug": "deck-plants",
@@ -701,7 +701,7 @@
     "location": "New Hampshire",
     "date": "2025",
     "category": "make",
-    "era": "acceleration"
+    "era": "behavioral-health"
   },
   {
     "slug": "church-new-england",
@@ -712,7 +712,7 @@
     "location": "New Hampshire",
     "date": "2025",
     "category": "see",
-    "era": "acceleration"
+    "era": "behavioral-health"
   },
   {
     "slug": "cats-cuddling",
@@ -723,6 +723,6 @@
     "location": "New Hampshire",
     "date": "2025",
     "category": "see",
-    "era": "acceleration"
+    "era": "behavioral-health"
   }
 ]
