@@ -590,10 +590,12 @@ export default function GanttTimeline() {
                       className="bg-warm-white shadow-lg px-4 py-4 sm:px-8 sm:py-6 border w-full"
                       style={{
                         borderColor: "rgba(45, 42, 38, 0.06)",
+                        pointerEvents: isMobile ? "auto" : "none",
                         ...(tooltipAbove
                           ? { borderBottom: `2px solid ${color.vivid}` }
                           : { borderTop: `2px solid ${color.vivid}` }),
                       }}
+                      onClick={isMobile ? () => setHoveredCompany(null) : undefined}
                     >
                       <div className="flex items-baseline justify-between mb-4">
                         <h3 className="font-serif font-bold text-base sm:text-lg leading-tight">
@@ -618,7 +620,12 @@ export default function GanttTimeline() {
                               {entry.role}
                             </p>
                             <p className="font-mono text-[9px] sm:text-[10px] text-charcoal/35 shrink-0">
-                              {entry.location}
+                              {isMobile
+                                ? (entry.location || "")
+                                    .replace("San Francisco Bay Area", "SF")
+                                    .replace("San Francisco, CA", "SF")
+                                    .replace(/New York, NY.*/, "NYC")
+                                : entry.location}
                             </p>
                           </div>
                         ))}
