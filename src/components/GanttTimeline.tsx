@@ -126,8 +126,7 @@ export default function GanttTimeline() {
         const tooltipAncestor = rowEl.closest(".relative");
         const anchorRect = tooltipAncestor?.getBoundingClientRect() ?? ganttRect;
         const centerX = (minLeft + maxRight) / 2 - anchorRect.left;
-        const clamped = Math.max(24, Math.min(centerX, anchorRect.width - 24));
-        setCaretLeft(clamped);
+        setCaretLeft(centerX);
       }
     }
   }, []);
