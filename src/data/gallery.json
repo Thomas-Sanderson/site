@@ -647,28 +647,6 @@
     "era": "behavioral-health"
   },
   {
-    "slug": "garden-landscaping",
-    "source": "whatsapp",
-    "cropped": "cropped/garden-landscaping.jpg",
-    "width": 800,
-    "height": 800,
-    "location": "New Hampshire",
-    "date": "2025",
-    "category": "make",
-    "era": "behavioral-health"
-  },
-  {
-    "slug": "fountain-garden",
-    "source": "whatsapp",
-    "cropped": "cropped/fountain-garden.jpg",
-    "width": 800,
-    "height": 800,
-    "location": "New Hampshire",
-    "date": "2025",
-    "category": "make",
-    "era": "behavioral-health"
-  },
-  {
     "slug": "deck-plants",
     "source": "whatsapp",
     "cropped": "cropped/deck-plants.jpg",
