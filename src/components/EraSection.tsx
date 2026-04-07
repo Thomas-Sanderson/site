@@ -30,14 +30,22 @@ export default function EraSection({ era }: { era: Era }) {
     );
   }, [progress, era.id]);
 
-  // Gallery images for this era — match by era tag or location filter
+  // Gallery images for this era — match by era tag or location filter, shuffled
   const galleryImages = useMemo(() => {
-    return (galleryData as GalleryImage[]).filter(
+    const images = (galleryData as GalleryImage[]).filter(
       (img) =>
         img.era === era.id ||
         (era.galleryFilter &&
           img.location?.toLowerCase().includes(era.galleryFilter.toLowerCase()))
     );
+    // Seeded shuffle so order is stable but mixed
+    let seed = era.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+    for (let i = images.length - 1; i > 0; i--) {
+      seed = (seed * 16807 + 1) % 2147483647;
+      const j = seed % (i + 1);
+      [images[i], images[j]] = [images[j], images[i]];
+    }
+    return images;
   }, [era.id, era.galleryFilter]);
 
   // Animation phases — mobile exits later so content lingers
