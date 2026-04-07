@@ -121,11 +121,12 @@ export default function GanttTimeline() {
           if (br.left < minLeft) minLeft = br.left;
           if (br.right > maxRight) maxRight = br.right;
         });
-        // Relative to the rows parent (.relative div), clamped within bounds
-        const rowsParent = rowEl.parentElement?.parentElement;
-        const parentRect = rowsParent?.getBoundingClientRect() ?? ganttRect;
-        const centerX = (minLeft + maxRight) / 2 - parentRect.left;
-        const clamped = Math.max(24, Math.min(centerX, parentRect.width - 24));
+        // Relative to the tooltip's positioned ancestor (.relative div wrapping all rows)
+        // That div is: rowEl -> parent (column-reverse flex) -> parent (.relative)
+        const tooltipAncestor = rowEl.closest(".relative");
+        const anchorRect = tooltipAncestor?.getBoundingClientRect() ?? ganttRect;
+        const centerX = (minLeft + maxRight) / 2 - anchorRect.left;
+        const clamped = Math.max(24, Math.min(centerX, anchorRect.width - 24));
         setCaretLeft(clamped);
       }
     }
@@ -633,16 +634,17 @@ export default function GanttTimeline() {
                   );
 
                   const caret = (
-                    <div className="relative" style={{ height: "6px" }}>
+                    <div className="relative" style={{ height: "8px" }}>
                       <div
-                        className="absolute"
+                        className="absolute w-0 h-0"
                         style={{
                           left: caretX,
                           transform: "translateX(-50%)",
-                          width: "16px",
-                          height: "6px",
-                          backgroundColor: color.vivid,
-                          ...(tooltipAbove ? { top: 0 } : { bottom: 0 }),
+                          borderLeft: "8px solid transparent",
+                          borderRight: "8px solid transparent",
+                          ...(tooltipAbove
+                            ? { borderTop: `8px solid ${color.vivid}`, top: 0 }
+                            : { borderBottom: `8px solid ${color.vivid}`, bottom: 0 }),
                         }}
                       />
                     </div>
