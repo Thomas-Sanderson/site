@@ -100,15 +100,12 @@ export default function GanttTimeline() {
     const ganttRect = ganttRef.current?.getBoundingClientRect();
     if (!ganttRect) return;
     const rowRect = rowEl.getBoundingClientRect();
-    const ganttMidY = ganttRect.top + ganttRect.height / 2;
-    const isAbove = rowRect.top < ganttMidY;
-    setTooltipAbove(isAbove);
-    // For above: anchor at the row's top edge. For below: anchor at the row's bottom edge.
+    // Always open above so the tooltip doesn't block clicking other rows
+    setTooltipAbove(true);
+    // Anchor at the row's top edge (tooltip opens above)
     const rowsParent = rowEl.parentElement;
     const parentRect = rowsParent?.getBoundingClientRect() ?? ganttRect;
-    setHoveredRowTop(isAbove
-      ? rowRect.top - parentRect.top
-      : rowRect.bottom - parentRect.top);
+    setHoveredRowTop(rowRect.top - parentRect.top);
 
     // Find the bar container inside the row and compute its visual center
     const barsContainer = rowEl.querySelector(".flex-1.relative") as HTMLElement | null;
