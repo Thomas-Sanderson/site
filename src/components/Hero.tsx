@@ -305,29 +305,41 @@ export default function Hero() {
             position: "relative",
           }}
         >
-          {/* Hero background photo — fades out with bio */}
+          {/* Headshot — fades out with bio */}
           <div
-            className="absolute inset-0 overflow-hidden"
+            className="absolute right-6 md:right-12 bottom-[15%] md:top-1/2 md:bottom-auto md:-translate-y-1/2"
             style={{
-              opacity: phases.bioOpacity,
+              opacity: phases.bioOpacity * 0.28,
+              transform: `translateY(${phases.bioSlide}px)`,
               pointerEvents: "none",
             }}
           >
             <img
-              src="/images/hero-bg.png"
+              src="/images/headshot.png"
               alt=""
+              className="hidden md:block"
               style={{
-                position: "absolute",
-                right: 0,
-                bottom: 0,
-                width: "65%",
-                height: "80%",
+                width: "280px",
+                height: "280px",
                 objectFit: "cover",
-                objectPosition: "left center",
-                transform: "scaleX(-1)",
-                filter: "grayscale(0.4) brightness(1.05) contrast(0.95)",
-                maskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.12) 30%, rgba(0,0,0,0.18) 100%)",
-                WebkitMaskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.12) 30%, rgba(0,0,0,0.18) 100%)",
+                objectPosition: "center top",
+                borderRadius: "50%",
+                filter: "grayscale(1) contrast(0.9) brightness(1.1)",
+                mixBlendMode: "multiply",
+              }}
+            />
+            <img
+              src="/images/headshot.png"
+              alt=""
+              className="md:hidden"
+              style={{
+                width: "140px",
+                height: "140px",
+                objectFit: "cover",
+                objectPosition: "center top",
+                borderRadius: "50%",
+                filter: "grayscale(1) contrast(0.9) brightness(1.1)",
+                mixBlendMode: "multiply",
               }}
             />
           </div>
