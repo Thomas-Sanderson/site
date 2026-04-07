@@ -11,6 +11,7 @@ import {
   type LocationCategory,
 } from "@/data/locations";
 import { buildContentItems } from "@/data/content";
+import galleryData from "@/data/gallery.json";
 import { lerp } from "@/lib/useScrollCard";
 import { useIsMobile } from "@/lib/useIsMobile";
 
@@ -32,6 +33,7 @@ interface Pin {
   dateRange: string | null;
   description: string | null;
   industries: string[] | null;
+  galleryImage: string | null;
   /** Months from Jan 2013 for chronological sorting */
   sortKey: number;
 }
@@ -153,6 +155,19 @@ export default function MapSection() {
   );
   const pathGenerator = useMemo(() => geoPath().projection(projection), [projection]);
 
+  // Build gallery lookup: city name → first "make" category image
+  const galleryByCity = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const img of galleryData as { slug: string; cropped: string; location?: string; category?: string }[]) {
+      if (img.category !== "make" || !img.location) continue;
+      const city = img.location.split(",")[0].trim().toLowerCase();
+      if (!map.has(city)) {
+        map.set(city, `/images/gallery/${img.cropped}`);
+      }
+    }
+    return map;
+  }, []);
+
   // Build chronologically sorted pins from content items
   const allPins = useMemo(() => {
     const items = buildContentItems();
@@ -160,6 +175,9 @@ export default function MapSection() {
     for (const item of items) {
       if (item.lat == null || item.lng == null) continue;
       if (item.source === "gallery") continue; // gallery moved to era sections
+      // Match gallery image by city for art/make pins
+      const cityKey = item.label?.toLowerCase() || "";
+      const galleryImage = galleryByCity.get(cityKey) || null;
       pins.push({
         id: item.id,
         lat: item.lat,
@@ -169,6 +187,7 @@ export default function MapSection() {
         dateRange: item.dateRange,
         description: item.description,
         industries: item.industries,
+        galleryImage,
         sortKey: parseSortKey(item.start || item.dateRange),
       });
     }
@@ -369,7 +388,7 @@ export default function MapSection() {
           {/* Tooltip */}
           {hoveredPin && (
             <div
-              className="absolute pointer-events-none z-10 bg-warm-white rounded-xl shadow-lg px-5 py-4 max-w-[260px] border"
+              className="absolute pointer-events-none z-10 bg-warm-white rounded-xl shadow-lg max-w-[260px] border overflow-hidden"
               style={{
                 left: tooltipPos.x,
                 top: tooltipPos.y < 120 ? tooltipPos.y + 20 : tooltipPos.y - 12,
@@ -377,6 +396,14 @@ export default function MapSection() {
                 borderColor: "rgba(45, 42, 38, 0.08)",
               }}
             >
+              {hoveredPin.galleryImage && (
+                <img
+                  src={hoveredPin.galleryImage}
+                  alt=""
+                  className="w-full h-32 object-cover"
+                />
+              )}
+              <div className="px-5 py-4">
               <p className="font-serif font-bold text-base mb-0.5">
                 {hoveredPin.label}
               </p>
@@ -406,6 +433,7 @@ export default function MapSection() {
                   {hoveredPin.description}
                 </p>
               )}
+              </div>
             </div>
           )}
 
