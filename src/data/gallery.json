@@ -724,5 +724,75 @@
     "date": "2025",
     "category": "see",
     "era": "behavioral-health"
+  },
+  {
+    "slug": "caterpillar-nh",
+    "cropped": "cropped/caterpillar-nh.png",
+    "width": 776,
+    "height": 855,
+    "location": "New Hampshire",
+    "date": "2019",
+    "category": "see",
+    "era": "acceleration",
+    "source": "instagram",
+    "account": "thomas.w.sanderson"
+  },
+  {
+    "slug": "flowers-nh",
+    "cropped": "cropped/flowers-nh.png",
+    "width": 688,
+    "height": 856,
+    "location": "New Hampshire",
+    "date": "2019",
+    "category": "see",
+    "era": "acceleration",
+    "source": "instagram",
+    "account": "thomas.w.sanderson"
+  },
+  {
+    "slug": "sunset-nh",
+    "cropped": "cropped/sunset-nh.png",
+    "width": 855,
+    "height": 750,
+    "location": "New Hampshire",
+    "date": "2019",
+    "category": "see",
+    "era": "acceleration",
+    "source": "instagram",
+    "account": "thomas.w.sanderson"
+  },
+  {
+    "slug": "band-nh",
+    "cropped": "cropped/band-nh.png",
+    "width": 700,
+    "height": 854,
+    "location": "New Hampshire",
+    "date": "2019",
+    "category": "see",
+    "era": "acceleration",
+    "source": "instagram",
+    "account": "thomas.w.sanderson"
+  },
+  {
+    "slug": "selfie-camino",
+    "source": "whatsapp",
+    "cropped": "cropped/selfie-camino.jpg",
+    "width": 800,
+    "height": 1067,
+    "location": "Santiago de Compostela, Spain",
+    "date": "2024",
+    "category": "see",
+    "era": "art"
+  },
+  {
+    "slug": "compostela-certificate",
+    "source": "whatsapp",
+    "cropped": "cropped/compostela-certificate.jpg",
+    "width": 800,
+    "height": 1067,
+    "location": "Santiago de Compostela, Spain",
+    "date": "2024",
+    "category": "see",
+    "era": "art"
   }
 ]
