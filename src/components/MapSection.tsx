@@ -442,7 +442,7 @@ export default function MapSection() {
 
         {/* Category pills — right below the map, space always reserved */}
         <div
-          className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mt-3 z-10"
+          className="flex justify-center gap-1.5 mt-3 z-10"
           style={{
             opacity: progress >= 0.99 ? 1 : 0,
             pointerEvents: progress >= 0.99 ? "auto" : "none",
