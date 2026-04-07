@@ -90,7 +90,7 @@ export default function GanttTimeline() {
   const tickHeight = lerp(8, 4, collapseProgress);
   const minorTickHeight = lerp(5, 3, collapseProgress);
   const yearFontSize = lerp(9, 7, collapseProgress);
-  const maxWidth = isMobile ? "100%" : `${lerp(1250, 1200, collapseProgress)}px`;
+  const maxWidth = isMobile ? "100%" : `${lerp(960, 960, collapseProgress)}px`;
   const hoverEnabled = revealProgress >= 1 && collapseProgress < 0.05;
 
   const prevReveal = useRef(0);
@@ -270,7 +270,7 @@ export default function GanttTimeline() {
                       <div
                         className="shrink-0 text-right hidden sm:block"
                         style={{
-                          width: `${lerp(150, 0, collapseProgress)}px`,
+                          width: `${lerp(110, 0, collapseProgress)}px`,
                           minWidth: 0,
                         }}
                       >
@@ -371,7 +371,7 @@ export default function GanttTimeline() {
                       <div
                         className="shrink-0 hidden sm:block"
                         style={{
-                          width: `${lerp(120, 0, collapseProgress)}px`,
+                          width: `${lerp(90, 0, collapseProgress)}px`,
                           minWidth: 0,
                         }}
                       >
@@ -405,7 +405,7 @@ export default function GanttTimeline() {
                 <div
                   className="shrink-0 hidden sm:block"
                   style={{
-                    width: `${lerp(150, 0, collapseProgress)}px`,
+                    width: `${lerp(110, 0, collapseProgress)}px`,
                     minWidth: 0,
                   }}
                 />
@@ -452,7 +452,7 @@ export default function GanttTimeline() {
                 <div
                   className="shrink-0 hidden sm:block"
                   style={{
-                    width: `${lerp(120, 0, collapseProgress)}px`,
+                    width: `${lerp(90, 0, collapseProgress)}px`,
                     minWidth: 0,
                   }}
                 />
@@ -469,7 +469,7 @@ export default function GanttTimeline() {
                 <div
                   className="shrink-0 hidden sm:block"
                   style={{
-                    width: `${lerp(150, 0, collapseProgress)}px`,
+                    width: `${lerp(110, 0, collapseProgress)}px`,
                     minWidth: 0,
                   }}
                 />
@@ -567,7 +567,7 @@ export default function GanttTimeline() {
                 <div
                   className="shrink-0 hidden sm:block"
                   style={{
-                    width: `${lerp(120, 0, collapseProgress)}px`,
+                    width: `${lerp(90, 0, collapseProgress)}px`,
                     minWidth: 0,
                   }}
                 />
