@@ -407,18 +407,6 @@
     "era": "consulting"
   },
   {
-    "slug": "malecon-havana",
-    "source": "instagram",
-    "account": "thomas.w.sanderson",
-    "cropped": "cropped/malecon-havana.png",
-    "width": 687,
-    "height": 860,
-    "location": "Havana, Cuba",
-    "date": "January 2017",
-    "category": "see",
-    "era": "consulting"
-  },
-  {
     "slug": "mountain-road-colorado",
     "source": "instagram",
     "account": "thomas.w.sanderson",
@@ -525,18 +513,6 @@
     "date": "2021",
     "category": "see",
     "era": "art"
-  },
-  {
-    "slug": "horse-carriage-havana",
-    "source": "instagram",
-    "account": "thomas.w.sanderson",
-    "cropped": "cropped/horse-carriage-havana.png",
-    "width": 861,
-    "height": 647,
-    "location": "Havana, Cuba",
-    "date": "January 2017",
-    "category": "see",
-    "era": "consulting"
   },
   {
     "slug": "wood-inlay-disc-memphis",
