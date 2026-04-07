@@ -97,7 +97,6 @@ function spreadPins(pins: Pin[], projection: (coords: [number, number]) => [numb
 export default function MapSection() {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const mapScrollRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
 
   // Animation range: rapid-fire pins fill over this many px of scroll.
@@ -148,6 +147,9 @@ export default function MapSection() {
 
   const width = 960;
   const height = 500;
+  // Mobile: cropped viewBox centered on Americas/Atlantic (no horizontal scroll)
+  const MOBILE_VB_X = 100;
+  const MOBILE_VB_W = 550;
 
   const projection = useMemo(
     () => geoNaturalEarth1().scale(160).translate([width / 2, height / 2]),
@@ -175,6 +177,7 @@ export default function MapSection() {
     for (const item of items) {
       if (item.lat == null || item.lng == null) continue;
       if (item.source === "gallery") continue; // gallery moved to era sections
+      if (item.source === "timeline" && item.label?.startsWith("Columbia University")) continue; // already in locations.ts
       // Match gallery image by city for art/make pins
       const cityKey = item.label?.toLowerCase() || "";
       const galleryImage = galleryByCity.get(cityKey) || null;
@@ -235,36 +238,21 @@ export default function MapSection() {
   // Position tooltip relative to SVG coordinates, clamped to stay on-screen
   const setTooltipFromSvgCoords = useCallback((cx: number, cy: number) => {
     const svg = svgRef.current;
-    const scrollContainer = mapScrollRef.current;
     if (!svg) return;
     const rect = svg.getBoundingClientRect();
-    const scaleX = rect.width / width;
-    const scaleY = rect.height / height;
-    let x = cx * scaleX;
-    const y = cy * scaleY;
-    // On mobile, account for horizontal scroll offset and clamp within visible area
-    if (scrollContainer) {
-      const scrollLeft = scrollContainer.scrollLeft;
-      const visibleLeft = scrollLeft + 130; // half tooltip width
-      const visibleRight = scrollLeft + scrollContainer.clientWidth - 130;
-      x = Math.max(visibleLeft, Math.min(x, visibleRight));
+    const tooltipHalf = 130;
+    if (isMobile) {
+      const scaleX = rect.width / MOBILE_VB_W;
+      const scaleY = rect.height / height;
+      const x = Math.max(tooltipHalf, Math.min((cx - MOBILE_VB_X) * scaleX, rect.width - tooltipHalf));
+      setTooltipPos({ x, y: cy * scaleY });
+    } else {
+      const scaleX = rect.width / width;
+      const scaleY = rect.height / height;
+      setTooltipPos({ x: cx * scaleX, y: cy * scaleY });
     }
-    setTooltipPos({ x, y });
-  }, []);
+  }, [isMobile]);
 
-  // On mobile, scroll the map container so it starts with Alaska off-screen left
-  useEffect(() => {
-    if (!isMobile || !mapScrollRef.current) return;
-    // Scroll just enough to push Alaska barely off-screen left
-    const el = mapScrollRef.current;
-    const setScroll = () => {
-      el.scrollLeft = el.scrollWidth * 0.12;
-    };
-    setScroll();
-    const t1 = setTimeout(setScroll, 50);
-    const t2 = setTimeout(setScroll, 200);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [isMobile, worldData]);
 
   const handlePillClick = useCallback((key: PillKey) => {
     setActivePill((prev) => (prev === key ? null : key));
@@ -290,18 +278,7 @@ export default function MapSection() {
         }}
       >
         <div
-          ref={mapScrollRef}
           className="relative w-full max-w-[1200px]"
-          style={{
-            // During animation: no overflow capture, touches pass through for page scroll
-            // After pills appear: horizontal scroll enabled for map panning
-            overflowX: isMobile ? "auto" : "visible",
-            overflowY: "visible",
-            touchAction: isMobile ? (progress >= 0.99 ? "pan-x pan-y" : "pan-y") : "auto",
-            WebkitOverflowScrolling: "touch",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-          }}
         >
           {/* Date scrubber */}
           {currentDateLabel && progress > 0.01 && progress < 0.99 && (
@@ -320,12 +297,10 @@ export default function MapSection() {
 
           <svg
             ref={svgRef}
-            viewBox={`0 0 ${width} ${height}`}
-            className="h-auto"
+            viewBox={isMobile ? `${MOBILE_VB_X} 0 ${MOBILE_VB_W} ${height}` : `0 0 ${width} ${height}`}
+            className="h-auto w-full"
             style={{
               maxHeight: isMobile ? "none" : "70vh",
-              width: isMobile ? "180vw" : "100%",
-              minWidth: isMobile ? "180vw" : undefined,
             }}
             onClick={(e) => {
               if (e.target === e.currentTarget) {
