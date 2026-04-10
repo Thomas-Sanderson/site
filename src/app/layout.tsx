@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import PasscodeGate from "@/components/PasscodeGate";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -60,7 +61,7 @@ export default function RootLayout({
             pointerEvents: "none",
           }}
         />
-        {children}
+        <PasscodeGate>{children}</PasscodeGate>
       </body>
     </html>
   );

@@ -15,8 +15,8 @@ export interface CaseStudy {
 
 export const caseStudies: CaseStudy[] = [
   {
-    slug: "melody",
-    title: "Melody",
+    slug: "gab",
+    title: "Gab",
     subtitle: "Deterministic LLM Chatbot for Healthcare Admissions",
     context:
       "A behavioral health organization needed a patient-facing chatbot for their admissions website — handling sensitive mental health and addiction inquiries with PHI compliance requirements.",
@@ -27,10 +27,10 @@ export const caseStudies: CaseStudy[] = [
     matters:
       'This is what responsible AI deployment looks like in a regulated environment — not "we added ChatGPT to our website" but a system designed to know what it doesn\'t know.',
     videos: [
-      { src: "/images/melody/demo.mp4", alt: "Melody chatbot demo — deterministic conversational flow in action" },
+      { src: "/images/gab/demo.mp4", alt: "Gab chatbot demo — deterministic conversational flow in action" },
     ],
     images: [
-      { src: "/images/melody/architecture.svg", alt: "Melody architecture — deterministic state machine with LLM flexibility layers" },
+      { src: "/images/gab/architecture.svg", alt: "Gab architecture — deterministic state machine with LLM flexibility layers" },
     ],
     imagePlaceholders: [],
   },

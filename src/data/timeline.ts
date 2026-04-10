@@ -331,7 +331,7 @@ export const timelineEntries: TimelineEntry[] = [
     location: "Virtual",
     highlights: [
       "Designing Sudsy — an end-to-end behavioral health EMR concept",
-      "Architected Melody, a deterministic LLM chatbot for healthcare admissions",
+      "Architected Gab, a deterministic LLM chatbot for healthcare admissions",
     ],
     startMonth: m(2025, 5),
     endMonth: m(2026, 4),
