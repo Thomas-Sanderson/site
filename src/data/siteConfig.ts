@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "Thomas",
   title: "Design Technologist",
-  email: "hello@thomas.dev",
+  email: "holler@thomasdesigns.xyz",
   navItems: [
     { label: "Employment", href: "#gantt-sentinel" },
     { label: "World", href: "#map" },
