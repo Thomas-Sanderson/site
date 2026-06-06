@@ -259,7 +259,7 @@ export default function MapSection() {
 
   // Secret Belarus dot — only visible when the year scrubber shows 2023
   const belarusCoords = useMemo(() => projection([27.57, 53.9]), [projection]);
-  const showBelarusDot = currentDateLabel === "2023";
+  const showBelarusDot = currentDateLabel === "2022" || currentDateLabel === "2023" || currentDateLabel === "2024";
 
   const handlePillClick = useCallback((key: PillKey) => {
     setActivePill((prev) => (prev === key ? null : key));
