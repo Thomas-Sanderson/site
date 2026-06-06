@@ -58,7 +58,7 @@ export default function ChadPage() {
           </a>
         </div>
         <iframe
-          src="https://chad-rescues-nobody.vercel.app"
+          src="https://chad-pearl.vercel.app"
           style={{ flex: 1, border: "none", width: "100%" }}
           allow="autoplay"
         />
