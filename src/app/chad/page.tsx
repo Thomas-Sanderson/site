@@ -32,6 +32,11 @@ export default function ChadPage() {
           flexDirection: "column",
         }}
       >
+        <style>{`
+          html, body { background: #0a0a1a !important; }
+          body::before { display: none !important; }
+          [aria-hidden="true"] { background-color: #0a0a1a !important; }
+        `}</style>
         <div
           style={{
             display: "flex",
@@ -59,7 +64,7 @@ export default function ChadPage() {
         </div>
         <iframe
           src="https://chad-pearl.vercel.app"
-          style={{ flex: 1, border: "none", width: "100%" }}
+          style={{ flex: 1, border: "none", width: "100%", background: "#0a0a1a" }}
           allow="autoplay"
         />
       </div>
