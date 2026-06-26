@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import PasscodeGate from "@/components/PasscodeGate";
 import ContentFade from "@/components/ContentFade";
 import "./globals.css";
 
@@ -51,7 +50,7 @@ export default function RootLayout({
         {/* Content fade — dissolves scrolling content before it reaches the header.
             Hidden on /chad where the game fills the viewport. */}
         <ContentFade />
-        <PasscodeGate>{children}</PasscodeGate>
+        {children}
       </body>
     </html>
   );
