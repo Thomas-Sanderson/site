@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useEffect, useMemo, useState, useCallback } from "react";
-import { useScrollCard, lerp } from "@/lib/useScrollCard";
+import { useEffect, useMemo, useState } from "react";
+import { useInView } from "@/lib/useInView";
 import type { Era } from "@/data/eras";
 import galleryData from "@/data/gallery.json";
 
@@ -16,19 +16,37 @@ interface GalleryImage {
 }
 
 export default function EraSection({ era }: { era: Era }) {
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const progress = useScrollCard(sentinelRef);
+  const { ref: sectionRef, inView } = useInView<HTMLElement>({
+    threshold: 0.2,
+    once: true,
+  });
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  // Dispatch era-highlight event for TimelineBar
+  // Dispatch era-highlight for the TimelineBar when this section occupies the
+  // vertical center band of the viewport (rootMargin shrinks the root to a
+  // thin strip through the middle).
   useEffect(() => {
-    const isActive = progress > 0.05 && progress < 0.95;
-    window.dispatchEvent(
-      new CustomEvent("era-highlight", {
-        detail: { eraId: isActive ? era.id : null },
-      })
+    const el = sectionRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        window.dispatchEvent(
+          new CustomEvent("era-highlight", {
+            detail: { eraId: entry.isIntersecting ? era.id : null },
+          })
+        );
+      },
+      { rootMargin: "-45% 0px -45% 0px", threshold: 0 }
     );
-  }, [progress, era.id]);
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      // Clear highlight on unmount so a stale era doesn't stay lit.
+      window.dispatchEvent(
+        new CustomEvent("era-highlight", { detail: { eraId: null } })
+      );
+    };
+  }, [era.id, sectionRef]);
 
   // Gallery images for this era — match by era tag or location filter, shuffled
   const galleryImages = useMemo(() => {
@@ -48,113 +66,75 @@ export default function EraSection({ era }: { era: Era }) {
     return images;
   }, [era.id, era.galleryFilter]);
 
-  // Animation phases: Enter 0–0.3, Hold 0.3–0.7, Exit 0.7–1.0
-  const enterT = Math.min(1, progress / 0.3);
-  const exitT = Math.max(0, (progress - 0.7) / 0.3);
-
-  const stagger = (index: number, total: number) => {
-    const delay = (index / total) * 0.5;
-    return Math.max(0, Math.min(1, (enterT - delay) / (1 - delay)));
-  };
-
-  const dateEnter = stagger(0, 4);
-  const titleEnter = stagger(1, 4);
-  const subtitleEnter = stagger(2, 4);
-  const narrativeEnter = stagger(3, 4);
-
-  const fadeIn = (t: number) => lerp(0, 1, t);
-  const slideIn = (t: number) => lerp(30, 0, t);
-  const fadeOut = lerp(1, 0, exitT);
-  const slideOut = lerp(0, -40, exitT);
+  // One-shot staggered reveal. `i` controls the cascade order.
+  const reveal = (i: number): React.CSSProperties => ({
+    opacity: inView ? 1 : 0,
+    transform: inView ? "translateY(0)" : "translateY(24px)",
+    transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+    transitionDelay: `${i * 0.1}s`,
+  });
 
   return (
-    <div ref={sentinelRef} style={{ height: "200vh", position: "relative" }}>
+    <div className="relative">
       <section
+        ref={sectionRef}
         id={`era-${era.id}`}
-        className="px-6 md:px-12 max-w-[960px] mx-auto flex flex-col justify-start pt-8 sm:justify-center sm:pt-0"
-        style={{
-          position: "sticky",
-          top: "calc(90px + env(safe-area-inset-top, 0px))",
-          height: "calc(100vh - 90px - env(safe-area-inset-top, 0px))",
-          zIndex: 30,
-          overflow: "hidden",
-        }}
+        className="relative px-6 md:px-12 max-w-[960px] mx-auto py-20 sm:py-28 scroll-mt-28"
       >
         {/* Era accent border */}
         <div
+          aria-hidden
           style={{
             position: "absolute",
             left: 0,
-            top: "15%",
-            bottom: "15%",
+            top: "10%",
+            bottom: "10%",
             width: "3px",
             backgroundColor: era.color,
-            opacity: lerp(0, 0.6, enterT) * fadeOut,
+            opacity: inView ? 0.6 : 0,
             borderRadius: "2px",
+            transition: "opacity 0.9s ease-out",
           }}
         />
 
         <p
           className="font-mono text-xs sm:text-sm tracking-widest uppercase mb-2 sm:mb-4"
-          style={{
-            color: era.color,
-            opacity: fadeIn(dateEnter) * fadeOut,
-            transform: `translateY(${slideIn(dateEnter) + slideOut}px)`,
-          }}
+          style={{ color: era.color, ...reveal(0) }}
         >
           {era.dateRange}
         </p>
 
         <h2
           className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold mb-1 sm:mb-2"
-          style={{
-            opacity: fadeIn(titleEnter) * fadeOut,
-            transform: `translateY(${slideIn(titleEnter) + slideOut}px)`,
-          }}
+          style={reveal(1)}
         >
           {era.title}
         </h2>
 
         <p
           className="font-mono text-xs sm:text-sm mb-6 sm:mb-12"
-          style={{
-            color: "var(--color-muted)",
-            opacity: fadeIn(subtitleEnter) * fadeOut,
-            transform: `translateY(${slideIn(subtitleEnter) + slideOut}px)`,
-          }}
+          style={{ color: "var(--color-muted)", ...reveal(2) }}
         >
           {era.subtitle}
         </p>
 
         <div className="flex flex-col gap-3 sm:gap-6 mb-4 sm:mb-8">
-          {era.narrative.map((paragraph, i) => {
-            const paraT = Math.max(
-              0,
-              Math.min(1, (narrativeEnter - i * 0.3) / (1 - i * 0.3))
-            );
-            return (
-              <p
-                key={i}
-                className="text-sm sm:text-lg leading-relaxed max-w-[640px] text-charcoal/80"
-                style={{
-                  opacity: fadeIn(paraT) * fadeOut,
-                  transform: `translateY(${slideIn(paraT) + slideOut}px)`,
-                }}
-              >
-                {paragraph}
-              </p>
-            );
-          })}
+          {era.narrative.map((paragraph, i) => (
+            <p
+              key={i}
+              className="text-sm sm:text-lg leading-relaxed max-w-[640px] text-charcoal/80"
+              style={reveal(3 + i)}
+            >
+              {paragraph}
+            </p>
+          ))}
         </div>
 
-        {/* Gallery grid (if this era has a galleryFilter) */}
+        {/* Gallery grid (if this era has matching images) */}
         {galleryImages.length > 0 && (
           <div
             className="grid grid-cols-3 gap-2 mt-4 max-w-[400px]"
-            style={{
-              opacity: fadeIn(narrativeEnter) * fadeOut,
-              transform: `translateY(${slideIn(narrativeEnter) + slideOut}px)`,
-            }}
+            style={reveal(3 + era.narrative.length)}
           >
             {galleryImages.slice(0, 5).map((img, i) => (
               <div

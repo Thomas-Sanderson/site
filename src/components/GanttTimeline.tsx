@@ -3,14 +3,16 @@
 import { useRef, useMemo, useState, useCallback, useEffect } from "react";
 import { timelineEntries, timelineEras, eraLabels } from "@/data/timeline";
 import { pct, groupByCompany, getColor } from "@/lib/timeline";
-import { lerp } from "@/lib/useScrollCard";
+import { lerp } from "@/lib/anim";
+import { useInView } from "@/lib/useInView";
 import { useIsMobile } from "@/lib/useIsMobile";
 
 
-const HEADER_HEIGHT = 52;
-
 export default function GanttTimeline() {
-  const sentinelRef = useRef<HTMLDivElement>(null);
+  const { ref: sectionRef, inView } = useInView<HTMLDivElement>({
+    threshold: 0.3,
+    once: true,
+  });
   const ganttRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const isMobile = useIsMobile();
@@ -20,29 +22,19 @@ export default function GanttTimeline() {
   const [tooltipAbove, setTooltipAbove] = useState(false);
   const [caretLeft, setCaretLeft] = useState<number | null>(null);
 
-  // Responsive scroll fuel
-  const scrollFuel = isMobile ? 700 : 1200;
-
+  // Reveal animation plays once when the timeline scrolls into view. Time-based
+  // (not scroll-based) so there's no scroll hijacking.
   useEffect(() => {
-    let raf = 0;
-    const handleScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = 0;
-        const el = sentinelRef.current;
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        const scrollInto = -rect.top;
-        setProgress(Math.max(0, Math.min(1, scrollInto / scrollFuel)));
-      });
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, [scrollFuel]);
+    if (!inView) return;
+    const DURATION = 1500; // ms for the full row cascade
+    const start = performance.now();
+    let raf = requestAnimationFrame(function tick(now) {
+      const t = Math.min(1, (now - start) / DURATION);
+      setProgress(t);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [inView]);
 
   // Dismiss hover card on tap outside (mobile)
   useEffect(() => {
@@ -65,25 +57,17 @@ export default function GanttTimeline() {
   const groups = useMemo(() => groupByCompany(timelineEntries), []);
   const N = groups.length;
 
-  // Phase breakdowns
-  const revealProgress = Math.min(1, progress / 0.45);
-  const migrateT = Math.max(0, Math.min(1, (progress - 0.65) / 0.15));
-  const collapseProgress = Math.max(0, Math.min(1, (progress - 0.80) / 0.20));
-
-  const ganttVisible = progress > 0;
-
-  const ganttApproxHeight = 340;
-  const centerY = `calc(50vh - ${ganttApproxHeight / 2}px)`;
-  const finalY = `calc(${HEADER_HEIGHT}px + env(safe-area-inset-top, 0px))`;
-  const fixedTop = migrateT < 1
-    ? `calc(${centerY} + (${finalY} - ${centerY}) * ${migrateT})`
-    : finalY;
+  // Reveal is the only remaining phase. The old migrate/collapse-into-top-bar
+  // phases were scroll-capture behavior and have been removed; the persistent
+  // mini-timeline is handled separately by <TimelineBar/>. collapseProgress is
+  // pinned to 0 so every style below renders at its full, expanded value.
+  const revealProgress = progress;
+  const collapseProgress = 0;
 
   // Row height — 50% taller on mobile
   const ROW_H = isMobile ? 21 : 14;
 
   // Visual interpolations
-  const backdropOpacity = lerp(0, 0.92, revealProgress);
   const revealAxisOpacity = lerp(0, 1, Math.max(0, (revealProgress - 0.5) / 0.5));
 
   const verticalPadding = lerp(isMobile ? 16 : 24, 8, collapseProgress);
@@ -170,34 +154,12 @@ export default function GanttTimeline() {
   const padR = padL;
 
   return (
-    <>
-      {/* Sentinel — scroll fuel */}
-      <div
-        ref={sentinelRef}
-        id="gantt-sentinel"
-        style={{ height: `calc(${scrollFuel}px + 50vh)`, position: "relative" }}
-      />
-
-      {/* Gantt — fixed overlay */}
-      {ganttVisible && (
-        <div
-          ref={ganttRef}
-          style={{
-            position: "fixed",
-            top: fixedTop,
-            left: 0,
-            right: 0,
-            zIndex: 39,
-            pointerEvents: "none",
-            backgroundColor: `rgba(255, 255, 255, ${backdropOpacity})`,
-            backdropFilter: revealProgress > 0 ? "blur(12px)" : "none",
-            borderBottom:
-              collapseProgress > 0.1
-                ? "1px solid rgba(45, 42, 38, 0.08)"
-                : "1px solid transparent",
-            transition: "border-color 0.2s",
-          }}
-        >
+    <section
+      id="gantt-sentinel"
+      ref={sectionRef}
+      className="relative scroll-mt-28 py-10 sm:py-14"
+    >
+      <div ref={ganttRef}>
           <div
             style={{
               maxWidth,
@@ -669,8 +631,7 @@ export default function GanttTimeline() {
                 })()}
             </div>
           </div>
-        </div>
-      )}
-    </>
+      </div>
+    </section>
   );
 }

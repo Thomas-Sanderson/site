@@ -2,17 +2,16 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-const GANTT_OFFSET = () => (window.innerWidth < 640 ? 700 : 1200) * 0.5;
-const MAP_OFFSET = () => 600; // animation completes at scrollInto = ANIM_RANGE (600px)
-const ERA_OFFSET = () => window.innerHeight * 0.5; // mid-hold of 200vh sentinel
-
+// Each section maps to the next anchor to scroll to. Targets are real,
+// in-flow elements that carry `scroll-mt`, so a plain scrollIntoView lands at
+// the right spot on every device — no per-section pixel offsets needed.
 const sections = [
-  { id: "intro", next: "gantt-sentinel", label: "Employment", scrollPx: GANTT_OFFSET },
-  { id: "gantt-sentinel", next: "map", label: "World", scrollPx: MAP_OFFSET },
-  { id: "map", next: "era-consulting", label: "Eras", scrollPx: ERA_OFFSET },
-  { id: "era-consulting", next: "era-art", label: "Continue", scrollPx: ERA_OFFSET },
-  { id: "era-art", next: "era-behavioral-health", label: "Continue", scrollPx: ERA_OFFSET },
-  { id: "era-behavioral-health", next: "era-acceleration", label: "Continue", scrollPx: ERA_OFFSET },
+  { id: "intro", next: "gantt-sentinel", label: "Employment" },
+  { id: "gantt-sentinel", next: "map", label: "World" },
+  { id: "map", next: "era-consulting", label: "Eras" },
+  { id: "era-consulting", next: "era-art", label: "Continue" },
+  { id: "era-art", next: "era-behavioral-health", label: "Continue" },
+  { id: "era-behavioral-health", next: "era-acceleration", label: "Continue" },
   { id: "era-acceleration", next: "case-studies", label: "Case Studies" },
   { id: "case-studies", next: "resume", label: "Resume" },
   { id: "resume", next: "contact", label: "Get in Touch" },
@@ -55,11 +54,7 @@ export default function ScrollNext() {
       e.preventDefault();
       const target = document.getElementById(current.next);
       if (!target) return;
-
-      // Always use window.scrollTo — triggers mobile browser minimal UI (hides toolbar)
-      const px = "scrollPx" in current && current.scrollPx ? current.scrollPx() : 0;
-      const targetY = target.getBoundingClientRect().top + window.scrollY + px;
-      window.scrollTo({ top: targetY, behavior: "smooth" });
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
     },
     [current]
   );

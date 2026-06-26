@@ -1,3 +1,4 @@
+import SiteHeader from "@/components/SiteHeader";
 import TimelineBar from "@/components/TimelineBar";
 import Hero from "@/components/Hero";
 import GanttTimeline from "@/components/GanttTimeline";
@@ -12,6 +13,7 @@ import { eras } from "@/data/eras";
 export default function Home() {
   return (
     <>
+      <SiteHeader />
       <TimelineBar />
       <main>
         <Hero />

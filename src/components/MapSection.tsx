@@ -13,7 +13,7 @@ import {
 } from "@/data/locations";
 import { buildContentItems } from "@/data/content";
 import galleryData from "@/data/gallery.json";
-import { lerp } from "@/lib/useScrollCard";
+import { useInView } from "@/lib/useInView";
 import { useIsMobile } from "@/lib/useIsMobile";
 
 const WORLD_TOPO_URL =
@@ -96,35 +96,27 @@ function spreadPins(pins: Pin[], projection: (coords: [number, number]) => [numb
 // ── Component ───────────────────────────────────────────────────────
 
 export default function MapSection() {
-  const sentinelRef = useRef<HTMLDivElement>(null);
+  const { ref: sectionRef, inView } = useInView<HTMLElement>({
+    threshold: 0.3,
+    once: true,
+  });
   const svgRef = useRef<SVGSVGElement>(null);
   const [progress, setProgress] = useState(0);
 
-  // Animation range: rapid-fire pins fill over this many px of scroll.
-  // The sentinel is taller to add a hold period after.
-  const ANIM_RANGE = 600; // px of scroll for the rapid-fire animation
-
+  // Pin-fill animation: plays once when the map scrolls into view. Time-based
+  // (not scroll-based) so there's no scroll hijacking and nothing depends on a
+  // fixed-height pinned container.
   useEffect(() => {
-    let raf = 0;
-    const handleScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = 0;
-        const el = sentinelRef.current;
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        const scrollInto = -rect.top;
-        // Progress 0→1 over ANIM_RANGE, then clamps at 1 for the hold period
-        setProgress(Math.max(0, Math.min(1, scrollInto / ANIM_RANGE)));
-      });
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
+    if (!inView) return;
+    const DURATION = 2200; // ms to reveal all pins
+    const start = performance.now();
+    let raf = requestAnimationFrame(function tick(now) {
+      const t = Math.min(1, (now - start) / DURATION);
+      setProgress(t);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [inView]);
 
   const isMobile = useIsMobile();
   const [worldData, setWorldData] = useState<GeoJSON.FeatureCollection | null>(null);
@@ -212,11 +204,11 @@ export default function MapSection() {
     return allPins.filter((p) => p.category === activePill);
   }, [allPins, activePill]);
 
-  // How many pins are visible based on scroll progress
+  // How many pins are visible based on animation progress
   const visibleCount = Math.floor(progress * filteredPins.length);
   const visiblePins = filteredPins.slice(0, visibleCount);
 
-  // Current year label during scroll — extract just the year
+  // Current year label during the fill — extract just the year
   const currentDateLabel = useMemo(() => {
     if (visiblePins.length === 0) return "";
     const last = visiblePins[visiblePins.length - 1];
@@ -257,7 +249,7 @@ export default function MapSection() {
 
   const router = useRouter();
 
-  // Secret Belarus dot — only visible when the year scrubber shows 2023
+  // Secret Belarus dot — only visible when the year scrubber shows 2022–2024
   const belarusCoords = useMemo(() => projection([27.57, 53.9]), [projection]);
   const showBelarusDot = currentDateLabel === "2022" || currentDateLabel === "2023" || currentDateLabel === "2024";
 
@@ -268,22 +260,11 @@ export default function MapSection() {
   }, []);
 
   return (
-    <div ref={sentinelRef} style={{ height: "calc(100vh + 600px + 80vh)", position: "relative" }}>
-      <section
-        id="map"
-        className="px-0 sm:px-4"
-        style={{
-          position: "sticky",
-          top: "calc(90px + env(safe-area-inset-top, 0px))",
-          height: "calc(100vh - 90px - env(safe-area-inset-top, 0px))",
-          zIndex: 20,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "hidden",
-        }}
-      >
+    <section
+      id="map"
+      ref={sectionRef}
+      className="relative px-0 sm:px-4 py-16 sm:py-24 scroll-mt-28 flex flex-col items-center"
+    >
         <div
           className="relative w-full max-w-[1200px]"
         >
@@ -328,12 +309,12 @@ export default function MapSection() {
             ))}
 
             {/* Pins — force-spread individual dots */}
-            {clusters.map((cluster) => {
+            {clusters.map((cluster, ci) => {
               const pin = cluster.pins[0];
               const meta = categoryMeta[pin.category as LocationCategory] || { color: "#A89F95" };
               return (
                 <g
-                  key={cluster.id}
+                  key={cluster.id + "-" + ci}
                   className="cursor-pointer"
                   style={{ transformOrigin: `${cluster.cx}px ${cluster.cy}px` }}
                   onMouseEnter={() => {
@@ -366,7 +347,7 @@ export default function MapSection() {
               );
             })}
 
-            {/* Secret Belarus dot — appears only in 2023 */}
+            {/* Secret Belarus dot — appears only in 2022–2024 */}
             {showBelarusDot && belarusCoords && (
               <g
                 className="cursor-pointer"
@@ -489,7 +470,7 @@ export default function MapSection() {
             })}
           </div>
 
-        {/* Progress indicator — outside scroll container */}
+        {/* Progress indicator — bottom-left of the section */}
         {progress > 0.01 && progress < 0.99 && (
           <div className="absolute bottom-3 left-3 z-10">
             <div
@@ -504,8 +485,7 @@ export default function MapSection() {
             </div>
           </div>
         )}
-      </section>
-    </div>
+    </section>
   );
 }
 
