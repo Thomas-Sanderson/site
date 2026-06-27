@@ -1,25 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useReveal } from "@/lib/useReveal";
 import type { CaseStudy } from "@/data/caseStudies";
 
 export default function CaseStudyCard({ study, fullPage = false }: { study: CaseStudy; fullPage?: boolean }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const { ref, revealed } = useReveal<HTMLDivElement>({ threshold: 0.1 });
   const [modalSrc, setModalSrc] = useState<string | null>(null);
   const [modalAlt, setModalAlt] = useState("");
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) el.classList.add("visible");
-      },
-      { threshold: 0.1 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
     if (!modalSrc) return;
@@ -42,9 +30,14 @@ export default function CaseStudyCard({ study, fullPage = false }: { study: Case
     <>
       <div
         ref={ref}
-        className={`reveal ${
+        className={
           study.flagship && !fullPage ? "p-0 sm:p-8 md:p-12 sm:rounded-2xl sm:bg-warm-white sm:ring-1 sm:ring-charcoal/5" : ""
-        }`}
+        }
+        style={{
+          opacity: revealed ? 1 : 0,
+          transform: revealed ? "translateY(0)" : "translateY(24px)",
+          transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+        }}
       >
         {study.flagship && (
           <span

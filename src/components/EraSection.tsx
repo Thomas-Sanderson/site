@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useInView } from "@/lib/useInView";
+import { useReveal } from "@/lib/useReveal";
 import type { Era } from "@/data/eras";
 import galleryData from "@/data/gallery.json";
 
@@ -16,9 +16,8 @@ interface GalleryImage {
 }
 
 export default function EraSection({ era }: { era: Era }) {
-  const { ref: sectionRef, inView } = useInView<HTMLElement>({
+  const { ref: sectionRef, revealed } = useReveal<HTMLElement>({
     threshold: 0.2,
-    once: true,
   });
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -42,8 +41,8 @@ export default function EraSection({ era }: { era: Era }) {
 
   // One-shot staggered reveal. `i` controls the cascade order.
   const reveal = (i: number): React.CSSProperties => ({
-    opacity: inView ? 1 : 0,
-    transform: inView ? "translateY(0)" : "translateY(24px)",
+    opacity: revealed ? 1 : 0,
+    transform: revealed ? "translateY(0)" : "translateY(24px)",
     transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
     transitionDelay: `${i * 0.1}s`,
   });
@@ -53,7 +52,7 @@ export default function EraSection({ era }: { era: Era }) {
       <section
         ref={sectionRef}
         id={`era-${era.id}`}
-        className="relative px-6 md:px-12 max-w-[960px] mx-auto min-h-[100svh] flex flex-col justify-center py-20 snap-start"
+        className="relative px-6 md:px-12 max-w-[960px] mx-auto py-16 sm:py-24"
       >
         {/* Era accent border */}
         <div
@@ -65,7 +64,7 @@ export default function EraSection({ era }: { era: Era }) {
             bottom: "10%",
             width: "3px",
             backgroundColor: era.color,
-            opacity: inView ? 0.6 : 0,
+            opacity: revealed ? 0.6 : 0,
             borderRadius: "2px",
             transition: "opacity 0.9s ease-out",
           }}

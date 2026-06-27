@@ -1,7 +1,7 @@
 "use client";
 
 import { siteConfig } from "@/data/siteConfig";
-import { useInView } from "@/lib/useInView";
+import { useReveal } from "@/lib/useReveal";
 
 /**
  * Hero — a full-height intro section in normal document flow. The old version
@@ -13,11 +13,11 @@ import { useInView } from "@/lib/useInView";
  * size — no fixed-height pin, no clipping.
  */
 export default function Hero() {
-  const { ref, inView } = useInView<HTMLElement>({ threshold: 0.2, once: true });
+  const { ref, revealed } = useReveal<HTMLElement>({ threshold: 0.2 });
 
   const reveal = (i: number): React.CSSProperties => ({
-    opacity: inView ? 1 : 0,
-    transform: inView ? "translateY(0)" : "translateY(24px)",
+    opacity: revealed ? 1 : 0,
+    transform: revealed ? "translateY(0)" : "translateY(24px)",
     transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
     transitionDelay: `${i * 0.12}s`,
   });
@@ -26,12 +26,12 @@ export default function Hero() {
     <section
       id="intro"
       ref={ref}
-      className="relative max-w-[960px] mx-auto px-6 md:px-12 min-h-[100svh] flex flex-col justify-center snap-start"
+      className="relative max-w-[960px] mx-auto px-6 md:px-12 min-h-[100svh] flex flex-col justify-center"
     >
       {/* Headshot — decorative, fades in */}
       <div
         className="absolute right-6 md:right-12 bottom-[5%] md:top-1/2 md:bottom-auto md:-translate-y-1/2 pointer-events-none"
-        style={{ opacity: inView ? 0.28 : 0, transition: "opacity 1.1s ease-out" }}
+        style={{ opacity: revealed ? 0.28 : 0, transition: "opacity 1.1s ease-out" }}
         aria-hidden
       >
         <img
