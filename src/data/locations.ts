@@ -2,6 +2,7 @@ export type LocationCategory =
   | "work"
   | "art"
   | "travel"
+  | "live"
   | "want-to-visit";
 
 export interface Location {
@@ -19,9 +20,10 @@ export const categoryMeta: Record<
   LocationCategory,
   { label: string; color: string }
 > = {
+  live: { label: "Live", color: "#2A6B5A" },
   work: { label: "Work", color: "#C4725A" },
   art: { label: "Make", color: "#7B5EA7" },
-  travel: { label: "Live", color: "#5A8FC4" },
+  travel: { label: "Travel", color: "#5A8FC4" },
   "want-to-visit": { label: "Want to Visit", color: "#A89F95" },
 };
 
@@ -192,7 +194,7 @@ export const locations: Location[] = [
     description: "Recovery Unplugged — EMR design and LLM chatbot architecture for admissions",
   },
 
-  // ART
+  // ART (Make)
   {
     city: "Porto",
     country: "Portugal",
@@ -212,7 +214,81 @@ export const locations: Location[] = [
     description: "Brand and digital strategy for Tipic i Catala wine shop",
   },
 
-  // LIVE
+  // LIVE — residences (where I lived, by move-in year)
+  {
+    city: "New York City",
+    country: "USA",
+    lat: 40.8075,
+    lng: -73.9626,
+    category: "live",
+    dateRange: "2010",
+    description: "Moved to New York for Columbia",
+  },
+  {
+    city: "San Francisco",
+    country: "USA",
+    lat: 37.7749,
+    lng: -122.4194,
+    category: "live",
+    dateRange: "2015",
+    description: "Moved to San Francisco",
+  },
+  {
+    city: "Oakland",
+    country: "USA",
+    lat: 37.8044,
+    lng: -122.2712,
+    category: "live",
+    dateRange: "2018",
+    description: "Moved to Oakland",
+  },
+  {
+    city: "New Hampshire",
+    country: "USA",
+    lat: 43.2,
+    lng: -71.55,
+    category: "live",
+    dateRange: "2019",
+    description: "Moved to New Hampshire",
+  },
+  {
+    city: "Memphis",
+    country: "USA",
+    lat: 35.1495,
+    lng: -90.049,
+    category: "live",
+    dateRange: "2020",
+    description: "Moved to Memphis",
+  },
+  {
+    city: "Porto",
+    country: "Portugal",
+    lat: 41.1579,
+    lng: -8.6291,
+    category: "live",
+    dateRange: "2021",
+    description: "Moved to Porto, Portugal",
+  },
+  {
+    city: "Austin",
+    country: "USA",
+    lat: 30.2672,
+    lng: -97.7431,
+    category: "live",
+    dateRange: "2023",
+    description: "Moved to Austin",
+  },
+  {
+    city: "Lewes",
+    country: "USA",
+    lat: 38.7746,
+    lng: -75.1394,
+    category: "live",
+    dateRange: "2025–present",
+    description: "Home base",
+  },
+
+  // TRAVEL — trips and volunteer work
   {
     city: "Panama City",
     country: "Panama",
@@ -223,8 +299,6 @@ export const locations: Location[] = [
     industries: ["Environmental"],
     description: "Environmental conservation volunteer work",
   },
-
-  // TRAVEL
   {
     city: "Belize City",
     country: "Belize",
@@ -296,15 +370,6 @@ export const locations: Location[] = [
     lng: -62.7177,
     category: "travel",
     dateRange: "2015",
-  },
-  {
-    city: "New Hampshire",
-    country: "USA",
-    lat: 43.2,
-    lng: -71.55,
-    category: "travel",
-    dateRange: "2019–present",
-    description: "Home base",
   },
   {
     city: "Santiago de Compostela",

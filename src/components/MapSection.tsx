@@ -21,7 +21,7 @@ const WORLD_TOPO_URL =
 
 type PillKey = LocationCategory;
 
-const pillKeys: PillKey[] = ["work", "art", "travel"];
+const pillKeys: PillKey[] = ["live", "work", "art", "travel"];
 
 // ── Clustering ──────────────────────────────────────────────────────
 
