@@ -172,11 +172,13 @@ export default function MapSection() {
       if (item.source === "timeline" && item.label?.startsWith("Columbia University")) continue; // already in locations.ts
       const cityKey = item.city ? normCity(item.city) : "";
       const photo = cityKey ? photoByCity.get(cityKey) ?? null : null;
+      // Timeline (employment) dots use their place as the label, not the job title.
+      const label = item.source === "timeline" && item.city ? item.city : item.label;
       pins.push({
         id: item.id,
         lat: item.lat,
         lng: item.lng,
-        label: item.label,
+        label,
         category: item.category || "work",
         dateRange: item.dateRange,
         description: item.description,
