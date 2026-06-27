@@ -61,7 +61,6 @@ export const caseStudies: CaseStudy[] = [
     slug: "paper-cannon",
     title: "Paper Cannon",
     subtitle: "Multi-Agent Research Synthesis Pipeline",
-    flagship: true,
     context:
       "Research organizations — whether academic, clinical, or product — drown in source material. Studies, interviews, reports, analytics, support tickets. The data exists. The synthesis doesn't.",
     problem:
@@ -84,16 +83,17 @@ export const caseStudies: CaseStudy[] = [
   },
   {
     slug: "chad",
-    title: "Chad Rescues Nobody",
-    subtitle: "A browser game",
+    title: "CHAD Rescues Nobody",
+    subtitle:
+      "A puzzle-platformer that teaches you to survive a country, not pass a test",
     context:
-      "[DRAFT — pending copy from Desktop] What Chad is and where it came from.",
+      "A puzzle-platformer that teaches you to survive in a foreign country, not pass a language exam. You play Chad — an oblivious American accidental-billionaire in cargo shorts — who lands in 1994 Belarus and has to function: order food, find an apartment, navigate the city, handle visa paperwork, all in Russian he doesn't speak. You learn by inference and immersion, not flashcards: Cyrillic words appear in context, you guess what they mean, and you test the guess by collecting the right items.",
     problem:
-      "[DRAFT — pending copy] The idea / constraint behind the game.",
+      "Language apps optimize for streaks and recognition. They make you feel like you're learning while leaving you unable to order coffee in the actual country — vocabulary in isolation, no spatial memory, no stakes, no social context. But people don't acquire language by memorizing rules; they acquire it by needing something, failing to get it, and trying again. CHAD makes the game itself the immersion environment: you learn Russian because a fictional idiot can't, and the comedy is the pedagogy — laughter lowers the stress that kills language acquisition, and physically navigating to the right object burns vocabulary into spatial memory.",
     built:
-      "[DRAFT — pending copy] What was built and how.",
+      "A content-driven game engine (React / TypeScript / Vite, Canvas) with a briefing → run → gate → reveal phase structure, wrapped around mechanics that teach reading, listening, and survival production rather than grammar. A WASD-driven Cyrillic input system works both ways — sound-to-letter for spelling, letter-to-sound for reading signs. A vertical city built from real Minsk streets is navigated by reading Soviet signage and asking grandmothers for directions; shopkeeper conversations force the local social register (greet, ask, thank); and a mentor, Anya, refuses to explain grammar and trusts repetition. Crucially, a new language is a data pack a bilingual non-programmer can author — the mechanics are the platform; the language and culture are content.",
     matters:
-      "[DRAFT — pending copy] Why it belongs in the portfolio.",
+      "Most “educational games” are neither. CHAD bets that the way to teach survival-level language is to make the player live a comedy of errors in the target culture — never explaining a rule, never breaking the joke — and that this produces functional speakers faster and more durably than apps that aim for fluency and deliver neither. It is built to scale: any phonetic, case-heavy language that follows Russian's rules — Polish, Ukrainian, Greek, Korean, Turkish — can ride the same engine, authored by native speakers. The unbreakable rule across every version: the joke is always the clueless foreigner, never the country. The promise isn't fluency — it's that you'll step off the plane able to get by.",
     playUrl: "/chad",
     imagePlaceholders: [],
   },
