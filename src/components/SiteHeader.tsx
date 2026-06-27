@@ -1,29 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { siteConfig } from "@/data/siteConfig";
 
 /**
- * Persistent site header + nav. Fades in once the hero (#intro) has scrolled
- * out of view, replacing the old scroll-driven "name morphs into header"
- * animation. Lives entirely in fixed positioning so it never participates in
- * document flow — and uses plain anchor links (sections carry `scroll-mt`),
- * so there are no device-tuned pixel scroll offsets.
+ * Persistent site header + route-based nav. Always visible on every page.
+ * Navigation moves between real routes (Story / Case Studies / Resume) via
+ * next/link — no scroll-jacking, no in-page anchor offsets.
  */
 export default function SiteHeader() {
-  const [visible, setVisible] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
-  useEffect(() => {
-    const hero = document.getElementById("intro");
-    if (!hero || typeof IntersectionObserver === "undefined") return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setVisible(!entry.isIntersecting),
-      { threshold: 0, rootMargin: "-52px 0px 0px 0px" }
-    );
-    observer.observe(hero);
-    return () => observer.disconnect();
-  }, []);
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
     <header
@@ -33,14 +25,11 @@ export default function SiteHeader() {
         backgroundColor: "rgba(245, 240, 235, 0.85)",
         backdropFilter: "blur(12px)",
         borderBottom: "1px solid rgba(45, 42, 38, 0.08)",
-        opacity: visible ? 1 : 0,
-        pointerEvents: visible ? "auto" : "none",
-        transition: "opacity 0.4s ease",
       }}
     >
       <div className="max-w-[1200px] mx-auto h-[52px] px-6 md:px-12 flex items-center justify-between">
-        {/* Name + title */}
-        <a href="#intro" className="flex items-baseline gap-2 hover:opacity-70 transition-opacity">
+        {/* Name + title → home */}
+        <Link href="/" className="flex items-baseline gap-2 hover:opacity-70 transition-opacity">
           <span className="font-serif font-bold text-base leading-none">
             {siteConfig.name}
           </span>
@@ -50,19 +39,23 @@ export default function SiteHeader() {
           >
             {siteConfig.title}
           </span>
-        </a>
+        </Link>
 
         {/* Desktop nav */}
         <nav className="hidden sm:flex gap-5">
           {siteConfig.navItems.map((item) => (
-            <a
+            <Link
               key={item.href}
               href={item.href}
               className="font-mono text-[10px] tracking-wide hover:opacity-70 transition-opacity"
-              style={{ color: "rgba(45, 42, 38, 0.5)" }}
+              style={{
+                color: isActive(item.href)
+                  ? "var(--color-charcoal)"
+                  : "rgba(45, 42, 38, 0.5)",
+              }}
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -92,15 +85,19 @@ export default function SiteHeader() {
         >
           <div className="flex flex-col px-6 py-3 gap-1">
             {siteConfig.navItems.map((item) => (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setMenuOpen(false)}
                 className="font-mono text-xs tracking-wide py-2 hover:opacity-70 transition-opacity"
-                style={{ color: "rgba(45, 42, 38, 0.6)" }}
+                style={{
+                  color: isActive(item.href)
+                    ? "var(--color-charcoal)"
+                    : "rgba(45, 42, 38, 0.6)",
+                }}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </div>
         </div>

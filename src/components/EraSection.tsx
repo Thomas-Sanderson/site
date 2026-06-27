@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useInView } from "@/lib/useInView";
 import type { Era } from "@/data/eras";
 import galleryData from "@/data/gallery.json";
@@ -21,32 +21,6 @@ export default function EraSection({ era }: { era: Era }) {
     once: true,
   });
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-
-  // Dispatch era-highlight for the TimelineBar when this section occupies the
-  // vertical center band of the viewport (rootMargin shrinks the root to a
-  // thin strip through the middle).
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el || typeof IntersectionObserver === "undefined") return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        window.dispatchEvent(
-          new CustomEvent("era-highlight", {
-            detail: { eraId: entry.isIntersecting ? era.id : null },
-          })
-        );
-      },
-      { rootMargin: "-45% 0px -45% 0px", threshold: 0 }
-    );
-    observer.observe(el);
-    return () => {
-      observer.disconnect();
-      // Clear highlight on unmount so a stale era doesn't stay lit.
-      window.dispatchEvent(
-        new CustomEvent("era-highlight", { detail: { eraId: null } })
-      );
-    };
-  }, [era.id, sectionRef]);
 
   // Gallery images for this era — match by era tag or location filter, shuffled
   const galleryImages = useMemo(() => {

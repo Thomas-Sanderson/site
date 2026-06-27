@@ -2,19 +2,16 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-// Each section maps to the next anchor to scroll to. Targets are real,
-// in-flow elements that carry `scroll-mt`, so a plain scrollIntoView lands at
-// the right spot on every device — no per-section pixel offsets needed.
+// Story-deck snap sequence only. Each entry maps to the next anchor to advance
+// to. Targets are real in-flow sections carrying scroll-mt, so a plain
+// scrollIntoView lands correctly on every device — no pixel offsets.
 const sections = [
-  { id: "intro", next: "gantt-sentinel", label: "Employment" },
-  { id: "gantt-sentinel", next: "map", label: "World" },
-  { id: "map", next: "era-consulting", label: "Eras" },
+  { id: "intro", next: "era-consulting", label: "The eras" },
   { id: "era-consulting", next: "era-art", label: "Continue" },
   { id: "era-art", next: "era-behavioral-health", label: "Continue" },
   { id: "era-behavioral-health", next: "era-acceleration", label: "Continue" },
-  { id: "era-acceleration", next: "case-studies", label: "Case Studies" },
-  { id: "case-studies", next: "resume", label: "Resume" },
-  { id: "resume", next: "contact", label: "Get in Touch" },
+  { id: "era-acceleration", next: "map", label: "The map" },
+  { id: "map", next: "story-doors", label: "Where to next" },
 ] as const;
 
 type Section = (typeof sections)[number];
@@ -37,10 +34,10 @@ export default function ScrollNext() {
       }
       setCurrent(active);
 
-      // Hide when at the footer
-      const footer = document.getElementById("contact");
-      if (footer) {
-        const rect = footer.getBoundingClientRect();
+      // Hide once the doors (end of the deck) come into view
+      const doors = document.getElementById("story-doors");
+      if (doors) {
+        const rect = doors.getBoundingClientRect();
         setVisible(rect.top > window.innerHeight - 80);
       }
     };
@@ -49,15 +46,11 @@ export default function ScrollNext() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      const target = document.getElementById(current.next);
-      if (!target) return;
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-    },
-    [current]
-  );
+  const handleClick = useCallback(() => {
+    const target = document.getElementById(current.next);
+    if (!target) return;
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [current]);
 
   if (!visible) return null;
 

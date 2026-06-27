@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import ContentFade from "@/components/ContentFade";
+import SiteChrome from "@/components/SiteChrome";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -50,7 +51,8 @@ export default function RootLayout({
         {/* Content fade — dissolves scrolling content before it reaches the header.
             Hidden on /chad where the game fills the viewport. */}
         <ContentFade />
-        {children}
+        {/* Site-wide header + footer (skipped on /chad) */}
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );

@@ -58,8 +58,8 @@ export default function GanttTimeline() {
   const N = groups.length;
 
   // Reveal is the only remaining phase. The old migrate/collapse-into-top-bar
-  // phases were scroll-capture behavior and have been removed; the persistent
-  // mini-timeline is handled separately by <TimelineBar/>. collapseProgress is
+  // phases were scroll-capture behavior and have been removed (the
+  // chart now lives on /resume. collapseProgress is
   // pinned to 0 so every style below renders at its full, expanded value.
   const revealProgress = progress;
   const collapseProgress = 0;
@@ -155,7 +155,6 @@ export default function GanttTimeline() {
 
   return (
     <section
-      id="gantt-sentinel"
       ref={sectionRef}
       className="relative py-10 sm:py-14"
     >

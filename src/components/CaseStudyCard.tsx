@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { CaseStudy } from "@/data/caseStudies";
 
-export default function CaseStudyCard({ study }: { study: CaseStudy }) {
+export default function CaseStudyCard({ study, fullPage = false }: { study: CaseStudy; fullPage?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const [modalSrc, setModalSrc] = useState<string | null>(null);
   const [modalAlt, setModalAlt] = useState("");
@@ -43,7 +43,7 @@ export default function CaseStudyCard({ study }: { study: CaseStudy }) {
       <div
         ref={ref}
         className={`reveal ${
-          study.flagship ? "p-0 sm:p-8 md:p-12 sm:rounded-2xl sm:bg-warm-white sm:ring-1 sm:ring-charcoal/5" : ""
+          study.flagship && !fullPage ? "p-0 sm:p-8 md:p-12 sm:rounded-2xl sm:bg-warm-white sm:ring-1 sm:ring-charcoal/5" : ""
         }`}
       >
         {study.flagship && (

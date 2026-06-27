@@ -3,11 +3,9 @@ export const siteConfig = {
   title: "Design Technologist",
   email: "holler@thomasdesigns.xyz",
   navItems: [
-    { label: "Employment", href: "#gantt-sentinel" },
-    { label: "World", href: "#map" },
-    { label: "Eras", href: "#era-consulting" },
-    { label: "Case Studies", href: "#case-studies" },
-    { label: "Resume", href: "#resume" },
+    { label: "Story", href: "/" },
+    { label: "Case Studies", href: "/work" },
+    { label: "Resume", href: "/resume" },
   ],
   colors: {
     cream: "#F5F0EB",
