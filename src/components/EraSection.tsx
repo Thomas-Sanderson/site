@@ -79,7 +79,7 @@ export default function EraSection({ era }: { era: Era }) {
       <section
         ref={sectionRef}
         id={`era-${era.id}`}
-        className="relative px-6 md:px-12 max-w-[960px] mx-auto py-20 sm:py-28 scroll-mt-28"
+        className="relative px-6 md:px-12 max-w-[960px] mx-auto py-16 sm:py-24"
       >
         {/* Era accent border */}
         <div

@@ -3,7 +3,7 @@ import CaseStudyCard from "./CaseStudyCard";
 
 export default function CaseStudySection() {
   return (
-    <section id="case-studies" className="px-6 md:px-12 py-24 max-w-[960px] mx-auto">
+    <section id="case-studies" className="px-6 md:px-12 py-16 sm:py-24 max-w-[960px] mx-auto">
       <p
         className="font-mono text-sm tracking-widest uppercase mb-4"
         style={{ color: "var(--color-terracotta)" }}

@@ -11,7 +11,7 @@ export default function ResumeSection() {
   return (
     <section
       id="resume"
-      className="px-6 md:px-12 py-24 max-w-[960px] mx-auto"
+      className="px-6 md:px-12 py-16 sm:py-24 max-w-[960px] mx-auto"
       style={{ fontFamily: "var(--font-mono, monospace)" }}
     >
       <p

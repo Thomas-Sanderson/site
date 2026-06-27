@@ -26,7 +26,7 @@ export default function Hero() {
     <section
       id="intro"
       ref={ref}
-      className="relative max-w-[960px] mx-auto px-6 md:px-12 min-h-[100svh] flex flex-col justify-center scroll-mt-20"
+      className="relative max-w-[960px] mx-auto px-6 md:px-12 min-h-[100svh] flex flex-col justify-center"
     >
       {/* Headshot — decorative, fades in */}
       <div

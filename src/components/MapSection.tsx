@@ -263,7 +263,7 @@ export default function MapSection() {
     <section
       id="map"
       ref={sectionRef}
-      className="relative px-0 sm:px-4 py-16 sm:py-24 scroll-mt-28 flex flex-col items-center"
+      className="relative px-0 sm:px-4 py-16 sm:py-24 flex flex-col items-center"
     >
         <div
           className="relative w-full max-w-[1200px]"

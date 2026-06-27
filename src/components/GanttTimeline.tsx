@@ -157,7 +157,7 @@ export default function GanttTimeline() {
     <section
       id="gantt-sentinel"
       ref={sectionRef}
-      className="relative scroll-mt-28 py-10 sm:py-14"
+      className="relative py-10 sm:py-14"
     >
       <div ref={ganttRef}>
           <div

@@ -129,3 +129,10 @@ body::before {
     var(--color-charcoal) 100%
   );
 }
+
+/* In-page anchor targets clear the fixed header (+ timeline bar) consistently.
+   Replaces ad-hoc per-section scroll-mt utilities. */
+section[id],
+footer[id] {
+  scroll-margin-top: calc(5rem + env(safe-area-inset-top, 0px));
+}
