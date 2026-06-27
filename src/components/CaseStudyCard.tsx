@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useReveal } from "@/lib/useReveal";
+import Link from "next/link";
 import type { CaseStudy } from "@/data/caseStudies";
 
 export default function CaseStudyCard({ study, fullPage = false }: { study: CaseStudy; fullPage?: boolean }) {
@@ -60,6 +61,16 @@ export default function CaseStudyCard({ study, fullPage = false }: { study: Case
         >
           {study.subtitle}
         </p>
+
+        {study.playUrl && (
+          <Link
+            href={study.playUrl}
+            className="inline-flex items-center gap-2 font-mono text-xs tracking-widest uppercase px-5 py-2.5 rounded-full mb-8 transition-transform hover:scale-105"
+            style={{ backgroundColor: "var(--color-terracotta)", color: "var(--color-warm-white)" }}
+          >
+            <span aria-hidden>&#9654;</span> Play Now
+          </Link>
+        )}
 
         <div className="grid gap-8 md:gap-10">
           <Block label="Context" text={study.context} />

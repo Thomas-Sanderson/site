@@ -7,6 +7,8 @@ export interface CaseStudy {
   problem: string;
   built: string;
   matters: string;
+  /** If set, renders a 'Play Now' CTA linking here. */
+  playUrl?: string;
   extra?: { label: string; text: string };
   images?: { src: string; alt: string; clipped?: boolean }[];
   videos?: { src: string; alt: string }[];
@@ -78,6 +80,21 @@ export const caseStudies: CaseStudy[] = [
       { src: "/images/paper-cannon/stacks.png", alt: "The Stacks — pre-flight phase extracting thesis, scope, claims, and correction candidates", clipped: true },
       { src: "/images/paper-cannon/distillation.png", alt: "Chat log distillation — session dynamics, counter-arguments, and trigger candidates", clipped: true },
     ],
+    imagePlaceholders: [],
+  },
+  {
+    slug: "chad",
+    title: "Chad Rescues Nobody",
+    subtitle: "A browser game",
+    context:
+      "[DRAFT — pending copy from Desktop] What Chad is and where it came from.",
+    problem:
+      "[DRAFT — pending copy] The idea / constraint behind the game.",
+    built:
+      "[DRAFT — pending copy] What was built and how.",
+    matters:
+      "[DRAFT — pending copy] Why it belongs in the portfolio.",
+    playUrl: "/chad",
     imagePlaceholders: [],
   },
 ];

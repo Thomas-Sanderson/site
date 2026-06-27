@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { geoNaturalEarth1, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 import type { Topology } from "topojson-specification";
@@ -247,11 +246,7 @@ export default function MapSection() {
   }, [isMobile]);
 
 
-  const router = useRouter();
 
-  // Secret Belarus dot — only visible when the year scrubber shows 2022–2024
-  const belarusCoords = useMemo(() => projection([27.57, 53.9]), [projection]);
-  const showBelarusDot = currentDateLabel === "2022" || currentDateLabel === "2023" || currentDateLabel === "2024";
 
   const handlePillClick = useCallback((key: PillKey) => {
     setActivePill((prev) => (prev === key ? null : key));
@@ -347,33 +342,6 @@ export default function MapSection() {
               );
             })}
 
-            {/* Secret Belarus dot — appears only in 2022–2024 */}
-            {showBelarusDot && belarusCoords && (
-              <g
-                className="cursor-pointer"
-                onClick={() => router.push("/chad")}
-              >
-                <circle
-                  cx={belarusCoords[0]}
-                  cy={belarusCoords[1]}
-                  r={5}
-                  fill="#A89F95"
-                  opacity={0.15}
-                >
-                  <animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.1;0.25;0.1" dur="2s" repeatCount="indefinite" />
-                </circle>
-                <circle
-                  cx={belarusCoords[0]}
-                  cy={belarusCoords[1]}
-                  r={2.5}
-                  fill="#A89F95"
-                  stroke="var(--color-cream)"
-                  strokeWidth={1}
-                  opacity={0.6}
-                />
-              </g>
-            )}
           </svg>
 
           {/* Tooltip */}
