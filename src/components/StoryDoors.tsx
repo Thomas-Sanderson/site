@@ -8,7 +8,7 @@ export default function StoryDoors() {
   return (
     <section
       id="story-doors"
-      className="px-6 md:px-12 max-w-[960px] mx-auto py-20 sm:py-28"
+      className="px-6 md:px-12 max-w-[960px] mx-auto min-h-[100svh] flex flex-col justify-center py-20 snap-start"
     >
       <p
         className="font-mono text-sm tracking-widest uppercase mb-8 text-center"

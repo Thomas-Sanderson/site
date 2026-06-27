@@ -134,5 +134,29 @@ body::before {
    Replaces ad-hoc per-section scroll-mt utilities. */
 section[id],
 footer[id] {
-  scroll-margin-top: calc(5rem + env(safe-area-inset-top, 0px));
+  scroll-margin-top: calc(3.5rem + env(safe-area-inset-top, 0px));
+}
+
+/* Story-deck scroll-snap. `proximity` (not mandatory) so tall sections never
+   trap the user. Only sections carrying `snap-start` (Story posters) snap;
+   /work and /resume have no snap targets, so they scroll normally. Disabled
+   under reduced-motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-snap-type: y proximity;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+    scroll-snap-type: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
