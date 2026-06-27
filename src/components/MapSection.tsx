@@ -4,16 +4,12 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { geoNaturalEarth1, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 import type { Topology } from "topojson-specification";
-import {
-  locations,
-  categoryMeta,
-  type Location,
-  type LocationCategory,
-} from "@/data/locations";
+import { categoryMeta, type LocationCategory } from "@/data/locations";
 import { buildContentItems } from "@/data/content";
 import galleryData from "@/data/gallery.json";
 import { useInView } from "@/lib/useInView";
 import { useIsMobile } from "@/lib/useIsMobile";
+import MapGallery, { type GalleryStop } from "@/components/MapGallery";
 
 const WORLD_TOPO_URL =
   "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
@@ -33,7 +29,9 @@ interface Pin {
   dateRange: string | null;
   description: string | null;
   industries: string[] | null;
-  galleryImage: string | null;
+  city: string | null;
+  /** One photo per dot — real where the location matches gallery.json, else null. */
+  photo: { src: string; alt: string } | null;
   /** Months from Jan 2013 for chronological sorting */
   sortKey: number;
 }
@@ -103,8 +101,7 @@ export default function MapSection() {
   const [progress, setProgress] = useState(0);
 
   // Pin-fill animation: plays once when the map scrolls into view. Time-based
-  // (not scroll-based) so there's no scroll hijacking and nothing depends on a
-  // fixed-height pinned container.
+  // (not scroll-based) so there's no scroll hijacking.
   useEffect(() => {
     if (!inView) return;
     const DURATION = 2200; // ms to reveal all pins
@@ -120,9 +117,12 @@ export default function MapSection() {
   const isMobile = useIsMobile();
   const [worldData, setWorldData] = useState<GeoJSON.FeatureCollection | null>(null);
   const [activePill, setActivePill] = useState<PillKey | null>(null);
-  const [hoveredCluster, setHoveredCluster] = useState<Cluster | null>(null);
   const [hoveredPin, setHoveredPin] = useState<Pin | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+
+  // Gallery modal state + the dot that triggered it (for focus return).
+  const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
+  const triggerRef = useRef<SVGGElement | null>(null);
 
   // Load world topology
   useEffect(() => {
@@ -149,30 +149,29 @@ export default function MapSection() {
   );
   const pathGenerator = useMemo(() => geoPath().projection(projection), [projection]);
 
-  // Build gallery lookup: city name → first "make" category image
-  const galleryByCity = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const img of galleryData as { slug: string; cropped: string; location?: string; category?: string }[]) {
-      if (img.category !== "make" || !img.location) continue;
-      const city = img.location.split(",")[0].trim().toLowerCase();
+  // city (lowercased token) → first gallery photo for that city
+  const photoByCity = useMemo(() => {
+    const map = new Map<string, { src: string; alt: string }>();
+    for (const img of galleryData as { cropped: string; location?: string }[]) {
+      if (!img.location) continue;
+      const city = normCity(img.location);
       if (!map.has(city)) {
-        map.set(city, `/images/gallery/${img.cropped}`);
+        map.set(city, { src: `/images/gallery/${img.cropped}`, alt: img.location });
       }
     }
     return map;
   }, []);
 
-  // Build chronologically sorted pins from content items
+  // Build chronologically sorted pins from content items, each with one photo.
   const allPins = useMemo(() => {
     const items = buildContentItems();
     const pins: Pin[] = [];
     for (const item of items) {
       if (item.lat == null || item.lng == null) continue;
-      if (item.source === "gallery") continue; // gallery moved to era sections
+      if (item.source === "gallery") continue; // gallery photos placed via their own dots
       if (item.source === "timeline" && item.label?.startsWith("Columbia University")) continue; // already in locations.ts
-      // Match gallery image by city for art/make pins
-      const cityKey = item.label?.toLowerCase() || "";
-      const galleryImage = galleryByCity.get(cityKey) || null;
+      const cityKey = item.city ? normCity(item.city) : "";
+      const photo = cityKey ? photoByCity.get(cityKey) ?? null : null;
       pins.push({
         id: item.id,
         lat: item.lat,
@@ -182,7 +181,8 @@ export default function MapSection() {
         dateRange: item.dateRange,
         description: item.description,
         industries: item.industries,
-        galleryImage,
+        city: item.city,
+        photo,
         sortKey: parseSortKey(item.start || item.dateRange),
       });
     }
@@ -195,13 +195,46 @@ export default function MapSection() {
       }
     }
     return Array.from(seen.values()).sort((a, b) => a.sortKey - b.sortKey);
-  }, []);
+  }, [photoByCity]);
 
   // Filter pins by active pill
   const filteredPins = useMemo(() => {
     if (!activePill) return allPins;
     return allPins.filter((p) => p.category === activePill);
   }, [allPins, activePill]);
+
+  // Gallery sequence = the currently-shown dots, in chronological order.
+  const galleryStops: GalleryStop[] = useMemo(
+    () =>
+      filteredPins.map((p) => ({
+        id: p.id,
+        label: p.label,
+        dateRange: p.dateRange,
+        photo: p.photo,
+        annotation: null,
+      })),
+    [filteredPins]
+  );
+  const stopIndexById = useMemo(() => {
+    const m = new Map<string, number>();
+    filteredPins.forEach((p, i) => m.set(p.id, i));
+    return m;
+  }, [filteredPins]);
+
+  const openGallery = useCallback(
+    (pinId: string, el: SVGGElement) => {
+      const i = stopIndexById.get(pinId);
+      if (i == null) return;
+      triggerRef.current = el;
+      setHoveredPin(null);
+      setGalleryIndex(i);
+    },
+    [stopIndexById]
+  );
+  const closeGallery = useCallback(() => {
+    setGalleryIndex(null);
+    triggerRef.current?.focus?.();
+  }, []);
 
   // How many pins are visible based on animation progress
   const visibleCount = Math.floor(progress * filteredPins.length);
@@ -212,7 +245,6 @@ export default function MapSection() {
     if (visiblePins.length === 0) return "";
     const last = visiblePins[visiblePins.length - 1];
     const dr = last.dateRange || "";
-    // Extract the first 4-digit year from the dateRange
     const match = dr.match(/\d{4}/);
     return match ? match[0] : "";
   }, [visiblePins]);
@@ -245,12 +277,8 @@ export default function MapSection() {
     }
   }, [isMobile]);
 
-
-
-
   const handlePillClick = useCallback((key: PillKey) => {
     setActivePill((prev) => (prev === key ? null : key));
-    setHoveredCluster(null);
     setHoveredPin(null);
   }, []);
 
@@ -286,10 +314,7 @@ export default function MapSection() {
               maxHeight: isMobile ? "none" : "70vh",
             }}
             onClick={(e) => {
-              if (e.target === e.currentTarget) {
-                setHoveredPin(null);
-                setHoveredCluster(null);
-              }
+              if (e.target === e.currentTarget) setHoveredPin(null);
             }}
           >
             {/* Country shapes */}
@@ -303,7 +328,7 @@ export default function MapSection() {
               />
             ))}
 
-            {/* Pins — force-spread individual dots */}
+            {/* Pins — force-spread individual dots; click/Enter opens the gallery */}
             {clusters.map((cluster, ci) => {
               const pin = cluster.pins[0];
               const meta = categoryMeta[pin.category as LocationCategory] || { color: "#A89F95" };
@@ -312,16 +337,20 @@ export default function MapSection() {
                   key={cluster.id + "-" + ci}
                   className="cursor-pointer"
                   style={{ transformOrigin: `${cluster.cx}px ${cluster.cy}px` }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`${pin.label} — open photo`}
                   onMouseEnter={() => {
                     setHoveredPin(pin);
-                    setHoveredCluster(null);
                     setTooltipFromSvgCoords(cluster.cx, cluster.cy);
                   }}
                   onMouseLeave={() => { if (!isMobile) setHoveredPin(null); }}
-                  onClick={() => {
-                    setHoveredPin((prev) => prev?.id === pin.id ? null : pin);
-                    setHoveredCluster(null);
-                    setTooltipFromSvgCoords(cluster.cx, cluster.cy);
+                  onClick={(e) => openGallery(pin.id, e.currentTarget)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      openGallery(pin.id, e.currentTarget);
+                    }
                   }}
                 >
                   <circle cx={cluster.cx} cy={cluster.cy} r={6} fill={meta.color} opacity={0.2}>
@@ -344,7 +373,7 @@ export default function MapSection() {
 
           </svg>
 
-          {/* Tooltip */}
+          {/* Tooltip — hover preview (desktop) */}
           {hoveredPin && (
             <div
               className="absolute pointer-events-none z-10 bg-warm-white rounded-xl shadow-lg max-w-[260px] border overflow-hidden"
@@ -355,9 +384,9 @@ export default function MapSection() {
                 borderColor: "rgba(45, 42, 38, 0.08)",
               }}
             >
-              {hoveredPin.galleryImage && (
+              {hoveredPin.photo && (
                 <img
-                  src={hoveredPin.galleryImage}
+                  src={hoveredPin.photo.src}
                   alt=""
                   className="w-full h-32 object-cover"
                 />
@@ -453,8 +482,20 @@ export default function MapSection() {
             </div>
           </div>
         )}
+
+        <MapGallery
+          stops={galleryStops}
+          index={galleryIndex}
+          onClose={closeGallery}
+          onIndex={setGalleryIndex}
+        />
     </section>
   );
+}
+
+/** Normalize a city token for photo matching ("New York City" -> "new york"). */
+function normCity(s: string): string {
+  return s.split(",")[0].trim().toLowerCase().replace(/\s+city$/, "");
 }
 
 /** Parse a date string into a sortable month number (months from Jan 2013) */
