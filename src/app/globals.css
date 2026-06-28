@@ -184,3 +184,28 @@ footer[id] {
   fill: transparent;
   cursor: default;
 }
+.lifemap-tip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 5;
+  transform: translate(-50%, -130%);
+  background: var(--color-charcoal);
+  color: #f6f1e8;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 12px;
+  line-height: 1.25;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.5);
+}
+.lifemap-tip b {
+  font-weight: 500;
+}
+.lifemap-tip .lifemap-tip-sub {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+  color: #c9bfb1;
+}

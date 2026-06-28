@@ -100,6 +100,10 @@ export interface LifeNode {
   bands: Band[];
   /** Radius of the transparent pointer hit-target. */
   hitR: number;
+  /** Tooltip primary line: "Place, Region". */
+  tipName: string;
+  /** Tooltip secondary line: dates / duration (precomputed). */
+  tipSub: string;
 }
 
 function baseRadius(count: number): number {
@@ -150,6 +154,8 @@ export const NODES: LifeNode[] = (() => {
         baseR: 0,
         bands: [],
         hitR: 0,
+        tipName: "",
+        tipSub: "",
       };
       map[mo.placeKey] = nd;
       order.push(nd);
@@ -163,6 +169,15 @@ export const NODES: LifeNode[] = (() => {
     nd.baseR = baseRadius(nd.count);
     nd.bands = bandsFor(nd.count, nd.modes);
     nd.hitR = Math.max(nd.baseR + 8, 14);
+    nd.tipName = `${nd.place}, ${nd.region}`;
+    const yrs = Math.max(1, Math.round(nd.count / 12));
+    if (nd.count <= 2) {
+      const f = MONTHS_PROJ[nd.first];
+      nd.tipSub = `${MONTH_ABBR[f.month]} ${f.year} · visit`;
+    } else {
+      const endTxt = nd.lastIdx >= N - 1 ? "now" : String(nd.lastY);
+      nd.tipSub = `${nd.firstY}–${endTxt} · ~${yrs} yr${yrs > 1 ? "s" : ""} total`;
+    }
   }
   return order;
 })();

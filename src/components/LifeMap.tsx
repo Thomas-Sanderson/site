@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useState } from "react";
 import {
   VBW,
   VBH,
@@ -9,12 +10,20 @@ import {
   NODES,
   MONTHS_PROJ,
   N,
+  type LifeNode,
 } from "@/lib/lifeMapGeometry";
 import { useLifeDraw } from "@/lib/useLifeDraw";
 import { META, MODE_HEX, MODE_LABEL, type Mode } from "@/data/lifeGrid";
 
 // Legend display order (matches the life-line reference).
 const LEGEND_MODES: Mode[] = ["live", "make", "work", "learn", "travel"];
+
+interface TipState {
+  name: string;
+  sub: string;
+  left: number;
+  top: number;
+}
 
 /**
  * Life Map — a line drawn through a life, paced by where it paused.
@@ -24,10 +33,21 @@ const LEGEND_MODES: Mode[] = ["live", "make", "work", "learn", "travel"];
  * graticule, land, legend, meta copy). No-JS and reduced-motion both rest on
  * exactly this state. `useLifeDraw` only resets+plays the 30s draw once JS is
  * alive and motion is allowed, auto-starting when the section scrolls into view.
+ * Hover tooltips are a pure pointer enhancement over transparent hit-circles.
  */
 export default function LifeMap() {
   const last = MONTHS_PROJ[N - 1];
   const { rootRef, replay } = useLifeDraw<HTMLElement>();
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [tip, setTip] = useState<TipState | null>(null);
+
+  const showTip = (n: LifeNode) => (e: React.PointerEvent) => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const r = stage.getBoundingClientRect();
+    setTip({ name: n.tipName, sub: n.tipSub, left: e.clientX - r.left, top: e.clientY - r.top });
+  };
+  const hideTip = () => setTip(null);
 
   return (
     <section
@@ -62,7 +82,10 @@ export default function LifeMap() {
       </header>
 
       {/* Stage */}
-      <div className="lifemap-stage relative rounded-[14px] overflow-hidden border border-[#E2D9C9] bg-[#F1EADD] shadow-[0_18px_40px_-28px_rgba(34,28,20,0.4)]">
+      <div
+        ref={stageRef}
+        className="lifemap-stage relative rounded-[14px] overflow-hidden border border-[#E2D9C9] bg-[#F1EADD] shadow-[0_18px_40px_-28px_rgba(34,28,20,0.4)]"
+      >
         <svg
           viewBox={`0 0 ${VBW} ${VBH}`}
           preserveAspectRatio="xMidYMid meet"
@@ -107,13 +130,16 @@ export default function LifeMap() {
                     fill={b.color}
                   />
                 ))}
-                {/* Transparent pointer target (hover tooltip wired later) */}
+                {/* Transparent pointer target → hover tooltip */}
                 <circle
                   cx={n.x}
                   cy={n.y}
                   r={n.hitR}
                   className="lifemap-hit"
                   aria-hidden="true"
+                  onPointerEnter={showTip(n)}
+                  onPointerMove={showTip(n)}
+                  onPointerLeave={hideTip}
                 />
               </g>
             ))}
@@ -123,6 +149,14 @@ export default function LifeMap() {
           <circle data-lifemap-halo r={0} fill="rgba(232,99,43,0.22)" />
           <circle data-lifemap-leader r={0} fill={MODE_HEX.work} />
         </svg>
+
+        {/* Hover tooltip (pointer enhancement) */}
+        {tip && (
+          <div className="lifemap-tip" style={{ left: tip.left, top: tip.top }}>
+            <b>{tip.name}</b>
+            <span className="lifemap-tip-sub">{tip.sub}</span>
+          </div>
+        )}
       </div>
 
       {/* Controls: legend + replay */}
