@@ -1065,5 +1065,15 @@
     "location": "Oakland, California",
     "date": "2018",
     "category": "see"
+  },
+  {
+    "slug": "friends-oakland",
+    "source": "manual",
+    "cropped": "cropped/friends-oakland.png",
+    "width": 1880,
+    "height": 1406,
+    "location": "Oakland, California",
+    "date": "2018",
+    "category": "see"
   }
 ]
