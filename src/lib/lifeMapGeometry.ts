@@ -204,7 +204,9 @@ export const NODES: LifeNode[] = (() => {
     const liveSpan = nd.firstLiveIdx >= 0 ? nd.lastLiveIdx - nd.firstLiveIdx + 1 : 0;
     nd.bands = bandsFor(nd.count, nd.modes, liveSpan);
     nd.baseR = nd.bands.reduce((mx, b) => Math.max(mx, b.r), 0);
-    nd.hitR = Math.max(nd.baseR + 8, 14);
+    // Hit-target matches the visible dot exactly, so tooltips correspond to
+    // real dots (not padded geography); later dots drawn on top win overlaps.
+    nd.hitR = nd.baseR;
     nd.tipName = `${nd.place}, ${nd.region}`;
     const yrs = Math.max(1, Math.round(nd.count / 12));
     if (nd.count <= 2) {

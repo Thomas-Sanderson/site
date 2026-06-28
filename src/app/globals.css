@@ -185,6 +185,11 @@ footer[id] {
   fill: transparent;
   cursor: default;
 }
+/* Only the transparent hit-targets capture hovers; the coloured rings don't,
+   so the topmost hit-circle (latest dot) always wins an overlap. */
+.lifemap [data-lifemap-ring] {
+  pointer-events: none;
+}
 .lifemap-tip {
   position: absolute;
   pointer-events: none;
