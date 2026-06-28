@@ -13,6 +13,11 @@ const DUR = 30000;
 const ACTIVE_STROKE = "#E3D9C2";
 const ACTIVE_STROKE_W = "1";
 
+// Modes that count as brief detours, not a change of home base. The active
+// border ignores these so a one-month work/travel trip doesn't yank it away
+// from the dot you keep returning to (which would read as stressful flashing).
+const TRIP_MODES = new Set<string>(["travel", "work"]);
+
 // Layout effect on the client, no-op on the server (avoids the SSR warning
 // while still letting us reset-before-paint to prevent a flash).
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -113,6 +118,7 @@ export function useLifeDraw<T extends HTMLElement>() {
     let raf = 0;
     let io: IntersectionObserver | null = null;
     let activeKey: string | null = null;
+    let anchorKey: string | null = null;
 
     const setBorder = (rn: RNode | undefined, on: boolean) => {
       const c = rn?.outer?.el;
@@ -170,8 +176,16 @@ export function useLifeDraw<T extends HTMLElement>() {
         }
       }
 
-      // Border the dot currently being drawn (none once finished).
-      setActive(ff < N - 1 ? MONTHS_PROJ[ff].placeKey : null);
+      // Border tracks the settled "home" dot. A month only moves the anchor if
+      // it is NOT a brief trip (travel/work), so short detours leave the border
+      // on the place that keeps expanding instead of flashing out and back.
+      if (ff < N - 1) {
+        const cm = MONTHS_PROJ[ff];
+        if (!TRIP_MODES.has(cm.mode)) anchorKey = cm.placeKey;
+        setActive(anchorKey);
+      } else {
+        setActive(null);
+      }
 
       const cur = MONTHS_PROJ[Math.min(N - 1, Math.round(f))];
       if (yearEl) yearEl.textContent = String(cur.year);
@@ -181,6 +195,7 @@ export function useLifeDraw<T extends HTMLElement>() {
     const play = () => {
       if (raf) cancelAnimationFrame(raf);
       raf = 0;
+      anchorKey = null; // re-anchor from the first month
       if (reduce) {
         render(N - 1);
         return;
