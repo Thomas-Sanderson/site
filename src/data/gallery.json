@@ -1,5 +1,15 @@
 [
   {
+    "slug": "service-truck-atlanta",
+    "source": "manual",
+    "cropped": "cropped/service-truck-atlanta.png",
+    "width": 2000,
+    "height": 1349,
+    "location": "Atlanta, Georgia",
+    "date": "2018",
+    "category": "work"
+  },
+  {
     "slug": "panama-volunteers",
     "source": "manual",
     "cropped": "cropped/panama-volunteers.png",
