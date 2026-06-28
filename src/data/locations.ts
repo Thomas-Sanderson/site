@@ -39,7 +39,6 @@ export const locations: Location[] = [
     category: "work",
     dateRange: "2010–2014",
     industries: ["Education"],
-    photoSlug: "subway-116-columbia",
     description: "Columbia University — B.A. Sustainable Development, Biology concentration",
   },
 
@@ -227,6 +226,7 @@ export const locations: Location[] = [
     category: "live",
     dateRange: "2010",
     description: "Moved to New York for Columbia",
+    photoSlug: "subway-116-columbia",
   },
   {
     city: "San Francisco",
