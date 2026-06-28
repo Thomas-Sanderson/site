@@ -77,7 +77,7 @@ export function useLifeDraw<T extends HTMLElement>() {
     const byKey = new Map<string, RingEl[]>();
     root.querySelectorAll<SVGCircleElement>("[data-lifemap-ring]").forEach((el) => {
       const k = el.getAttribute("data-lifemap-ring") ?? "";
-      const rTarget = parseFloat(el.getAttribute("r") ?? "0");
+      const rTarget = parseFloat(el.getAttribute("data-lifemap-r") ?? el.getAttribute("r") ?? "0");
       const arr = byKey.get(k) ?? [];
       arr.push({ el, rTarget });
       byKey.set(k, arr);
@@ -266,13 +266,18 @@ export function useLifeDraw<T extends HTMLElement>() {
       return;
     }
 
-    // Reset to a blank map before paint (no flash), then auto-play on view.
-    renderBlank();
     const rect = root.getBoundingClientRect();
     const onScreen = rect.top < window.innerHeight * 0.85 && rect.bottom > 0;
     if (onScreen) {
+      // Already in view: blank before paint (no flash), then draw.
+      renderBlank();
       play();
     } else {
+      // Leave the full server-rendered map as the resting state and only
+      // blank+draw as it approaches the viewport. So if you navigate away
+      // before ever scrolling to it, it is never left blank (and its dots'
+      // targets are never read as 0 from a cached blank DOM). rootMargin fires
+      // the observer early enough that the blank happens off-screen.
       io = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
@@ -281,7 +286,7 @@ export function useLifeDraw<T extends HTMLElement>() {
             io = null;
           }
         },
-        { threshold: 0.2 }
+        { rootMargin: "0px 0px 280px 0px", threshold: 0 }
       );
       io.observe(root);
     }

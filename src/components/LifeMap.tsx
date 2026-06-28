@@ -123,6 +123,7 @@ export default function LifeMap() {
                   <circle
                     key={`${n.key}-band-${bi}`}
                     data-lifemap-ring={n.key}
+                    data-lifemap-r={b.r}
                     cx={n.x}
                     cy={n.y}
                     r={b.r}
