@@ -1,5 +1,15 @@
 [
   {
+    "slug": "lilly-vaccine-indianapolis",
+    "source": "manual",
+    "cropped": "cropped/lilly-vaccine-indianapolis.png",
+    "width": 2000,
+    "height": 1423,
+    "location": "Indianapolis, Indiana",
+    "date": "2017",
+    "category": "work"
+  },
+  {
     "slug": "rbc-centre-toronto",
     "source": "manual",
     "cropped": "cropped/rbc-centre-toronto.png",
