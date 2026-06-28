@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import type { GalleryPhoto } from "@/lib/mapDots";
 
 interface CurateDot {
@@ -26,18 +26,18 @@ export default function CurateClient({
   photos: GalleryPhoto[];
 }) {
   const [i, setI] = useState(0);
-  // Local copy of each dot's current slug (key -> slug|null), seeded from server.
+  const [photoList, setPhotoList] = useState<GalleryPhoto[]>(photos);
   const [assigned, setAssigned] = useState<Record<string, string | null>>(() =>
     Object.fromEntries(dots.map((d) => [d.key, d.currentSlug]))
   );
   const [filter, setFilter] = useState("");
-  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState("");
 
   const srcBySlug = useMemo(() => {
     const m = new Map<string, string>();
-    for (const p of photos) m.set(p.slug, p.src);
+    for (const p of photoList) m.set(p.slug, p.src);
     return m;
-  }, [photos]);
+  }, [photoList]);
 
   const dot = dots[i];
   const currentSlug = dot ? assigned[dot.key] : null;
@@ -45,11 +45,11 @@ export default function CurateClient({
 
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
-    if (!q) return photos;
-    return photos.filter(
+    if (!q) return photoList;
+    return photoList.filter(
       (p) => p.slug.toLowerCase().includes(q) || p.location.toLowerCase().includes(q)
     );
-  }, [photos, filter]);
+  }, [photoList, filter]);
 
   const go = useCallback((delta: number) => {
     setI((v) => Math.max(0, Math.min(dots.length - 1, v + delta)));
@@ -59,25 +59,67 @@ export default function CurateClient({
   const assign = useCallback(
     async (slug: string | null) => {
       if (!dot) return;
-      setSaving(true);
       setAssigned((a) => ({ ...a, [dot.key]: slug }));
+      setStatus("saving…");
       try {
         await fetch("/api/curate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ key: dot.key, slug }),
         });
-      } finally {
-        setSaving(false);
+        setStatus("saved");
+      } catch {
+        setStatus("save failed");
       }
     },
     [dot]
   );
 
+  const uploadPaste = useCallback(
+    async (dataUrl: string) => {
+      if (!dot) return;
+      setStatus("uploading pasted image…");
+      try {
+        const res = await fetch("/api/curate/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key: dot.key, location: dot.label, date: dot.dateRange, dataUrl }),
+        });
+        const json = await res.json();
+        if (!json.ok) throw new Error(json.error || "upload failed");
+        setPhotoList((prev) => [
+          { slug: json.slug, src: json.src, location: dot.label, date: dot.dateRange ?? "", category: "" },
+          ...prev,
+        ]);
+        setAssigned((a) => ({ ...a, [dot.key]: json.slug }));
+        setStatus(`added ${json.slug}`);
+      } catch (e) {
+        setStatus("upload failed: " + (e as Error).message);
+      }
+    },
+    [dot]
+  );
+
+  // ⌘V paste an image -> upload + assign to the current dot
+  useEffect(() => {
+    const onPaste = (e: ClipboardEvent) => {
+      const item = Array.from(e.clipboardData?.items ?? []).find((it) => it.type.startsWith("image/"));
+      if (!item) return;
+      const blob = item.getAsFile();
+      if (!blob) return;
+      e.preventDefault();
+      const reader = new FileReader();
+      reader.onload = () => uploadPaste(reader.result as string);
+      reader.readAsDataURL(blob);
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, [uploadPaste]);
+
   if (!dot) return <div className="p-8 font-mono">No dots.</div>;
 
   return (
-    <div className="min-h-screen bg-charcoal text-cream" style={{ backgroundColor: "#1a1a1a", color: "#f5f0eb" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "#1a1a1a", color: "#f5f0eb" }}>
       {/* Header */}
       <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-3 border-b border-white/10" style={{ backgroundColor: "#1a1a1a" }}>
         <div className="flex items-center gap-3">
@@ -86,7 +128,7 @@ export default function CurateClient({
           <button onClick={() => go(1)} disabled={i === dots.length - 1} className="px-3 py-1.5 rounded border border-white/15 disabled:opacity-30 font-mono text-xs">Keep ▶</button>
         </div>
         <div className="font-mono text-xs text-white/40">
-          {assignedCount}/{dots.length} have photos{saving ? " · saving…" : ""}
+          {assignedCount}/{dots.length} have photos{status ? ` · ${status}` : ""}
         </div>
       </div>
 
@@ -102,6 +144,7 @@ export default function CurateClient({
             <button onClick={() => go(1)} className="px-3 py-1.5 rounded font-mono text-xs" style={{ backgroundColor: "#C4725A", color: "#fff" }}>Keep current →</button>
             <button onClick={() => assign(null)} className="px-3 py-1.5 rounded border border-white/15 font-mono text-xs">Clear</button>
           </div>
+          <p className="mt-2 font-mono text-[10px] text-white/40">⌘V to paste a new photo for this dot</p>
         </div>
         <div className="w-full sm:w-[360px] shrink-0">
           <p className="font-mono text-[10px] uppercase tracking-widest text-white/40 mb-1">Current</p>
@@ -111,7 +154,7 @@ export default function CurateClient({
               <p className="font-mono text-[10px] text-white/40 mt-1">{currentSlug}</p>
             </>
           ) : (
-            <div className="w-full h-40 rounded border border-dashed border-white/20 flex items-center justify-center font-mono text-xs text-white/30">— no photo —</div>
+            <div className="w-full h-40 rounded border border-dashed border-white/20 flex items-center justify-center font-mono text-xs text-white/30">— no photo · ⌘V to paste —</div>
           )}
         </div>
       </div>
@@ -121,7 +164,7 @@ export default function CurateClient({
         <input
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          placeholder={`Filter ${photos.length} photos by slug or location…`}
+          placeholder={`Filter ${photoList.length} photos by slug or location…`}
           className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 font-mono text-sm outline-none focus:border-white/30"
         />
       </div>
