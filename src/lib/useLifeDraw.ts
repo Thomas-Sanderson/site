@@ -119,7 +119,6 @@ export function useLifeDraw<T extends HTMLElement>() {
     });
 
     let raf = 0;
-    let io: IntersectionObserver | null = null;
     let activeKey: string | null = null;
     let anchorKey: string | null = null;
     let borderKey: string | null = null;
@@ -266,35 +265,11 @@ export function useLifeDraw<T extends HTMLElement>() {
       return;
     }
 
-    const rect = root.getBoundingClientRect();
-    const onScreen = rect.top < window.innerHeight * 0.85 && rect.bottom > 0;
-    if (onScreen) {
-      // Already in view: blank before paint (no flash), then draw.
-      renderBlank();
-      play();
-    } else {
-      // Leave the full server-rendered map as the resting state and only
-      // blank+draw as it approaches the viewport. So if you navigate away
-      // before ever scrolling to it, it is never left blank (and its dots'
-      // targets are never read as 0 from a cached blank DOM). rootMargin fires
-      // the observer early enough that the blank happens off-screen.
-      io = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            play();
-            io?.disconnect();
-            io = null;
-          }
-        },
-        { rootMargin: "0px 0px 280px 0px", threshold: 0 }
-      );
-      io.observe(root);
-    }
-
+    // The map rests on its complete, final state. It does NOT auto-play on
+    // scroll — the "Watch the journey" button plays the draw on demand.
     return () => {
       if (raf) cancelAnimationFrame(raf);
       if (startTimer) clearTimeout(startTimer);
-      io?.disconnect();
     };
   }, []);
 

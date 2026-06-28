@@ -44,11 +44,16 @@ export default function EraSection({ era }: { era: Era }) {
     return images.slice(0, 3);
   }, [era.id, era.galleryFilter]);
 
-  // One-shot staggered reveal. `i` controls the cascade order.
+  // One-shot staggered reveal. `i` controls the cascade order. "Consulting"
+  // slides in fully rendered (no opacity fade) so it doesn't fade at the same
+  // time as the following section.
+  const noFade = era.id === "consulting";
   const reveal = (i: number): React.CSSProperties => ({
-    opacity: revealed ? 1 : 0,
+    opacity: noFade || revealed ? 1 : 0,
     transform: revealed ? "translateY(0)" : "translateY(24px)",
-    transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+    transition: noFade
+      ? "transform 0.7s ease-out"
+      : "opacity 0.7s ease-out, transform 0.7s ease-out",
     transitionDelay: `${i * 0.1}s`,
   });
 

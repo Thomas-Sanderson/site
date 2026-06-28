@@ -178,10 +178,10 @@ export default function LifeMap() {
         <button
           type="button"
           onClick={replay}
-          aria-label="Replay the animation"
+          aria-label="Watch the journey animation"
           className="font-mono text-xs tracking-[0.04em] inline-flex items-center gap-2 rounded-full px-4 py-2 text-[color:var(--color-cream)] bg-[color:var(--color-charcoal)] transition-transform active:translate-y-px hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[color:var(--color-teal)] focus-visible:outline-offset-2"
         >
-          ▷ Replay
+          ▷ Watch the journey
         </button>
       </div>
     </section>
