@@ -15,9 +15,9 @@ export const MODES: Mode[] = ["live", "work", "learn", "make", "travel"];
 export const MODE_HEX: Record<Mode, string> = {
   live: "#2A6B5A",
   work: "#C4725A",
-  learn: "#BFA052",
+  learn: "#5A8FC4",
   make: "#7B5EA7",
-  travel: "#5A8FC4",
+  travel: "#BFA052",
 };
 
 export const MODE_LABEL: Record<Mode, string> = {
