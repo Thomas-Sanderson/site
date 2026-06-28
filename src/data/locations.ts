@@ -11,6 +11,8 @@ export interface Location {
   lat: number;
   lng: number;
   category: LocationCategory;
+  /** Pin a specific gallery photo to this dot (overrides city match). */
+  photoSlug?: string;
   industries?: string[];
   dateRange?: string;
   description?: string;
@@ -251,6 +253,7 @@ export const locations: Location[] = [
     category: "live",
     dateRange: "2019",
     description: "Moved to New Hampshire",
+    photoSlug: "sunset-nh",
   },
   {
     city: "Memphis",

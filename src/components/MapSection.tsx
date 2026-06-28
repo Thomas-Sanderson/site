@@ -162,6 +162,15 @@ export default function MapSection() {
     return map;
   }, []);
 
+  // slug -> photo, for explicit per-dot photo overrides
+  const photoBySlug = useMemo(() => {
+    const map = new Map<string, { src: string; alt: string }>();
+    for (const img of galleryData as { slug: string; cropped: string; location?: string }[]) {
+      map.set(img.slug, { src: `/images/gallery/${img.cropped}`, alt: img.location ?? "" });
+    }
+    return map;
+  }, []);
+
   // Build chronologically sorted pins from content items, each with one photo.
   const allPins = useMemo(() => {
     const items = buildContentItems();
@@ -172,7 +181,9 @@ export default function MapSection() {
       if (item.source === "timeline" && item.label?.startsWith("Columbia University")) continue; // already in locations.ts
       if (item.category === "art") continue; // art is narrated in the Eras section, not the map
       const cityKey = item.city ? normCity(item.city) : "";
-      const photo = cityKey ? photoByCity.get(cityKey) ?? null : null;
+      const photo =
+        (item.photoSlug ? photoBySlug.get(item.photoSlug) ?? null : null) ??
+        (cityKey ? photoByCity.get(cityKey) ?? null : null);
       // Timeline (employment) dots use their place as the label, not the job title.
       const label = item.source === "timeline" && item.city ? item.city : item.label;
       pins.push({
@@ -198,7 +209,7 @@ export default function MapSection() {
       }
     }
     return Array.from(seen.values()).sort((a, b) => a.sortKey - b.sortKey);
-  }, [photoByCity]);
+  }, [photoByCity, photoBySlug]);
 
   // Filter pins by active pill
   const filteredPins = useMemo(() => {

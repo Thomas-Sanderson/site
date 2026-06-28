@@ -18,6 +18,7 @@ export interface ContentItem {
   end: string | null;
   dateRange: string | null;
   category: string | null;
+  photoSlug: string | null;
   imageSlugs: string[] | null;
 }
 
@@ -42,6 +43,7 @@ export function buildContentItems(): ContentItem[] {
       end: entry.end,
       dateRange: `${entry.start} – ${entry.end}`,
       category: entry.category ?? null,
+      photoSlug: null,
       imageSlugs: null,
     });
   }
@@ -64,6 +66,7 @@ export function buildContentItems(): ContentItem[] {
       end: null,
       dateRange: loc.dateRange ?? null,
       category: loc.category,
+      photoSlug: loc.photoSlug ?? null,
       imageSlugs: null,
     });
   }
@@ -94,6 +97,7 @@ export function buildContentItems(): ContentItem[] {
       end: null,
       dateRange: img.date ?? null,
       category: img.category ?? null,
+      photoSlug: null,
       imageSlugs: [img.slug],
     });
   }
