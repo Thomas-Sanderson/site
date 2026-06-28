@@ -10,6 +10,7 @@ import {
   MONTHS_PROJ,
   N,
 } from "@/lib/lifeMapGeometry";
+import { useLifeDraw } from "@/lib/useLifeDraw";
 import { META, MODE_HEX, MODE_LABEL, type Mode } from "@/data/lifeGrid";
 
 // Legend display order (matches the life-line reference).
@@ -21,14 +22,16 @@ const LEGEND_MODES: Mode[] = ["live", "make", "work", "learn", "travel"];
  * Progressive enhancement: this server-renders the COMPLETE final map (full
  * route path, every place at full radius with its concentric mode-rings,
  * graticule, land, legend, meta copy). No-JS and reduced-motion both rest on
- * exactly this state. The draw animation (added on top) only resets+plays once
- * JS is alive and motion is allowed — see later phases.
+ * exactly this state. `useLifeDraw` only resets+plays the 30s draw once JS is
+ * alive and motion is allowed, auto-starting when the section scrolls into view.
  */
 export default function LifeMap() {
   const last = MONTHS_PROJ[N - 1];
+  const { rootRef, replay } = useLifeDraw<HTMLElement>();
 
   return (
     <section
+      ref={rootRef}
       id="map"
       className="lifemap relative min-h-[100svh] px-6 md:px-12 max-w-[1120px] mx-auto py-16 sm:py-24 flex flex-col justify-center"
     >
@@ -122,19 +125,29 @@ export default function LifeMap() {
         </svg>
       </div>
 
-      {/* Legend */}
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4">
-        <span className="inline-flex items-center gap-2 text-[12.5px] text-[color:var(--color-muted)]">
-          <svg width="22" height="16" className="overflow-visible block">
-            <circle cx="11" cy="8" r="7" fill={MODE_HEX.travel} />
-            <circle cx="11" cy="8" r="5" fill={MODE_HEX.learn} />
-            <circle cx="11" cy="8" r="2.6" fill={MODE_HEX.live} />
-          </svg>
-          Place — rings show the mix of time, size shows how long
-        </span>
-        <span className="text-[12.5px] text-[color:var(--color-muted)]">
-          Hover a place for its name and dates
-        </span>
+      {/* Controls: legend + replay */}
+      <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <span className="inline-flex items-center gap-2 text-[12.5px] text-[color:var(--color-muted)]">
+            <svg width="22" height="16" className="overflow-visible block">
+              <circle cx="11" cy="8" r="7" fill={MODE_HEX.travel} />
+              <circle cx="11" cy="8" r="5" fill={MODE_HEX.learn} />
+              <circle cx="11" cy="8" r="2.6" fill={MODE_HEX.live} />
+            </svg>
+            Place — rings show the mix of time, size shows how long
+          </span>
+          <span className="text-[12.5px] text-[color:var(--color-muted)]">
+            Hover a place for its name and dates
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={replay}
+          aria-label="Replay the animation"
+          className="font-mono text-xs tracking-[0.04em] inline-flex items-center gap-2 rounded-full px-4 py-2 text-[color:var(--color-cream)] bg-[color:var(--color-charcoal)] transition-transform active:translate-y-px hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[color:var(--color-teal)] focus-visible:outline-offset-2"
+        >
+          ▷ Replay
+        </button>
       </div>
 
       {/* Modes key */}
