@@ -171,9 +171,18 @@ export default function CaseStudyCard({ study, fullPage = false }: { study: Case
               <p className="font-mono text-xs uppercase tracking-widest mb-2" style={{ color: "var(--color-terracotta)" }}>
                 Play it
               </p>
+              {/* Full-bleed: break out of the case-study column to the full
+                  viewport width (like /chad); height capped so it stays on
+                  screen. The game is responsive and fills the container. */}
               <div
-                className="w-full overflow-hidden rounded-xl border"
-                style={{ borderColor: "rgba(45, 42, 38, 0.08)", aspectRatio: "16 / 9" }}
+                className="overflow-hidden border-y"
+                style={{
+                  borderColor: "rgba(45, 42, 38, 0.08)",
+                  width: "100vw",
+                  maxWidth: "100vw",
+                  marginLeft: "calc(50% - 50vw)",
+                  height: "min(56.25vw, 80vh)",
+                }}
               >
                 <iframe
                   src={study.embedUrl}

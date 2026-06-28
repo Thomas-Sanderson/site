@@ -61,6 +61,9 @@ body {
   background-color: var(--color-cream);
   color: var(--color-charcoal);
   font-family: var(--font-sans);
+  /* Contain full-bleed (100vw) children without a horizontal scrollbar; clip
+     (not hidden) so it does not create a scroll container that breaks sticky. */
+  overflow-x: clip;
 }
 
 /* Subtle paper grain texture via CSS */
