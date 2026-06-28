@@ -10,7 +10,7 @@ import type { CaseStudy } from "@/data/caseStudies";
  * wrapper so the card's own hover-lift transform isn't clobbered.
  */
 export default function WorkCard({ study }: { study: CaseStudy }) {
-  const thumb = study.images?.[0]?.src;
+  const thumb = study.thumb ?? study.images?.[0]?.src;
   const { ref, revealed } = useReveal<HTMLDivElement>({ threshold: 0.15 });
 
   return (

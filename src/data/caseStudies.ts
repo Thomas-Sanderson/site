@@ -11,6 +11,8 @@ export interface CaseStudy {
   playUrl?: string;
   /** If set, embeds the project (e.g. a playable iframe) at the bottom. */
   embedUrl?: string;
+  /** Index-card thumbnail; falls back to the first body image. */
+  thumb?: string;
   extra?: { label: string; text: string };
   images?: { src: string; alt: string; clipped?: boolean }[];
   videos?: { src: string; alt: string }[];
@@ -98,6 +100,7 @@ export const caseStudies: CaseStudy[] = [
       "Most “educational games” are neither. CHAD bets that the way to teach survival-level language is to make the player live a comedy of errors in the target culture — never explaining a rule, never breaking the joke — and that this produces functional speakers faster and more durably than apps that aim for fluency and deliver neither. It is built to scale: any phonetic, case-heavy language that follows Russian's rules — Polish, Ukrainian, Greek, Korean, Turkish — can ride the same engine, authored by native speakers. The unbreakable rule across every version: the joke is always the clueless foreigner, never the country. The promise isn't fluency — it's that you'll step off the plane able to get by.",
     playUrl: "/chad",
     embedUrl: "/chad",
+    thumb: "/images/chad/title.png",
     imagePlaceholders: [],
   },
 ];
