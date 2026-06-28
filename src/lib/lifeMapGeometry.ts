@@ -96,6 +96,9 @@ export interface LifeNode {
   firstY: number;
   lastY: number;
   modes: Partial<Record<Mode, number>>;
+  /** Index of the first/last month actually tagged "live" here (-1 if none). */
+  firstLiveIdx: number;
+  lastLiveIdx: number;
   baseR: number;
   bands: Band[];
   /** Radius of the transparent pointer hit-target. */
@@ -110,42 +113,53 @@ function baseRadius(count: number): number {
   return Math.min(18, 3.5 + Math.sqrt(count) * 1.05);
 }
 
-function bandsFor(count: number, modes: Partial<Record<Mode, number>>): Band[] {
-  const R = baseRadius(count);
-
-  // Concentric rings ordered from the centre outward: live, make, work, learn,
-  // travel. "Live" is weighted by the FULL time at a place — the other modes
-  // happen during months you also lived there, so the alternating Live/Work
-  // tagging shouldn't shrink how long you lived somewhere. A residence reads as
-  // a green core sized by that full duration, with the activities as outer
-  // shells; trip-only places just stack their present modes in the same order.
-  const present: { color: string; n: number; weight: number }[] = [];
-  for (const m of RING_ORDER) {
-    if (m === "live") {
-      if ((modes.live ?? 0) > 0) present.push({ color: MODE_HEX.live, n: count, weight: count });
-    } else {
-      const n = modes[m] ?? 0;
-      if (n > 0) present.push({ color: MODE_HEX[m], n, weight: n });
+function bandsFor(
+  count: number,
+  modes: Partial<Record<Mode, number>>,
+  liveSpan: number
+): Band[] {
+  // Residence: the green core is sized by HOW LONG you lived there — the span
+  // (bounds) from your first to last live month, NOT the count of recorded
+  // months (trips deflate that, which made two equally-long homes look unequal).
+  // Activities ring outward from the green in RING_ORDER (make, work, learn,
+  // travel), each a thin shell scaled by its own amount.
+  if ((modes.live ?? 0) > 0 && liveSpan > 0) {
+    const greenR = baseRadius(liveSpan);
+    const bands: Band[] = [{ color: MODE_HEX.live, n: liveSpan, r: greenR }];
+    let cum = greenR;
+    for (const m of RING_ORDER) {
+      if (m === "live") continue;
+      const c = modes[m] ?? 0;
+      if (c > 0) {
+        cum += Math.min(4, 1.0 + Math.sqrt(c) * 0.45);
+        bands.push({ color: MODE_HEX[m], n: c, r: cum });
+      }
     }
-  }
-
-  const bands: Band[] = present.map((p) => ({ color: p.color, n: p.n, r: 0 }));
-  if (bands.length <= 1) {
-    if (bands.length === 1) bands[0].r = R;
     return bands;
   }
 
-  const total = present.reduce((s, p) => s + p.weight, 0);
+  // Trip-only place (no live months): cumulative bands sized by count.
+  const R = baseRadius(count);
+  const present: Band[] = [];
+  for (const m of RING_ORDER) {
+    const n = modes[m] ?? 0;
+    if (n > 0) present.push({ color: MODE_HEX[m], n, r: 0 });
+  }
+  if (present.length <= 1) {
+    if (present.length === 1) present[0].r = R;
+    return present;
+  }
+  const total = present.reduce((sum, b) => sum + b.n, 0);
   const minW = 1.5;
-  const free = Math.max(0, R - minW * bands.length);
+  const free = Math.max(0, R - minW * present.length);
   let cum = 0;
-  for (let i = 0; i < bands.length; i++) {
-    cum += minW + free * (present[i].weight / total);
-    bands[i].r = cum;
+  for (const b of present) {
+    cum += minW + free * (b.n / total);
+    b.r = cum;
   }
   const sc = R / cum;
-  for (const b of bands) b.r *= sc;
-  return bands;
+  for (const b of present) b.r *= sc;
+  return present;
 }
 
 export const NODES: LifeNode[] = (() => {
@@ -166,6 +180,8 @@ export const NODES: LifeNode[] = (() => {
         firstY: mo.year,
         lastY: mo.year,
         modes: {},
+        firstLiveIdx: -1,
+        lastLiveIdx: -1,
         baseR: 0,
         bands: [],
         hitR: 0,
@@ -179,10 +195,15 @@ export const NODES: LifeNode[] = (() => {
     nd.lastIdx = mo.i;
     nd.lastY = mo.year;
     nd.modes[mo.mode] = (nd.modes[mo.mode] ?? 0) + 1;
+    if (mo.mode === "live") {
+      if (nd.firstLiveIdx < 0) nd.firstLiveIdx = mo.i;
+      nd.lastLiveIdx = mo.i;
+    }
   }
   for (const nd of order) {
-    nd.baseR = baseRadius(nd.count);
-    nd.bands = bandsFor(nd.count, nd.modes);
+    const liveSpan = nd.firstLiveIdx >= 0 ? nd.lastLiveIdx - nd.firstLiveIdx + 1 : 0;
+    nd.bands = bandsFor(nd.count, nd.modes, liveSpan);
+    nd.baseR = nd.bands.reduce((mx, b) => Math.max(mx, b.r), 0);
     nd.hitR = Math.max(nd.baseR + 8, 14);
     nd.tipName = `${nd.place}, ${nd.region}`;
     const yrs = Math.max(1, Math.round(nd.count / 12));
