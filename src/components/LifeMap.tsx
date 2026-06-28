@@ -26,7 +26,7 @@ interface TipState {
 }
 
 /**
- * Life Map — a line drawn through a life, paced by where it paused.
+ * Life Map — every place I've lived, worked, and wandered.
  *
  * Progressive enhancement: this server-renders the COMPLETE final map (full
  * route path, every place at full radius with its concentric mode-rings,
@@ -62,7 +62,7 @@ export default function LifeMap() {
             {META.eyebrow}
           </p>
           <h2 className="font-serif text-2xl sm:text-3xl leading-tight max-w-[20ch]">
-            A line drawn through a life, paced by where it paused.
+            Every place I&rsquo;ve lived, worked, and wandered.
           </h2>
         </div>
         <div className="text-right min-w-[170px]">
@@ -144,10 +144,6 @@ export default function LifeMap() {
               </g>
             ))}
           </g>
-
-          {/* Leader + halo (invisible in the static state) */}
-          <circle data-lifemap-halo r={0} fill="rgba(232,99,43,0.22)" />
-          <circle data-lifemap-leader r={0} fill={MODE_HEX.work} />
         </svg>
 
         {/* Hover tooltip (pointer enhancement) */}

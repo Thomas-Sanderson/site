@@ -11,25 +11,8 @@ const DUR = 30000;
 // while still letting us reset-before-paint to prevent a flash).
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
-type RGB = [number, number, number];
-const TAG_RGB: Record<string, RGB> = {
-  live: [47, 161, 94],
-  make: [126, 91, 208],
-  work: [232, 99, 43],
-  learn: [46, 120, 201],
-  travel: [216, 162, 30],
-};
-const TAG_DEF: RGB = [232, 99, 43];
-
-const colorFor = (mode: string): RGB => TAG_RGB[mode] ?? TAG_DEF;
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-const smooth = (t: number) => t * t * (3 - 2 * t);
-const mixc = (a: RGB, b: RGB, t: number): RGB => [
-  Math.round(a[0] + (b[0] - a[0]) * t),
-  Math.round(a[1] + (b[1] - a[1]) * t),
-  Math.round(a[2] + (b[2] - a[2]) * t),
-];
 
 interface RNode {
   first: number;
@@ -43,6 +26,10 @@ interface RNode {
  * Drives the Life Map draw animation by mutating SVG attributes imperatively
  * (no React re-render per frame). Returns a ref for the section root and a
  * `replay` callback for the Replay button.
+ *
+ * The growing line and the place rings ARE the animation — there is no separate
+ * leader dot (its only job is to drive ring growth at the drawing edge, which
+ * `render` does directly).
  *
  * Progressive enhancement: if `prefers-reduced-motion` is set (or this hook
  * never runs, i.e. no JS), the map is left on its server-rendered final state.
@@ -60,11 +47,9 @@ export function useLifeDraw<T extends HTMLElement>() {
     const reduce = !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
     const line = root.querySelector<SVGPathElement>("[data-lifemap-line]");
-    const leader = root.querySelector<SVGCircleElement>("[data-lifemap-leader]");
-    const halo = root.querySelector<SVGCircleElement>("[data-lifemap-halo]");
     const yearEl = root.querySelector<HTMLElement>("[data-lifemap-year]");
     const placeEl = root.querySelector<HTMLElement>("[data-lifemap-place]");
-    if (!line || !leader || !halo) return;
+    if (!line) return;
 
     // Group ring circles by place, reading their full radius as the target.
     const byKey = new Map<string, { el: SVGCircleElement; rTarget: number }[]>();
@@ -95,12 +80,6 @@ export function useLifeDraw<T extends HTMLElement>() {
     let raf = 0;
     let io: IntersectionObserver | null = null;
 
-    const tagRGB = (f: number): RGB => {
-      const i = Math.floor(f);
-      if (i >= N - 1) return colorFor(MONTHS_PROJ[N - 1].mode);
-      return mixc(colorFor(MONTHS_PROJ[i].mode), colorFor(MONTHS_PROJ[i + 1].mode), smooth(f - i));
-    };
-
     const elapsedIn = (rn: RNode, ff: number): number => {
       let c = 0;
       for (const ix of rn.idxs) {
@@ -110,44 +89,19 @@ export function useLifeDraw<T extends HTMLElement>() {
       return c;
     };
 
-    const leaderDraw = (x: number, y: number, f: number) => {
-      if (f >= N - 1) {
-        leader.setAttribute("r", "0");
-        halo.setAttribute("r", "0");
-        return;
-      }
-      const c = tagRGB(f);
-      const t = performance.now();
-      const pulse = 3.7 + Math.sin(t / 230) * 0.8;
-      const ha = 0.15 + ((Math.sin(t / 560) + 1) / 2) * 0.13;
-      leader.setAttribute("cx", String(x));
-      leader.setAttribute("cy", String(y));
-      leader.setAttribute("r", pulse.toFixed(2));
-      leader.setAttribute("fill", `rgb(${c[0]},${c[1]},${c[2]})`);
-      halo.setAttribute("cx", String(x));
-      halo.setAttribute("cy", String(y));
-      halo.setAttribute("r", (pulse + 9).toFixed(2));
-      halo.setAttribute("fill", `rgba(${c[0]},${c[1]},${c[2]},${ha.toFixed(3)})`);
-    };
-
     const render = (f: number) => {
       const ff = Math.floor(f);
-      let tipX: number;
-      let tipY: number;
+
+      // Draw the line up to a smooth fractional tip (this tip is what grows the
+      // rings at the current place — no visible dot).
       let lead: { x: number; y: number } | undefined;
       if (ff < N - 1) {
         const t = f - ff;
         const a = MONTHS_PROJ[ff];
         const b = MONTHS_PROJ[ff + 1];
-        tipX = lerp(a.x, b.x, t);
-        tipY = lerp(a.y, b.y, t);
-        lead = { x: tipX, y: tipY };
-      } else {
-        tipX = MONTHS_PROJ[N - 1].x;
-        tipY = MONTHS_PROJ[N - 1].y;
+        lead = { x: lerp(a.x, b.x, t), y: lerp(a.y, b.y, t) };
       }
       line.setAttribute("d", partialPath(ff + 1, lead));
-      leaderDraw(tipX, tipY, f);
 
       for (const rn of rnodes) {
         if (ff >= rn.first) {
