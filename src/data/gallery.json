@@ -985,5 +985,15 @@
     "date": "2024",
     "category": "work",
     "era": "behavioral-health"
+  },
+  {
+    "slug": "subway-116-columbia",
+    "source": "manual",
+    "cropped": "cropped/subway-116-columbia.jpg",
+    "width": 2000,
+    "height": 1427,
+    "location": "New York, New York",
+    "date": "2014",
+    "category": "see"
   }
 ]

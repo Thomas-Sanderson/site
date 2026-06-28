@@ -39,6 +39,7 @@ export const locations: Location[] = [
     category: "work",
     dateRange: "2010–2014",
     industries: ["Education"],
+    photoSlug: "subway-116-columbia",
     description: "Columbia University — B.A. Sustainable Development, Biology concentration",
   },
 
