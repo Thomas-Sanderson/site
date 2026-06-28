@@ -36,7 +36,7 @@ export default function EraSection({ era }: { era: Era }) {
       const j = seed % (i + 1);
       [images[i], images[j]] = [images[j], images[i]];
     }
-    return images;
+    return images.slice(0, 3);
   }, [era.id, era.galleryFilter]);
 
   // One-shot staggered reveal. `i` controls the cascade order.
