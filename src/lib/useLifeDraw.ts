@@ -5,6 +5,8 @@ import { MONTHS_PROJ, NODES, N, partialPath } from "./lifeMapGeometry";
 
 // 30-second pass, matching the life-line reference.
 const DUR = 30000;
+// Hold the map blank briefly before the line starts drawing.
+const START_DELAY = 650;
 
 // Thin border drawn on the dot that's currently expanding, so small
 // month-to-month growth is easier to see. Warm sand tone (sampled from the
@@ -117,6 +119,7 @@ export function useLifeDraw<T extends HTMLElement>() {
     let io: IntersectionObserver | null = null;
     let activeKey: string | null = null;
     let anchorKey: string | null = null;
+    let startTimer = 0;
 
     const setBorder = (rn: RNode | undefined, on: boolean) => {
       const c = rn?.outer?.el;
@@ -189,25 +192,43 @@ export function useLifeDraw<T extends HTMLElement>() {
       if (yearEl) yearEl.textContent = String(cur.year);
     };
 
+    // Fully empty map: no line, no dots, no border — the pre-roll state.
+    const renderBlank = () => {
+      line.setAttribute("d", "");
+      for (const rn of rnodes) {
+        for (const c of rn.circles) c.el.setAttribute("r", "0");
+        rn.visible = false;
+        if (rn.hit) rn.hit.style.pointerEvents = "none";
+      }
+      anchorKey = null;
+      setActive(null);
+      if (yearEl) yearEl.textContent = String(MONTHS_PROJ[0].year);
+    };
+
     const play = () => {
       if (raf) cancelAnimationFrame(raf);
       raf = 0;
-      anchorKey = null; // re-anchor from the first month
+      if (startTimer) clearTimeout(startTimer);
       if (reduce) {
         render(N - 1);
         return;
       }
-      const t0 = performance.now();
-      const step = (now: number) => {
-        const p = Math.min(1, (now - t0) / DUR);
-        render(p * (N - 1));
-        if (p < 1) raf = requestAnimationFrame(step);
-        else {
-          render(N - 1);
-          raf = 0;
-        }
-      };
-      raf = requestAnimationFrame(step);
+      // Start blank, hold a beat, then draw from the first month.
+      renderBlank();
+      startTimer = window.setTimeout(() => {
+        startTimer = 0;
+        const t0 = performance.now();
+        const step = (now: number) => {
+          const p = Math.min(1, (now - t0) / DUR);
+          render(p * (N - 1));
+          if (p < 1) raf = requestAnimationFrame(step);
+          else {
+            render(N - 1);
+            raf = 0;
+          }
+        };
+        raf = requestAnimationFrame(step);
+      }, START_DELAY);
     };
     playRef.current = play;
 
@@ -216,8 +237,8 @@ export function useLifeDraw<T extends HTMLElement>() {
       return;
     }
 
-    // Reset to the start before paint (no flash), then auto-play on view.
-    render(0);
+    // Reset to a blank map before paint (no flash), then auto-play on view.
+    renderBlank();
     const rect = root.getBoundingClientRect();
     const onScreen = rect.top < window.innerHeight * 0.85 && rect.bottom > 0;
     if (onScreen) {
@@ -238,6 +259,7 @@ export function useLifeDraw<T extends HTMLElement>() {
 
     return () => {
       if (raf) cancelAnimationFrame(raf);
+      if (startTimer) clearTimeout(startTimer);
       io?.disconnect();
     };
   }, []);
