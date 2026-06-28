@@ -175,8 +175,9 @@ footer[id] {
 }
 .lifemap-line {
   fill: none;
-  stroke: rgba(45, 42, 38, 0.18);
-  stroke-width: 2.1;
+  stroke: rgba(45, 42, 38, 0.12);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 4;
   stroke-linejoin: round;
   stroke-linecap: round;
 }

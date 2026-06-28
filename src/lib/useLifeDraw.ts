@@ -66,7 +66,6 @@ export function useLifeDraw<T extends HTMLElement>() {
 
     const line = root.querySelector<SVGPathElement>("[data-lifemap-line]");
     const yearEl = root.querySelector<HTMLElement>("[data-lifemap-year]");
-    const placeEl = root.querySelector<HTMLElement>("[data-lifemap-place]");
     if (!line) return;
 
     // Group ring circles by place, reading their full radius as the target.
@@ -188,7 +187,6 @@ export function useLifeDraw<T extends HTMLElement>() {
 
       const cur = MONTHS_PROJ[Math.min(N - 1, Math.round(f))];
       if (yearEl) yearEl.textContent = String(cur.year);
-      if (placeEl) placeEl.textContent = `${cur.place}, ${cur.region}`;
     };
 
     const play = () => {

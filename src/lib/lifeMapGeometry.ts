@@ -112,6 +112,29 @@ function baseRadius(count: number): number {
 
 function bandsFor(count: number, modes: Partial<Record<Mode, number>>): Band[] {
   const R = baseRadius(count);
+  const liveN = modes.live ?? 0;
+
+  // Residence model: living spans the ENTIRE time at a place (the full-size
+  // envelope), because the other modes happen *during* months you also lived
+  // there — the alternating Live/Work tagging shouldn't shrink how long you
+  // lived somewhere. Concurrent activities nest inside, area-proportional to
+  // their share of the time. Returned inner(smallest)->outer with the live
+  // envelope last (largest) so the reversed draw paints it behind everything.
+  if (liveN > 0) {
+    const activities: Band[] = [];
+    for (const m of MODE_ORDER) {
+      if (m === "live") continue;
+      const n = modes[m];
+      if (n) {
+        const r = Math.min(R * 0.92, Math.max(2.4, R * Math.sqrt(n / count)));
+        activities.push({ color: MODE_HEX[m], n, r });
+      }
+    }
+    activities.sort((a, b) => a.r - b.r);
+    return [...activities, { color: MODE_HEX.live, n: count, r: R }];
+  }
+
+  // Trip-only place (no live months): cumulative concentric bands.
   const present: Band[] = [];
   for (const m of MODE_ORDER) {
     const n = modes[m];

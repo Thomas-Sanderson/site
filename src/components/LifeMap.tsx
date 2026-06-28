@@ -13,7 +13,7 @@ import {
   type LifeNode,
 } from "@/lib/lifeMapGeometry";
 import { useLifeDraw } from "@/lib/useLifeDraw";
-import { META, MODE_HEX, MODE_LABEL, type Mode } from "@/data/lifeGrid";
+import { MODE_HEX, MODE_LABEL, type Mode } from "@/data/lifeGrid";
 
 // Legend display order (matches the life-line reference).
 const LEGEND_MODES: Mode[] = ["live", "make", "work", "learn", "travel"];
@@ -30,10 +30,10 @@ interface TipState {
  *
  * Progressive enhancement: this server-renders the COMPLETE final map (full
  * route path, every place at full radius with its concentric mode-rings,
- * graticule, land, legend, meta copy). No-JS and reduced-motion both rest on
- * exactly this state. `useLifeDraw` only resets+plays the 30s draw once JS is
- * alive and motion is allowed, auto-starting when the section scrolls into view.
- * Hover tooltips are a pure pointer enhancement over transparent hit-circles.
+ * graticule, land). No-JS and reduced-motion both rest on exactly this state.
+ * `useLifeDraw` only resets+plays the 30s draw once JS is alive and motion is
+ * allowed, auto-starting when the section scrolls into view. Hover tooltips are
+ * a pure pointer enhancement over transparent hit-circles.
  */
 export default function LifeMap() {
   const last = MONTHS_PROJ[N - 1];
@@ -55,37 +55,28 @@ export default function LifeMap() {
       id="map"
       className="lifemap relative min-h-[100svh] px-6 md:px-12 max-w-[1120px] mx-auto py-16 sm:py-24 flex flex-col justify-center"
     >
-      {/* Header: eyebrow + heading + ticker */}
-      <header className="flex flex-wrap items-end justify-between gap-6 mb-5">
-        <div>
-          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-[color:var(--color-muted)] mb-2">
-            {META.eyebrow}
-          </p>
-          <h2 className="font-serif text-2xl sm:text-3xl leading-tight max-w-[20ch]">
-            Every place I&rsquo;ve lived, worked, and wandered.
-          </h2>
-        </div>
-        <div className="text-right min-w-[170px]">
-          <div
-            data-lifemap-year
-            className="font-mono font-bold leading-none tabular-nums text-[clamp(34px,6vw,56px)]"
-          >
-            {last.year}
-          </div>
-          <div
-            data-lifemap-place
-            className="font-mono text-xs text-[color:var(--color-muted)] mt-1.5 min-h-[1.2em] tracking-wide"
-          >
-            {last.place}, {last.region}
-          </div>
-        </div>
+      {/* Heading */}
+      <header className="mb-5">
+        <h2 className="font-serif text-2xl sm:text-3xl leading-tight max-w-[20ch]">
+          Every place I&rsquo;ve lived, worked, and wandered.
+        </h2>
       </header>
 
       {/* Stage */}
-      <div
-        ref={stageRef}
-        className="lifemap-stage relative"
-      >
+      <div ref={stageRef} className="lifemap-stage relative">
+        {/* Year pill — subtle, top-centre of the map */}
+        <div
+          data-lifemap-year
+          className="absolute left-1/2 top-3 -translate-x-1/2 z-10 px-3 py-1 rounded-full border font-mono text-sm font-semibold tabular-nums tracking-wide"
+          style={{
+            backgroundColor: "rgba(245, 240, 235, 0.9)",
+            borderColor: "rgba(45, 42, 38, 0.1)",
+            color: "var(--color-charcoal)",
+          }}
+        >
+          {last.year}
+        </div>
+
         <svg
           viewBox={`0 0 ${VBW} ${VBH}`}
           preserveAspectRatio="xMidYMid meet"
