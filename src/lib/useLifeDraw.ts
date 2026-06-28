@@ -156,13 +156,14 @@ export function useLifeDraw<T extends HTMLElement>() {
     };
 
     const render = (f: number) => {
-      const ff = Math.floor(f);
+      const cf = Number.isFinite(f) ? Math.max(0, Math.min(N - 1, f)) : 0;
+      const ff = Math.floor(cf);
 
       // Draw the line up to a smooth fractional tip (this tip is what grows the
       // rings at the current place — no visible dot).
       let lead: { x: number; y: number } | undefined;
       if (ff < N - 1) {
-        const t = f - ff;
+        const t = cf - ff;
         const a = MONTHS_PROJ[ff];
         const b = MONTHS_PROJ[ff + 1];
         lead = { x: lerp(a.x, b.x, t), y: lerp(a.y, b.y, t) };
@@ -195,7 +196,7 @@ export function useLifeDraw<T extends HTMLElement>() {
         setActive(finalLiveAnchor);
       }
 
-      const cur = MONTHS_PROJ[Math.min(N - 1, Math.round(f))];
+      const cur = MONTHS_PROJ[Math.min(N - 1, Math.round(cf))];
       if (yearEl) yearEl.textContent = String(cur.year);
       if (placeEl) {
         const homeKey = ff < N - 1 ? anchorKey : finalLiveAnchor;
@@ -231,7 +232,7 @@ export function useLifeDraw<T extends HTMLElement>() {
         startTimer = 0;
         const t0 = performance.now();
         const step = (now: number) => {
-          const p = Math.min(1, (now - t0) / DUR);
+          const p = Math.min(1, Math.max(0, (now - t0) / DUR));
           render(p * (N - 1));
           if (p < 1) raf = requestAnimationFrame(step);
           else {
