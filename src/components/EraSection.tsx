@@ -5,6 +5,10 @@ import { useReveal } from "@/lib/useReveal";
 import type { Era } from "@/data/eras";
 import galleryData from "@/data/gallery.json";
 
+// Temporary: hide the Era photo galleries until they're curated. Set to false
+// to bring them back (the gallery + lightbox code below is untouched).
+const HIDE_ERA_GALLERIES = true;
+
 interface GalleryImage {
   slug: string;
   cropped: string;
@@ -23,6 +27,7 @@ export default function EraSection({ era }: { era: Era }) {
 
   // Gallery images for this era — match by era tag or location filter, shuffled
   const galleryImages = useMemo(() => {
+    if (HIDE_ERA_GALLERIES) return [] as GalleryImage[];
     const images = (galleryData as GalleryImage[]).filter(
       (img) =>
         img.era === era.id ||
