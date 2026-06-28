@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { MONTHS_PROJ, NODES, N, partialPath } from "./lifeMapGeometry";
-import { MODE_LABEL } from "@/data/lifeGrid";
 
 // 30-second pass, matching the life-line reference.
 const DUR = 30000;
@@ -189,7 +188,7 @@ export function useLifeDraw<T extends HTMLElement>() {
 
       const cur = MONTHS_PROJ[Math.min(N - 1, Math.round(f))];
       if (yearEl) yearEl.textContent = String(cur.year);
-      if (placeEl) placeEl.textContent = `${cur.place}, ${cur.region}  ·  ${MODE_LABEL[cur.mode]}`;
+      if (placeEl) placeEl.textContent = `${cur.place}, ${cur.region}`;
     };
 
     const play = () => {

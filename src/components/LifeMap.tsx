@@ -76,7 +76,7 @@ export default function LifeMap() {
             data-lifemap-place
             className="font-mono text-xs text-[color:var(--color-muted)] mt-1.5 min-h-[1.2em] tracking-wide"
           >
-            {last.place}, {last.region}&nbsp;&nbsp;·&nbsp;&nbsp;{MODE_LABEL[last.mode]}
+            {last.place}, {last.region}
           </div>
         </div>
       </header>
@@ -156,20 +156,24 @@ export default function LifeMap() {
         )}
       </div>
 
-      {/* Controls: legend + replay */}
+      {/* Modes key + replay */}
       <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-          <span className="inline-flex items-center gap-2 text-[12.5px] text-[color:var(--color-muted)]">
-            <svg width="22" height="16" className="overflow-visible block">
-              <circle cx="11" cy="8" r="7" fill={MODE_HEX.travel} />
-              <circle cx="11" cy="8" r="5" fill={MODE_HEX.learn} />
-              <circle cx="11" cy="8" r="2.6" fill={MODE_HEX.live} />
-            </svg>
-            Place — rings show the mix of time, size shows how long
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[color:var(--color-muted)]">
+            Modes
           </span>
-          <span className="text-[12.5px] text-[color:var(--color-muted)]">
-            Hover a place for its name and dates
-          </span>
+          {LEGEND_MODES.map((m) => (
+            <span
+              key={m}
+              className="inline-flex items-center gap-2 font-mono text-[12.5px] tracking-wide text-[color:var(--color-muted)]"
+            >
+              <i
+                className="inline-block w-[11px] h-[11px] rounded-full"
+                style={{ backgroundColor: MODE_HEX[m] }}
+              />
+              {MODE_LABEL[m]}
+            </span>
+          ))}
         </div>
         <button
           type="button"
@@ -180,31 +184,6 @@ export default function LifeMap() {
           ▷ Replay
         </button>
       </div>
-
-      {/* Modes key */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3">
-        <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[color:var(--color-muted)]">
-          Modes
-        </span>
-        {LEGEND_MODES.map((m) => (
-          <span
-            key={m}
-            className="inline-flex items-center gap-2 font-mono text-[12.5px] tracking-wide text-[color:var(--color-muted)]"
-          >
-            <i
-              className="inline-block w-[11px] h-[11px] rounded-full"
-              style={{ backgroundColor: MODE_HEX[m] }}
-            />
-            {MODE_LABEL[m]}
-          </span>
-        ))}
-      </div>
-
-      {/* Note */}
-      <p
-        className="font-mono text-[11.5px] leading-relaxed tracking-[0.01em] text-[color:var(--color-muted)] mt-5 max-w-[70ch]"
-        dangerouslySetInnerHTML={{ __html: META.note }}
-      />
     </section>
   );
 }
