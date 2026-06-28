@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/data/siteConfig";
+
+const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+const HEADER_H = 52;
 
 /**
  * Persistent site header + route-based nav. Always visible on every page.
@@ -13,6 +16,28 @@ import { siteConfig } from "@/data/siteConfig";
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  // The name/title hides over the Story hero and fades in once you scroll past
+  // it. Defaults to visible so it stays shown with no JS / on other pages.
+  const [pastHero, setPastHero] = useState(true);
+
+  useIsoLayoutEffect(() => {
+    if (pathname !== "/" || typeof IntersectionObserver === "undefined") {
+      setPastHero(true);
+      return;
+    }
+    const hero = document.getElementById("intro");
+    if (!hero) {
+      setPastHero(true);
+      return;
+    }
+    setPastHero(hero.getBoundingClientRect().bottom <= HEADER_H);
+    const obs = new IntersectionObserver(
+      ([entry]) => setPastHero(!entry.isIntersecting),
+      { rootMargin: `-${HEADER_H}px 0px 0px 0px`, threshold: 0 }
+    );
+    obs.observe(hero);
+    return () => obs.disconnect();
+  }, [pathname]);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -28,18 +53,24 @@ export default function SiteHeader() {
       }}
     >
       <div className="max-w-[1200px] mx-auto h-[52px] px-6 md:px-12 flex items-center justify-between">
-        {/* Name + title → home */}
-        <Link href="/" className="flex items-baseline gap-2 hover:opacity-70 transition-opacity">
-          <span className="font-serif font-bold text-base leading-none">
-            {siteConfig.name}
-          </span>
-          <span
-            className="font-mono text-[10px] tracking-widest uppercase hidden sm:inline"
-            style={{ color: "var(--color-terracotta)" }}
-          >
-            {siteConfig.title}
-          </span>
-        </Link>
+        {/* Name + title → home (hidden over the Story hero, fades in past it) */}
+        <div
+          className="transition-opacity duration-300"
+          style={{ opacity: pastHero ? 1 : 0, pointerEvents: pastHero ? "auto" : "none" }}
+          aria-hidden={!pastHero}
+        >
+          <Link href="/" className="flex items-baseline gap-2 hover:opacity-70 transition-opacity">
+            <span className="font-serif font-bold text-base leading-none">
+              {siteConfig.name}
+            </span>
+            <span
+              className="font-mono text-[10px] tracking-widest uppercase hidden sm:inline"
+              style={{ color: "var(--color-terracotta)" }}
+            >
+              {siteConfig.title}
+            </span>
+          </Link>
+        </div>
 
         {/* Desktop nav */}
         <nav className="hidden sm:flex gap-5">
