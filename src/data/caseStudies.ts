@@ -9,6 +9,8 @@ export interface CaseStudy {
   matters: string;
   /** If set, renders a 'Play Now' CTA linking here. */
   playUrl?: string;
+  /** If set, embeds the project (e.g. a playable iframe) at the bottom. */
+  embedUrl?: string;
   extra?: { label: string; text: string };
   images?: { src: string; alt: string; clipped?: boolean }[];
   videos?: { src: string; alt: string }[];
@@ -94,10 +96,8 @@ export const caseStudies: CaseStudy[] = [
       "A content-driven game engine (React / TypeScript / Vite, Canvas) with a briefing → run → gate → reveal phase structure, wrapped around mechanics that teach reading, listening, and survival production rather than grammar. A WASD-driven Cyrillic input system works both ways — sound-to-letter for spelling, letter-to-sound for reading signs. A vertical city built from real Minsk streets is navigated by reading Soviet signage and asking grandmothers for directions; shopkeeper conversations force the local social register (greet, ask, thank); and a mentor, Anya, refuses to explain grammar and trusts repetition. Crucially, a new language is a data pack a bilingual non-programmer can author — the mechanics are the platform; the language and culture are content.",
     matters:
       "Most “educational games” are neither. CHAD bets that the way to teach survival-level language is to make the player live a comedy of errors in the target culture — never explaining a rule, never breaking the joke — and that this produces functional speakers faster and more durably than apps that aim for fluency and deliver neither. It is built to scale: any phonetic, case-heavy language that follows Russian's rules — Polish, Ukrainian, Greek, Korean, Turkish — can ride the same engine, authored by native speakers. The unbreakable rule across every version: the joke is always the clueless foreigner, never the country. The promise isn't fluency — it's that you'll step off the plane able to get by.",
-    images: [
-      { src: "/images/chad/title.png", alt: "CHAD Rescues Nobody — title screen" },
-    ],
     playUrl: "/chad",
+    embedUrl: "/chad",
     imagePlaceholders: [],
   },
 ];

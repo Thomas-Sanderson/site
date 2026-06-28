@@ -165,6 +165,27 @@ export default function CaseStudyCard({ study, fullPage = false }: { study: Case
               ))}
             </div>
           )}
+
+          {study.embedUrl && (
+            <div>
+              <p className="font-mono text-xs uppercase tracking-widest mb-2" style={{ color: "var(--color-terracotta)" }}>
+                Play it
+              </p>
+              <div
+                className="w-full overflow-hidden rounded-xl border"
+                style={{ borderColor: "rgba(45, 42, 38, 0.08)", height: "clamp(440px, 72vh, 760px)" }}
+              >
+                <iframe
+                  src={study.embedUrl}
+                  title={`${study.title} — playable embed`}
+                  className="block w-full h-full"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  allow="autoplay; fullscreen; gamepad"
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
