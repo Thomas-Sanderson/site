@@ -173,7 +173,7 @@ export default function CaseStudyCard({ study, fullPage = false }: { study: Case
               </p>
               <div
                 className="w-full overflow-hidden rounded-xl border"
-                style={{ borderColor: "rgba(45, 42, 38, 0.08)", height: "clamp(440px, 72vh, 760px)" }}
+                style={{ borderColor: "rgba(45, 42, 38, 0.08)", aspectRatio: "16 / 9" }}
               >
                 <iframe
                   src={study.embedUrl}
