@@ -21,6 +21,9 @@ const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : use
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
+// key -> "Place, Region" for the home ticker.
+const PLACE_LABEL = new Map(NODES.map((n) => [n.key, `${n.place}, ${n.region}`]));
+
 interface RingEl {
   el: SVGCircleElement;
   rTarget: number;
@@ -63,6 +66,7 @@ export function useLifeDraw<T extends HTMLElement>() {
 
     const line = root.querySelector<SVGPathElement>("[data-lifemap-line]");
     const yearEl = root.querySelector<HTMLElement>("[data-lifemap-year]");
+    const placeEl = root.querySelector<HTMLElement>("[data-lifemap-place]");
     if (!line) return;
 
     // Group ring circles by place, reading their full radius as the target.
@@ -193,6 +197,10 @@ export function useLifeDraw<T extends HTMLElement>() {
 
       const cur = MONTHS_PROJ[Math.min(N - 1, Math.round(f))];
       if (yearEl) yearEl.textContent = String(cur.year);
+      if (placeEl) {
+        const homeKey = ff < N - 1 ? anchorKey : finalLiveAnchor;
+        placeEl.textContent = homeKey ? PLACE_LABEL.get(homeKey) ?? "" : "";
+      }
     };
 
     // Fully empty map: no line, no dots, no border — the pre-roll state.
@@ -206,6 +214,7 @@ export function useLifeDraw<T extends HTMLElement>() {
       anchorKey = null;
       setActive(null);
       if (yearEl) yearEl.textContent = String(MONTHS_PROJ[0].year);
+      if (placeEl) placeEl.textContent = "";
     };
 
     const play = () => {

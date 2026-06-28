@@ -37,6 +37,8 @@ interface TipState {
  */
 export default function LifeMap() {
   const last = MONTHS_PROJ[N - 1];
+  const lastLive = [...MONTHS_PROJ].reverse().find((m) => m.mode === "live");
+  const homeLabel = lastLive ? `${lastLive.place}, ${lastLive.region}` : "";
   const { rootRef, replay } = useLifeDraw<HTMLElement>();
   const stageRef = useRef<HTMLDivElement>(null);
   const [tip, setTip] = useState<TipState | null>(null);
@@ -63,17 +65,24 @@ export default function LifeMap() {
       </header>
 
       {/* Stage */}
-      <div
-        ref={stageRef}
-        className="lifemap-stage relative rounded-[14px] overflow-hidden border border-[#E2D9C9] bg-[#F1EADD] shadow-[0_18px_40px_-28px_rgba(34,28,20,0.4)]"
-      >
-        {/* Year — subtle, bottom-centre of the map, in the continent tone */}
+      <div ref={stageRef} className="lifemap-stage relative">
+        {/* Year + current home — subtle, bottom-right, in the continent tone */}
         <div
-          data-lifemap-year
-          className="pointer-events-none select-none absolute left-1/2 bottom-3 -translate-x-1/2 z-10 font-mono font-semibold tabular-nums tracking-wide leading-none text-[clamp(26px,4.5vw,40px)]"
+          className="pointer-events-none select-none absolute right-4 bottom-3 z-10 text-right"
           style={{ color: "#C9B89B" }}
         >
-          {last.year}
+          <div
+            data-lifemap-year
+            className="font-mono font-semibold tabular-nums tracking-wide leading-none text-[clamp(18px,2.6vw,26px)]"
+          >
+            {last.year}
+          </div>
+          <div
+            data-lifemap-place
+            className="font-mono tracking-wide leading-none mt-1 text-[11px] min-h-[1em]"
+          >
+            {homeLabel}
+          </div>
         </div>
 
         <svg
@@ -150,7 +159,7 @@ export default function LifeMap() {
       <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[color:var(--color-muted)]">
-            Modes
+            Key
           </span>
           {LEGEND_MODES.map((m) => (
             <span
