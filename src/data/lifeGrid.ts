@@ -11,13 +11,13 @@ export type Mode = "live" | "work" | "learn" | "make" | "travel";
 
 export const MODES: Mode[] = ["live", "work", "learn", "make", "travel"];
 
-/** Display colour per mode (matches the life-line reference palette). */
+/** Display colour per mode (softened site palette: teal/terracotta/gold/purple/blue). */
 export const MODE_HEX: Record<Mode, string> = {
-  live: "#2FA15E",
-  work: "#E8632B",
-  learn: "#2E78C9",
-  make: "#7E5BD0",
-  travel: "#D8A21E",
+  live: "#2A6B5A",
+  work: "#C4725A",
+  learn: "#BFA052",
+  make: "#7B5EA7",
+  travel: "#5A8FC4",
 };
 
 export const MODE_LABEL: Record<Mode, string> = {

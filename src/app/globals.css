@@ -160,22 +160,22 @@ footer[id] {
   display: block;
 }
 .lifemap-land {
-  fill: #e5d8bf;
-  stroke: #c9b89b;
-  stroke-width: 0.7;
+  fill: rgba(45, 42, 38, 0.06);
+  stroke: rgba(45, 42, 38, 0.12);
+  stroke-width: 0.5;
   stroke-linejoin: round;
 }
 .lifemap-grat {
-  stroke: #eadfcb;
+  stroke: rgba(45, 42, 38, 0.05);
   stroke-width: 1;
   fill: none;
 }
 .lifemap-grat.axis {
-  stroke: #e2d7c2;
+  stroke: rgba(45, 42, 38, 0.09);
 }
 .lifemap-line {
   fill: none;
-  stroke: #b2aea7;
+  stroke: rgba(45, 42, 38, 0.18);
   stroke-width: 2.1;
   stroke-linejoin: round;
   stroke-linecap: round;

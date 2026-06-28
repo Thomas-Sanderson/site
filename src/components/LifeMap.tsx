@@ -84,7 +84,7 @@ export default function LifeMap() {
       {/* Stage */}
       <div
         ref={stageRef}
-        className="lifemap-stage relative rounded-[14px] overflow-hidden border border-[#E2D9C9] bg-[#F1EADD] shadow-[0_18px_40px_-28px_rgba(34,28,20,0.4)]"
+        className="lifemap-stage relative"
       >
         <svg
           viewBox={`0 0 ${VBW} ${VBH}`}
