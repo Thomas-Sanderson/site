@@ -72,7 +72,7 @@ export const MONTHS_PROJ: ProjMonth[] = MONTHS.map((m, i) => {
 export const N = MONTHS_PROJ.length;
 
 // ── Nodes: one per place, with concentric mode bands ──────────────────────
-const MODE_ORDER: Mode[] = ["live", "work", "learn", "make", "travel"];
+const RING_ORDER: Mode[] = ["live", "make", "work", "learn", "travel"];
 
 export interface Band {
   color: string;
@@ -112,48 +112,40 @@ function baseRadius(count: number): number {
 
 function bandsFor(count: number, modes: Partial<Record<Mode, number>>): Band[] {
   const R = baseRadius(count);
-  const liveN = modes.live ?? 0;
 
-  // Residence model: living spans the ENTIRE time at a place (the full-size
-  // envelope), because the other modes happen *during* months you also lived
-  // there — the alternating Live/Work tagging shouldn't shrink how long you
-  // lived somewhere. Concurrent activities nest inside, area-proportional to
-  // their share of the time. Returned inner(smallest)->outer with the live
-  // envelope last (largest) so the reversed draw paints it behind everything.
-  if (liveN > 0) {
-    const activities: Band[] = [];
-    for (const m of MODE_ORDER) {
-      if (m === "live") continue;
-      const n = modes[m];
-      if (n) {
-        const r = Math.min(R * 0.92, Math.max(2.4, R * Math.sqrt(n / count)));
-        activities.push({ color: MODE_HEX[m], n, r });
-      }
+  // Concentric rings ordered from the centre outward: live, make, work, learn,
+  // travel. "Live" is weighted by the FULL time at a place — the other modes
+  // happen during months you also lived there, so the alternating Live/Work
+  // tagging shouldn't shrink how long you lived somewhere. A residence reads as
+  // a green core sized by that full duration, with the activities as outer
+  // shells; trip-only places just stack their present modes in the same order.
+  const present: { color: string; n: number; weight: number }[] = [];
+  for (const m of RING_ORDER) {
+    if (m === "live") {
+      if ((modes.live ?? 0) > 0) present.push({ color: MODE_HEX.live, n: count, weight: count });
+    } else {
+      const n = modes[m] ?? 0;
+      if (n > 0) present.push({ color: MODE_HEX[m], n, weight: n });
     }
-    activities.sort((a, b) => a.r - b.r);
-    return [...activities, { color: MODE_HEX.live, n: count, r: R }];
   }
 
-  // Trip-only place (no live months): cumulative concentric bands.
-  const present: Band[] = [];
-  for (const m of MODE_ORDER) {
-    const n = modes[m];
-    if (n) present.push({ color: MODE_HEX[m], n, r: 0 });
+  const bands: Band[] = present.map((p) => ({ color: p.color, n: p.n, r: 0 }));
+  if (bands.length <= 1) {
+    if (bands.length === 1) bands[0].r = R;
+    return bands;
   }
-  if (present.length === 1) {
-    present[0].r = R;
-    return present;
-  }
+
+  const total = present.reduce((s, p) => s + p.weight, 0);
   const minW = 1.5;
-  const free = Math.max(0, R - minW * present.length);
+  const free = Math.max(0, R - minW * bands.length);
   let cum = 0;
-  for (const b of present) {
-    cum += minW + free * (b.n / count);
-    b.r = cum;
+  for (let i = 0; i < bands.length; i++) {
+    cum += minW + free * (present[i].weight / total);
+    bands[i].r = cum;
   }
   const sc = R / cum;
-  for (const b of present) b.r *= sc;
-  return present;
+  for (const b of bands) b.r *= sc;
+  return bands;
 }
 
 export const NODES: LifeNode[] = (() => {

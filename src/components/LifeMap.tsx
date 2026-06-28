@@ -64,15 +64,11 @@ export default function LifeMap() {
 
       {/* Stage */}
       <div ref={stageRef} className="lifemap-stage relative">
-        {/* Year pill — subtle, top-centre of the map */}
+        {/* Year — subtle, bottom-centre of the map, in the continent tone */}
         <div
           data-lifemap-year
-          className="absolute left-1/2 top-3 -translate-x-1/2 z-10 px-3 py-1 rounded-full border font-mono text-sm font-semibold tabular-nums tracking-wide"
-          style={{
-            backgroundColor: "rgba(245, 240, 235, 0.9)",
-            borderColor: "rgba(45, 42, 38, 0.1)",
-            color: "var(--color-charcoal)",
-          }}
+          className="pointer-events-none select-none absolute left-1/2 bottom-3 -translate-x-1/2 z-10 font-mono font-semibold tabular-nums tracking-wide leading-none text-[clamp(26px,4.5vw,40px)]"
+          style={{ color: "#C9B89B" }}
         >
           {last.year}
         </div>
