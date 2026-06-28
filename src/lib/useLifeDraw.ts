@@ -14,11 +14,6 @@ const START_DELAY = 650;
 const ACTIVE_STROKE = "#E3D9C2";
 const ACTIVE_STROKE_W = "1";
 
-// Modes that count as brief detours, not a change of home base. The active
-// border ignores these so a one-month work/travel trip doesn't yank it away
-// from the dot you keep returning to (which would read as stressful flashing).
-const TRIP_MODES = new Set<string>(["travel", "work"]);
-
 // Layout effect on the client, no-op on the server (avoids the SSR warning
 // while still letting us reset-before-paint to prevent a flash).
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -120,6 +115,13 @@ export function useLifeDraw<T extends HTMLElement>() {
     let activeKey: string | null = null;
     let anchorKey: string | null = null;
     let startTimer = 0;
+    let finalLiveAnchor: string | null = null;
+    for (let i = N - 1; i >= 0; i--) {
+      if (MONTHS_PROJ[i].mode === "live") {
+        finalLiveAnchor = MONTHS_PROJ[i].placeKey;
+        break;
+      }
+    }
 
     const setBorder = (rn: RNode | undefined, on: boolean) => {
       const c = rn?.outer?.el;
@@ -177,15 +179,16 @@ export function useLifeDraw<T extends HTMLElement>() {
         }
       }
 
-      // Border tracks the settled "home" dot. A month only moves the anchor if
-      // it is NOT a brief trip (travel/work), so short detours leave the border
-      // on the place that keeps expanding instead of flashing out and back.
+      // Border tracks the current LIVE home: only a live month moves it, so it
+      // persists through trips/work and never clears until the NEXT live dot is
+      // drawn — which means the final home (e.g. Lewes) keeps its border when
+      // the draw finishes.
       if (ff < N - 1) {
         const cm = MONTHS_PROJ[ff];
-        if (!TRIP_MODES.has(cm.mode)) anchorKey = cm.placeKey;
+        if (cm.mode === "live") anchorKey = cm.placeKey;
         setActive(anchorKey);
       } else {
-        setActive(null);
+        setActive(finalLiveAnchor);
       }
 
       const cur = MONTHS_PROJ[Math.min(N - 1, Math.round(f))];
