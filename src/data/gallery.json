@@ -1,5 +1,15 @@
 [
   {
+    "slug": "stamford-skyline",
+    "source": "manual",
+    "cropped": "cropped/stamford-skyline.jpg",
+    "width": 2000,
+    "height": 1015,
+    "location": "Stamford, Connecticut",
+    "date": "2015",
+    "category": "work"
+  },
+  {
     "slug": "guesthouse-porto",
     "source": "manual",
     "cropped": "cropped/guesthouse-porto.png",
