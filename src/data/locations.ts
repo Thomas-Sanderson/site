@@ -272,6 +272,7 @@ export const locations: Location[] = [
     category: "live",
     dateRange: "2021",
     description: "Moved to Porto, Portugal",
+    photoSlug: "sunset-stream-porto",
   },
   {
     city: "Austin",

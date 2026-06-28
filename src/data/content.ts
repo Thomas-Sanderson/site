@@ -43,7 +43,7 @@ export function buildContentItems(): ContentItem[] {
       end: entry.end,
       dateRange: `${entry.start} – ${entry.end}`,
       category: entry.category ?? null,
-      photoSlug: null,
+      photoSlug: entry.photoSlug ?? null,
       imageSlugs: null,
     });
   }

@@ -1,5 +1,15 @@
 [
   {
+    "slug": "guesthouse-porto",
+    "source": "manual",
+    "cropped": "cropped/guesthouse-porto.png",
+    "width": 2000,
+    "height": 1490,
+    "location": "Porto, Portugal",
+    "date": "2022",
+    "category": "work"
+  },
+  {
     "slug": "service-truck-atlanta",
     "source": "manual",
     "cropped": "cropped/service-truck-atlanta.png",

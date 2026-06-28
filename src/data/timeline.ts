@@ -14,6 +14,7 @@ export interface TimelineEntry {
   lng?: number;
   country?: string;
   category?: "work" | "art" | "volunteer" | "travel" | "want-to-visit";
+  photoSlug?: string;
 }
 
 // Month 0 = Jan 2013
@@ -231,6 +232,7 @@ export const timelineEntries: TimelineEntry[] = [
   {
     role: "Hostel Receptionist",
     company: "Casa Bonjardim Guest House Porto",
+    photoSlug: "guesthouse-porto",
     type: "Seasonal",
     start: "Mar 2022",
     end: "Sep 2022",
