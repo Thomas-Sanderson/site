@@ -224,7 +224,7 @@ export default function MapSection() {
       photoPins.map((p) => ({
         id: p.id,
         label: p.label,
-        dateRange: p.dateRange,
+        dateRange: displayYear(p.dateRange),
         photo: p.photo,
         annotation: null,
       })),
@@ -412,7 +412,7 @@ export default function MapSection() {
               </p>
               {hoveredPin.dateRange && (
                 <p className="font-mono text-xs mb-1" style={{ color: "var(--color-muted)" }}>
-                  {hoveredPin.dateRange}
+                  {displayYear(hoveredPin.dateRange)}
                 </p>
               )}
               {hoveredPin.industries && (
@@ -511,6 +511,13 @@ export default function MapSection() {
 /** Normalize a city token for photo matching ("New York City" -> "new york"). */
 function normCity(s: string): string {
   return s.split(",")[0].trim().toLowerCase().replace(/\s+city$/, "");
+}
+
+/** Display just the (start) year, e.g. "2010–2014" -> "2010", "Mar 2022 – Sep 2022" -> "2022". */
+function displayYear(dateRange: string | null): string {
+  if (!dateRange) return "";
+  const m = dateRange.match(/\d{4}/);
+  return m ? m[0] : "";
 }
 
 /** Parse a date string into a sortable month number (months from Jan 2013) */
