@@ -235,11 +235,27 @@ export const GRATICULE: GratLine[] = (() => {
 })();
 
 // ── Full chronological route path ─────────────────────────────────────────
+// Build a path that draws each unique segment only ONCE. A return trip retraces
+// the same segment; redrawing it would double the dashes and render the line
+// solid/inconsistent. When a segment (or a stay in one place) repeats, we jump
+// (M) instead of stroking (L), so the dashing stays uniform everywhere.
 function pathFrom(points: { x: number; y: number }[]): string {
   if (points.length === 0) return "";
-  let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+  const fx = (n: number) => n.toFixed(1);
+  const ptKey = (p: { x: number; y: number }) => `${fx(p.x)},${fx(p.y)}`;
+  const segKey = (a: string, b: string) => (a < b ? `${a}|${b}` : `${b}|${a}`);
+  const drawn = new Set<string>();
+  let d = `M ${fx(points[0].x)} ${fx(points[0].y)}`;
   for (let k = 1; k < points.length; k++) {
-    d += ` L ${points[k].x.toFixed(1)} ${points[k].y.toFixed(1)}`;
+    const a = ptKey(points[k - 1]);
+    const b = ptKey(points[k]);
+    if (a === b) continue; // same place, no segment
+    if (drawn.has(segKey(a, b))) {
+      d += ` M ${fx(points[k].x)} ${fx(points[k].y)}`; // already drawn — jump
+    } else {
+      drawn.add(segKey(a, b));
+      d += ` L ${fx(points[k].x)} ${fx(points[k].y)}`;
+    }
   }
   return d;
 }
