@@ -265,6 +265,7 @@ export const locations: Location[] = [
     category: "live",
     dateRange: "2020",
     description: "Moved to Memphis",
+    photoSlug: "workshop-memphis",
   },
   {
     city: "Porto",

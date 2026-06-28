@@ -1035,5 +1035,15 @@
     "location": "San Francisco, California",
     "date": "2015",
     "category": "live"
+  },
+  {
+    "slug": "workshop-memphis",
+    "source": "manual",
+    "cropped": "cropped/workshop-memphis.png",
+    "width": 1512,
+    "height": 1262,
+    "location": "Memphis, Tennessee",
+    "date": "2020",
+    "category": "make"
   }
 ]
