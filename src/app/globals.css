@@ -149,3 +149,38 @@ footer[id] {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Life Map (Story page) ──────────────────────────────────────────────
+   SVG-internal presentation. Surrounding chrome uses Tailwind + site tokens;
+   these style elements inside the projected map where utility classes are
+   awkward. Colours are the life-line reference's earth palette. */
+.lifemap-stage svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.lifemap-land {
+  fill: #e5d8bf;
+  stroke: #c9b89b;
+  stroke-width: 0.7;
+  stroke-linejoin: round;
+}
+.lifemap-grat {
+  stroke: #eadfcb;
+  stroke-width: 1;
+  fill: none;
+}
+.lifemap-grat.axis {
+  stroke: #e2d7c2;
+}
+.lifemap-line {
+  fill: none;
+  stroke: #b2aea7;
+  stroke-width: 2.1;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.lifemap-hit {
+  fill: transparent;
+  cursor: default;
+}
