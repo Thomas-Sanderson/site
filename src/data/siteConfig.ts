@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "Thomas",
   title: "Design Technologist",
-  email: "holler@thomasdesigns.xyz",
+  email: "thomasdesigns@icloud.com",
   navItems: [
     { label: "Story", href: "/" },
     { label: "Case Studies", href: "/work" },
