@@ -16,7 +16,7 @@ const WORLD_TOPO_URL =
 
 type PillKey = LocationCategory;
 
-const pillKeys: PillKey[] = ["live", "work", "travel"];
+const pillKeys: PillKey[] = ["live", "work", "art", "travel"];
 
 // ── Clustering ──────────────────────────────────────────────────────
 
@@ -179,7 +179,6 @@ export default function MapSection() {
       if (item.lat == null || item.lng == null) continue;
       if (item.source === "gallery") continue; // gallery photos placed via their own dots
       if (item.source === "timeline" && item.label?.startsWith("Columbia University")) continue; // already in locations.ts
-      if (item.category === "art") continue; // art is narrated in the Eras section, not the map
       const cityKey = item.city ? normCity(item.city) : "";
       const photo =
         (item.photoSlug ? photoBySlug.get(item.photoSlug) ?? null : null) ??

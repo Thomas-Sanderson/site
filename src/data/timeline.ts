@@ -228,6 +228,7 @@ export const timelineEntries: TimelineEntry[] = [
     lng: -8.6291,
     country: "Portugal",
     category: "art",
+    photoSlug: "plaster-rose-porto",
   },
   {
     role: "Hostel Receptionist",
