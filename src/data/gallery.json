@@ -1,5 +1,16 @@
 [
   {
+    "slug": "barcelona-overlook",
+    "source": "manual",
+    "cropped": "cropped/barcelona-overlook.png",
+    "width": 2000,
+    "height": 1384,
+    "location": "Barcelona, Spain",
+    "date": "2014",
+    "category": "see",
+    "era": "consulting"
+  },
+  {
     "slug": "moth-lewes",
     "source": "instagram",
     "account": "thomas.w.sanderson",
