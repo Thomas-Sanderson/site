@@ -194,24 +194,15 @@ export const locations: Location[] = [
     description: "Recovery Unplugged — EMR design and LLM chatbot architecture for admissions",
   },
 
-  // ART (Make)
-  {
-    city: "Porto",
-    country: "Portugal",
-    lat: 41.1579,
-    lng: -8.6291,
-    category: "art",
-    dateRange: "2021–2023",
-    description: "Two years of independent art practice and guest house work",
-  },
+  // ART (Make) — none currently; art lives in the Eras section
   {
     city: "Barcelona",
     country: "Spain",
     lat: 41.3874,
     lng: 2.1686,
-    category: "art",
+    category: "live",
     dateRange: "2014",
-    description: "Brand and digital strategy for Tipic i Catala wine shop",
+    description: "Lived in Barcelona",
   },
 
   // LIVE — residences (where I lived, by move-in year)
