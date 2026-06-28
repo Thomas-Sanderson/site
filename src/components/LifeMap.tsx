@@ -63,7 +63,10 @@ export default function LifeMap() {
       </header>
 
       {/* Stage */}
-      <div ref={stageRef} className="lifemap-stage relative">
+      <div
+        ref={stageRef}
+        className="lifemap-stage relative rounded-[14px] overflow-hidden border border-[#E2D9C9] bg-[#F1EADD] shadow-[0_18px_40px_-28px_rgba(34,28,20,0.4)]"
+      >
         {/* Year — subtle, bottom-centre of the map, in the continent tone */}
         <div
           data-lifemap-year
