@@ -1045,5 +1045,25 @@
     "location": "Memphis, Tennessee",
     "date": "2020",
     "category": "make"
+  },
+  {
+    "slug": "earrings-oakland",
+    "source": "manual",
+    "cropped": "cropped/earrings-oakland.png",
+    "width": 1500,
+    "height": 1848,
+    "location": "Oakland, California",
+    "date": "2018",
+    "category": "make"
+  },
+  {
+    "slug": "bookstore-oakland",
+    "source": "manual",
+    "cropped": "cropped/bookstore-oakland.png",
+    "width": 1876,
+    "height": 1310,
+    "location": "Oakland, California",
+    "date": "2018",
+    "category": "see"
   }
 ]

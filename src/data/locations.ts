@@ -246,6 +246,16 @@ export const locations: Location[] = [
     category: "live",
     dateRange: "2018",
     description: "Moved to Oakland",
+    photoSlug: "bookstore-oakland",
+  },
+  {
+    city: "Oakland",
+    country: "USA",
+    lat: 37.8044,
+    lng: -122.2712,
+    category: "art",
+    dateRange: "2018",
+    photoSlug: "earrings-oakland",
   },
   {
     city: "New Hampshire",
