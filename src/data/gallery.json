@@ -1075,5 +1075,15 @@
     "location": "Oakland, California",
     "date": "2018",
     "category": "see"
+  },
+  {
+    "slug": "columbia-campus",
+    "source": "manual",
+    "cropped": "cropped/columbia-campus.png",
+    "width": 1864,
+    "height": 1402,
+    "location": "New York, New York",
+    "date": "2010",
+    "category": "see"
   }
 ]
