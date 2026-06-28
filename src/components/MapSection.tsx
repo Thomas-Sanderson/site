@@ -10,6 +10,10 @@ import galleryData from "@/data/gallery.json";
 import { useInView } from "@/lib/useInView";
 import { useIsMobile } from "@/lib/useIsMobile";
 import MapGallery, { type GalleryStop } from "@/components/MapGallery";
+import { dotKey } from "@/lib/mapDots";
+import photoOverridesData from "@/data/photoOverrides.json";
+
+const photoOverrides = photoOverridesData as Record<string, string>;
 
 const WORLD_TOPO_URL =
   "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
@@ -180,7 +184,9 @@ export default function MapSection() {
       if (item.source === "gallery") continue; // gallery photos placed via their own dots
       if (item.source === "timeline" && item.label?.startsWith("Columbia University")) continue; // already in locations.ts
       const cityKey = item.city ? normCity(item.city) : "";
+      const okey = dotKey(item.lat, item.lng, item.category || "work");
       const photo =
+        (photoOverrides[okey] ? photoBySlug.get(photoOverrides[okey]) ?? null : null) ??
         (item.photoSlug ? photoBySlug.get(item.photoSlug) ?? null : null) ??
         (cityKey ? photoByCity.get(cityKey) ?? null : null);
       // Timeline (employment) dots use their place as the label, not the job title.
