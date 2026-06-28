@@ -8,10 +8,9 @@ import { MODE_LABEL } from "@/data/lifeGrid";
 const DUR = 30000;
 
 // Thin border drawn on the dot that's currently expanding, so small
-// month-to-month growth is easier to see. Uses the continent fill's full
-// colour — the .lifemap-land fill is rgb(45,42,38) at 6%, so this is that
-// same charcoal at full strength (#2D2A26), which stays clearly visible.
-const ACTIVE_STROKE = "#2D2A26";
+// month-to-month growth is easier to see. Warm sand tone (sampled from the
+// continent fill) that stays visible on the saturated dots.
+const ACTIVE_STROKE = "#E3D9C2";
 const ACTIVE_STROKE_W = "1";
 
 // Layout effect on the client, no-op on the server (avoids the SSR warning
