@@ -135,6 +135,7 @@ export default function LifeMap() {
                   cx={n.x}
                   cy={n.y}
                   r={n.hitR}
+                  data-lifemap-hit={n.key}
                   className="lifemap-hit"
                   aria-hidden="true"
                   onPointerEnter={showTip(n)}

@@ -19,6 +19,7 @@ interface RNode {
   count: number;
   idxs: number[];
   circles: { el: SVGCircleElement; rTarget: number }[];
+  hit: SVGCircleElement | null;
   visible: boolean;
 }
 
@@ -29,13 +30,13 @@ interface RNode {
  *
  * The growing line and the place rings ARE the animation — there is no separate
  * leader dot (its only job is to drive ring growth at the drawing edge, which
- * `render` does directly).
+ * `render` does directly). Each place's transparent hit-target is disabled
+ * until its dot has actually been drawn, so you can't hover an empty spot whose
+ * dot hasn't appeared yet.
  *
  * Progressive enhancement: if `prefers-reduced-motion` is set (or this hook
- * never runs, i.e. no JS), the map is left on its server-rendered final state.
- * Otherwise it resets to the start inside a layout effect (before paint, so no
- * flash) and plays forward to that same final state — auto-starting when the
- * section scrolls into view.
+ * never runs, i.e. no JS), the map is left on its server-rendered final state
+ * with every dot — and therefore every hit-target — present.
  */
 export function useLifeDraw<T extends HTMLElement>() {
   const rootRef = useRef<T>(null);
@@ -61,6 +62,12 @@ export function useLifeDraw<T extends HTMLElement>() {
       byKey.set(k, arr);
     });
 
+    // Transparent pointer hit-targets, one per place.
+    const hitByKey = new Map<string, SVGCircleElement>();
+    root.querySelectorAll<SVGCircleElement>("[data-lifemap-hit]").forEach((el) => {
+      hitByKey.set(el.getAttribute("data-lifemap-hit") ?? "", el);
+    });
+
     // Chronological month indices per place (handles revisits).
     const idxByKey = new Map<string, number[]>();
     for (const m of MONTHS_PROJ) {
@@ -74,6 +81,7 @@ export function useLifeDraw<T extends HTMLElement>() {
       count: n.count,
       idxs: idxByKey.get(n.key) ?? [],
       circles: byKey.get(n.key) ?? [],
+      hit: hitByKey.get(n.key) ?? null,
       visible: true,
     }));
 
@@ -109,9 +117,11 @@ export function useLifeDraw<T extends HTMLElement>() {
           const prog = elapsedIn(rn, ff) / rn.count;
           const gr = easeOut(Math.max(0.08, prog));
           for (const c of rn.circles) c.el.setAttribute("r", (c.rTarget * gr).toFixed(2));
+          if (rn.hit) rn.hit.style.pointerEvents = "";
         } else if (rn.visible) {
           rn.visible = false;
           for (const c of rn.circles) c.el.setAttribute("r", "0");
+          if (rn.hit) rn.hit.style.pointerEvents = "none";
         }
       }
 
@@ -142,7 +152,7 @@ export function useLifeDraw<T extends HTMLElement>() {
     playRef.current = play;
 
     if (reduce) {
-      // Leave the server-rendered final map untouched.
+      // Leave the server-rendered final map untouched (all dots + hits present).
       return;
     }
 
