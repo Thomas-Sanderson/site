@@ -7,6 +7,11 @@ import { MODE_LABEL } from "@/data/lifeGrid";
 // 30-second pass, matching the life-line reference.
 const DUR = 30000;
 
+// Thin border drawn on the dot that's currently expanding, so small
+// month-to-month growth is easier to see.
+const ACTIVE_STROKE = "rgba(45, 42, 38, 0.6)";
+const ACTIVE_STROKE_W = "0.9";
+
 // Layout effect on the client, no-op on the server (avoids the SSR warning
 // while still letting us reset-before-paint to prevent a flash).
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -14,11 +19,19 @@ const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : use
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
+interface RingEl {
+  el: SVGCircleElement;
+  rTarget: number;
+}
+
 interface RNode {
+  key: string;
   first: number;
   count: number;
   idxs: number[];
-  circles: { el: SVGCircleElement; rTarget: number }[];
+  circles: RingEl[];
+  /** Outermost ring (largest radius) — carries the active border. */
+  outer: RingEl | null;
   hit: SVGCircleElement | null;
   visible: boolean;
 }
@@ -29,14 +42,13 @@ interface RNode {
  * `replay` callback for the Replay button.
  *
  * The growing line and the place rings ARE the animation — there is no separate
- * leader dot (its only job is to drive ring growth at the drawing edge, which
- * `render` does directly). Each place's transparent hit-target is disabled
- * until its dot has actually been drawn, so you can't hover an empty spot whose
- * dot hasn't appeared yet.
+ * leader dot. The dot currently being drawn gets a thin border so small
+ * expansions are visible; each place's transparent hit-target is disabled until
+ * its dot has actually been drawn.
  *
  * Progressive enhancement: if `prefers-reduced-motion` is set (or this hook
  * never runs, i.e. no JS), the map is left on its server-rendered final state
- * with every dot — and therefore every hit-target — present.
+ * with every dot present, no borders.
  */
 export function useLifeDraw<T extends HTMLElement>() {
   const rootRef = useRef<T>(null);
@@ -53,7 +65,7 @@ export function useLifeDraw<T extends HTMLElement>() {
     if (!line) return;
 
     // Group ring circles by place, reading their full radius as the target.
-    const byKey = new Map<string, { el: SVGCircleElement; rTarget: number }[]>();
+    const byKey = new Map<string, RingEl[]>();
     root.querySelectorAll<SVGCircleElement>("[data-lifemap-ring]").forEach((el) => {
       const k = el.getAttribute("data-lifemap-ring") ?? "";
       const rTarget = parseFloat(el.getAttribute("r") ?? "0");
@@ -76,17 +88,49 @@ export function useLifeDraw<T extends HTMLElement>() {
       idxByKey.set(m.placeKey, a);
     }
 
-    const rnodes: RNode[] = NODES.map((n) => ({
-      first: n.first,
-      count: n.count,
-      idxs: idxByKey.get(n.key) ?? [],
-      circles: byKey.get(n.key) ?? [],
-      hit: hitByKey.get(n.key) ?? null,
-      visible: true,
-    }));
+    const byKeyNode = new Map<string, RNode>();
+    const rnodes: RNode[] = NODES.map((n) => {
+      const circles = byKey.get(n.key) ?? [];
+      const outer = circles.reduce<RingEl | null>(
+        (best, c) => (best && best.rTarget >= c.rTarget ? best : c),
+        null
+      );
+      const rn: RNode = {
+        key: n.key,
+        first: n.first,
+        count: n.count,
+        idxs: idxByKey.get(n.key) ?? [],
+        circles,
+        outer,
+        hit: hitByKey.get(n.key) ?? null,
+        visible: true,
+      };
+      byKeyNode.set(n.key, rn);
+      return rn;
+    });
 
     let raf = 0;
     let io: IntersectionObserver | null = null;
+    let activeKey: string | null = null;
+
+    const setBorder = (rn: RNode | undefined, on: boolean) => {
+      const c = rn?.outer?.el;
+      if (!c) return;
+      if (on) {
+        c.setAttribute("stroke", ACTIVE_STROKE);
+        c.setAttribute("stroke-width", ACTIVE_STROKE_W);
+      } else {
+        c.removeAttribute("stroke");
+        c.removeAttribute("stroke-width");
+      }
+    };
+
+    const setActive = (key: string | null) => {
+      if (key === activeKey) return;
+      setBorder(activeKey ? byKeyNode.get(activeKey) : undefined, false);
+      setBorder(key ? byKeyNode.get(key) : undefined, true);
+      activeKey = key;
+    };
 
     const elapsedIn = (rn: RNode, ff: number): number => {
       let c = 0;
@@ -124,6 +168,9 @@ export function useLifeDraw<T extends HTMLElement>() {
           if (rn.hit) rn.hit.style.pointerEvents = "none";
         }
       }
+
+      // Border the dot currently being drawn (none once finished).
+      setActive(ff < N - 1 ? MONTHS_PROJ[ff].placeKey : null);
 
       const cur = MONTHS_PROJ[Math.min(N - 1, Math.round(f))];
       if (yearEl) yearEl.textContent = String(cur.year);
