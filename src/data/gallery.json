@@ -1025,5 +1025,15 @@
     "location": "New York, New York",
     "date": "2014",
     "category": "see"
+  },
+  {
+    "slug": "moved-to-sf",
+    "source": "manual",
+    "cropped": "cropped/moved-to-sf.png",
+    "width": 2000,
+    "height": 1500,
+    "location": "San Francisco, California",
+    "date": "2015",
+    "category": "live"
   }
 ]
