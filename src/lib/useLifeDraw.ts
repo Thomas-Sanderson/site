@@ -7,6 +7,10 @@ import { MONTHS_PROJ, NODES, N, partialPath } from "./lifeMapGeometry";
 const DUR = 30000;
 // Hold the map blank briefly before the line starts drawing.
 const START_DELAY = 650;
+// Months a NEW home's dot must have been drawing before the border moves onto
+// it — so the border lingers on the old home instead of jumping the instant
+// the line arrives.
+const BORDER_LAG = 2;
 
 // Thin border drawn on the dot that's currently expanding, so small
 // month-to-month growth is easier to see. Warm sand tone (sampled from the
@@ -118,6 +122,7 @@ export function useLifeDraw<T extends HTMLElement>() {
     let io: IntersectionObserver | null = null;
     let activeKey: string | null = null;
     let anchorKey: string | null = null;
+    let borderKey: string | null = null;
     let startTimer = 0;
     let finalLiveAnchor: string | null = null;
     for (let i = N - 1; i >= 0; i--) {
@@ -184,14 +189,24 @@ export function useLifeDraw<T extends HTMLElement>() {
         }
       }
 
-      // Border tracks the current LIVE home: only a live month moves it, so it
-      // persists through trips/work and never clears until the NEXT live dot is
-      // drawn — which means the final home (e.g. Lewes) keeps its border when
-      // the draw finishes.
+      // Border tracks the current LIVE home, but LINGERS: when a new home
+      // becomes live, the border stays on the previous home until the new
+      // home's dot has been drawing for BORDER_LAG months, then transfers —
+      // so it never leaves the old home the instant the line arrives. Returns
+      // to an already-drawn home transfer immediately (its dot is past the lag).
+      // At the very end it rests on the final home (e.g. Lewes).
       if (ff < N - 1) {
         const cm = MONTHS_PROJ[ff];
         if (cm.mode === "live") anchorKey = cm.placeKey;
-        setActive(anchorKey);
+        if (anchorKey) {
+          if (borderKey === null) {
+            borderKey = anchorKey;
+          } else if (anchorKey !== borderKey) {
+            const nd = byKeyNode.get(anchorKey);
+            if (nd && ff >= nd.first + BORDER_LAG) borderKey = anchorKey;
+          }
+        }
+        setActive(borderKey);
       } else {
         setActive(finalLiveAnchor);
       }
@@ -213,6 +228,7 @@ export function useLifeDraw<T extends HTMLElement>() {
         if (rn.hit) rn.hit.style.pointerEvents = "none";
       }
       anchorKey = null;
+      borderKey = null;
       setActive(null);
       if (yearEl) yearEl.textContent = String(MONTHS_PROJ[0].year);
       if (placeEl) placeEl.textContent = "";
