@@ -1,5 +1,15 @@
 [
   {
+    "slug": "rbc-centre-toronto",
+    "source": "manual",
+    "cropped": "cropped/rbc-centre-toronto.png",
+    "width": 2000,
+    "height": 1124,
+    "location": "Toronto, Canada",
+    "date": "2015",
+    "category": "work"
+  },
+  {
     "slug": "stamford-skyline",
     "source": "manual",
     "cropped": "cropped/stamford-skyline.jpg",
