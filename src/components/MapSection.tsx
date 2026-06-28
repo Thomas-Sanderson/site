@@ -206,23 +206,25 @@ export default function MapSection() {
     return allPins.filter((p) => p.category === activePill);
   }, [allPins, activePill]);
 
-  // Gallery sequence = the currently-shown dots, in chronological order.
+  // Gallery sequence = only dots that have a photo (skip placeholders),
+  // in chronological order.
+  const photoPins = useMemo(() => filteredPins.filter((p) => p.photo), [filteredPins]);
   const galleryStops: GalleryStop[] = useMemo(
     () =>
-      filteredPins.map((p) => ({
+      photoPins.map((p) => ({
         id: p.id,
         label: p.label,
         dateRange: p.dateRange,
         photo: p.photo,
         annotation: null,
       })),
-    [filteredPins]
+    [photoPins]
   );
   const stopIndexById = useMemo(() => {
     const m = new Map<string, number>();
-    filteredPins.forEach((p, i) => m.set(p.id, i));
+    photoPins.forEach((p, i) => m.set(p.id, i));
     return m;
-  }, [filteredPins]);
+  }, [photoPins]);
 
   const openGallery = useCallback(
     (pinId: string, el: SVGGElement) => {

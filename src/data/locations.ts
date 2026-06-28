@@ -281,6 +281,14 @@ export const locations: Location[] = [
 
   // TRAVEL — trips and volunteer work
   {
+    city: "Pittsburgh",
+    country: "USA",
+    lat: 40.4406,
+    lng: -79.9959,
+    category: "travel",
+    dateRange: "2014",
+  },
+  {
     city: "Panama City",
     country: "Panama",
     lat: 8.9824,
