@@ -8,9 +8,10 @@ import { MODE_LABEL } from "@/data/lifeGrid";
 const DUR = 30000;
 
 // Thin border drawn on the dot that's currently expanding, so small
-// month-to-month growth is easier to see.
-const ACTIVE_STROKE = "rgba(45, 42, 38, 0.6)";
-const ACTIVE_STROKE_W = "0.9";
+// month-to-month growth is easier to see. Coloured to match the continent
+// fill (the .lifemap-land fill) so it reads as part of the map, not a hard ring.
+const ACTIVE_STROKE = "rgba(45, 42, 38, 0.06)";
+const ACTIVE_STROKE_W = "1";
 
 // Layout effect on the client, no-op on the server (avoids the SSR warning
 // while still letting us reset-before-paint to prevent a flash).
