@@ -325,7 +325,7 @@ export const timelineEntries: TimelineEntry[] = [
     category: "work",
   },
   {
-    role: "Experience Designer",
+    role: "Experience Design Technologist",
     company: "Recovery Unplugged (Consultant)",
     type: "Contract",
     start: "May 2025",
