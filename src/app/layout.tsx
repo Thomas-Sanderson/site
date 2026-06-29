@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import ContentFade from "@/components/ContentFade";
 import SiteChrome from "@/components/SiteChrome";
-import ScrollReset from "@/components/ScrollReset";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -34,8 +33,6 @@ export default function RootLayout({
               "if(history.scrollRestoration)history.scrollRestoration='manual';window.scrollTo(0,0);",
           }}
         />
-        {/* Reset scroll to top on client-side route changes (instant) */}
-        <ScrollReset />
         {/* Notch cover — opaque cream behind the status bar on notch devices.
             theme-color only tints the static bar; this blocks content bleed during scroll. */}
         <div

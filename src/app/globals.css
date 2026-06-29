@@ -53,10 +53,6 @@
     format("woff2");
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
   background-color: var(--color-cream);
   color: var(--color-charcoal);
