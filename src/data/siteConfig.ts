@@ -14,7 +14,4 @@ export const siteConfig = {
     teal: "#2A6B5A",
     muted: "#A89F95",
   },
-  footer: {
-    builtWith: "Built in a weekend with Claude Code",
-  },
 } as const;
