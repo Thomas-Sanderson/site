@@ -41,8 +41,8 @@ export const caseStudies: CaseStudy[] = [
     imagePlaceholders: [],
   },
   {
-    slug: "sudsy",
-    title: "Sudsy",
+    slug: "couve",
+    title: "Couve",
     subtitle: "Behavioral Health EMR Concept",
     context:
       "The behavioral health industry runs on fragmented, outdated EHR/EMR systems that weren't designed for the complexity of addiction treatment and mental health care.",
@@ -53,11 +53,11 @@ export const caseStudies: CaseStudy[] = [
     matters:
       "This isn't a redesign. It's a rethinking of what the system should be when you start from the patient and clinician experience rather than the billing code.",
     videos: [
-      { src: "/images/sudsy/demo.mp4", alt: "Sudsy EMR concept — intake to billing workflow demo" },
+      { src: "/images/couve/demo.mp4", alt: "Couve EMR concept — intake to billing workflow demo" },
     ],
     images: [
-      { src: "/images/sudsy/census.png", alt: "Sudsy Census — real-time patient census with filtering by state, level of care, and group", clipped: true },
-      { src: "/images/sudsy/attendance.png", alt: "Sudsy Attendance — virtual IOP attendance tracking with AM/PM group management", clipped: true },
+      { src: "/images/couve/census.png", alt: "Couve Census — real-time patient census with filtering by state, level of care, and group", clipped: true },
+      { src: "/images/couve/attendance.png", alt: "Couve Attendance — virtual IOP attendance tracking with AM/PM group management", clipped: true },
     ],
     imagePlaceholders: [],
   },

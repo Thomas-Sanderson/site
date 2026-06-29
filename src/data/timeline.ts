@@ -333,7 +333,7 @@ export const timelineEntries: TimelineEntry[] = [
     duration: "1 yr",
     location: "Remote",
     highlights: [
-      "Designing Sudsy — an end-to-end behavioral health EMR concept",
+      "Designed Couve — an end-to-end behavioral health EMR concept",
       "Architected Gab, a deterministic LLM chatbot for healthcare admissions",
     ],
     startMonth: m(2025, 5),

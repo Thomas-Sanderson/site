@@ -39,7 +39,7 @@ export default function StoryDoors() {
             <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
           </h3>
           <p className="text-base leading-relaxed text-charcoal/70">
-            Case studies — Gab, Sudsy, and Paper Cannon. Deterministic AI in
+            Case studies — Gab, Couve, and Paper Cannon. Deterministic AI in
             regulated, high-stakes environments.
           </p>
         </Link>
