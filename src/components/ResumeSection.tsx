@@ -114,7 +114,12 @@ function CollapsibleJob({ entry, index }: { entry: TimelineEntry; index: number 
 export default function ResumeSection() {
   const workEntries = timelineEntries
     .filter((e) => e.type !== "Education")
-    .sort((a, b) => b.startMonth - a.startMonth);
+    // Ongoing ("Present") roles first, then most recent start.
+    .sort((a, b) => {
+      const ao = a.end === "Present" ? 1 : 0;
+      const bo = b.end === "Present" ? 1 : 0;
+      return ao !== bo ? bo - ao : b.startMonth - a.startMonth;
+    });
 
   return (
     <section
