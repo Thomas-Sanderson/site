@@ -78,7 +78,7 @@ export const caseStudies: CaseStudy[] = [
       text: "The containment agent (Reindeer) operates in detection-only mode, issuing CLEAR or DRIFT assessments per agent. During testing, Reindeer caught the Red-Team agent drifting during the challenge phase — the system policing itself in real time.",
     },
     images: [
-      { src: "/images/paper-cannon/newsroom.png", alt: "Paper Cannon Newsroom GUI — pixel-art interface showing agents in the Challenge phase" },
+      { src: "/images/paper-cannon/newsroom.png", alt: "Paper Cannon Writer's Room GUI — pixel-art interface showing agents in the Challenge phase" },
       { src: "/images/paper-cannon/architecture.svg", alt: "Paper Cannon pipeline architecture — 14-agent multi-agent research synthesis system" },
       { src: "/images/paper-cannon/stacks.png", alt: "The Stacks — pre-flight phase extracting thesis, scope, claims, and correction candidates", clipped: true },
       { src: "/images/paper-cannon/distillation.png", alt: "Chat log distillation — session dynamics, counter-arguments, and trigger candidates", clipped: true },
