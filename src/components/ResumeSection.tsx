@@ -1,7 +1,115 @@
 "use client";
 
-import { timelineEntries } from "@/data/timeline";
+import { useEffect, useRef, useState } from "react";
+import { timelineEntries, type TimelineEntry } from "@/data/timeline";
 import { skillGroups, education } from "@/data/resume";
+
+/**
+ * One job = a disclosure: a header <button> (role · company · location · dates)
+ * controlling its bullet list. The bullets render fully EXPANDED in SSR with no
+ * `hidden` attribute (crawler / no-JS / Cmd-F baseline). Only after hydration,
+ * and only where the browser supports `beforematch` (Chromium), do we collapse
+ * each list with hidden="until-found" — which keeps the text findable by native
+ * find-in-page and auto-expands the group when a collapsed word is searched.
+ * Browsers without `beforematch` (e.g. Safari) stay fully expanded, so no
+ * browser ends up worse than the static baseline.
+ */
+function CollapsibleJob({ entry, index }: { entry: TimelineEntry; index: number }) {
+  const ref = useRef<HTMLUListElement>(null);
+  const [open, setOpen] = useState(true); // SSR / baseline: expanded
+  const [enhanced, setEnhanced] = useState(false);
+  const bullets = entry.highlights ?? [];
+  const regionId = `resume-job-${index}`;
+  const headerId = `resume-job-h-${index}`;
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || bullets.length === 0) return;
+    // Capability gate: only collapse where find-in-page can re-expand it.
+    const supported =
+      typeof document !== "undefined" && !!document.body && "onbeforematch" in document.body;
+    if (!supported) return; // leave expanded — Cmd-F finds everything
+
+    setEnhanced(true);
+    el.setAttribute("hidden", "until-found"); // imperative, never a JSX prop
+    setOpen(false);
+
+    const onBeforeMatch = () => {
+      el.removeAttribute("hidden");
+      setOpen(true);
+    };
+    el.addEventListener("beforematch", onBeforeMatch);
+    return () => el.removeEventListener("beforematch", onBeforeMatch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const toggle = () => {
+    const el = ref.current;
+    if (!el || !enhanced) return;
+    if (open) {
+      el.setAttribute("hidden", "until-found");
+      setOpen(false);
+    } else {
+      el.removeAttribute("hidden");
+      setOpen(true);
+    }
+  };
+
+  const hasBullets = bullets.length > 0;
+
+  return (
+    <div className="border-t" style={{ borderColor: "rgba(45, 42, 38, 0.08)" }}>
+      <button
+        id={headerId}
+        type="button"
+        aria-expanded={open}
+        aria-controls={hasBullets ? regionId : undefined}
+        onClick={toggle}
+        className="w-full flex items-start justify-between gap-4 text-left py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 rounded-sm"
+        style={{ cursor: enhanced && hasBullets ? "pointer" : "default", outlineColor: "var(--color-terracotta)" }}
+      >
+        <span className="text-sm leading-snug">
+          <span className="font-bold">{entry.role}</span>
+          <span style={{ color: "var(--color-muted)" }}> — {entry.company}</span>
+          <span className="block text-xs mt-0.5" style={{ color: "var(--color-muted)" }}>
+            {entry.start} – {entry.end}
+            {entry.location ? ` · ${entry.location}` : ""}
+          </span>
+        </span>
+        {enhanced && hasBullets && (
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 16 16"
+            fill="none"
+            aria-hidden="true"
+            className="shrink-0 mt-1"
+            style={{
+              color: "var(--color-muted)",
+              transform: open ? "rotate(90deg)" : "rotate(0deg)",
+              transition: "transform 0.2s ease",
+            }}
+          >
+            <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </button>
+
+      {hasBullets && (
+        <ul
+          id={regionId}
+          ref={ref}
+          aria-labelledby={headerId}
+          className="resume-bullets list-disc pl-5 pb-4 flex flex-col gap-1.5 text-sm leading-relaxed text-charcoal/80"
+        >
+          {bullets.map((b, i) => (
+            <li key={i}>{b}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 export default function ResumeSection() {
   const workEntries = timelineEntries
@@ -27,62 +135,17 @@ export default function ResumeSection() {
         Just the data.
       </h2>
 
-      {/* Work History */}
+      {/* Work History — collapsible, but always Cmd-F findable */}
       <div className="mb-16">
         <h3
-          className="text-xs tracking-widest uppercase mb-6"
+          className="text-xs tracking-widest uppercase mb-4"
           style={{ color: "var(--color-terracotta)" }}
         >
           Work History
         </h3>
-        <div className="hidden sm:block overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr
-                className="text-left text-xs tracking-wider uppercase"
-                style={{ color: "var(--color-muted)" }}
-              >
-                <th className="pb-3 pr-4 font-normal">Dates</th>
-                <th className="pb-3 pr-4 font-normal">Role</th>
-                <th className="pb-3 pr-4 font-normal">Company</th>
-                <th className="pb-3 font-normal hidden md:table-cell">Location</th>
-              </tr>
-            </thead>
-            <tbody>
-              {workEntries.map((entry, i) => (
-                <tr
-                  key={i}
-                  className="border-t"
-                  style={{ borderColor: "rgba(45, 42, 38, 0.08)" }}
-                >
-                  <td
-                    className="py-2 pr-4 whitespace-nowrap align-top"
-                    style={{ color: "var(--color-muted)" }}
-                  >
-                    {entry.start} – {entry.end}
-                  </td>
-                  <td className="py-2 pr-4 align-top">{entry.role}</td>
-                  <td className="py-2 pr-4 align-top">{entry.company}</td>
-                  <td
-                    className="py-2 align-top hidden md:table-cell"
-                    style={{ color: "var(--color-muted)" }}
-                  >
-                    {entry.location}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="sm:hidden flex flex-col gap-3">
+        <div className="flex flex-col">
           {workEntries.map((entry, i) => (
-            <div key={i} className="py-3 border-t text-sm" style={{ borderColor: "rgba(45, 42, 38, 0.08)" }}>
-              <p className="font-bold">{entry.role}</p>
-              <p>{entry.company}</p>
-              <p style={{ color: "var(--color-muted)" }}>
-                {entry.start} – {entry.end}{entry.location ? ` · ${entry.location}` : ""}
-              </p>
-            </div>
+            <CollapsibleJob key={i} entry={entry} index={i} />
           ))}
         </div>
       </div>

@@ -10,6 +10,8 @@ export interface Education {
   location: string;
 }
 
+// Curated to tell the design → behavioral-health story without a pile of
+// generic dev skills.
 export const skillGroups: SkillGroup[] = [
   {
     category: "Design",
@@ -20,18 +22,16 @@ export const skillGroups: SkillGroup[] = [
       "Prototyping",
       "Design Systems",
       "Figma",
-      "Adobe Creative Suite",
     ],
   },
   {
-    category: "Domain",
+    category: "Domain & Operations",
     skills: [
-      "Healthcare",
       "Behavioral Health",
-      "Agriculture",
-      "Banking",
-      "Insurance",
+      "Healthcare",
       "EMR / EHR Systems",
+      "Case Management",
+      "Insurance Verification",
       "Lean Management",
     ],
   },

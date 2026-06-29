@@ -218,3 +218,23 @@ footer[id] {
   letter-spacing: 0.02em;
   color: #c9bfb1;
 }
+
+/* ── Résumé collapsible bullets ─────────────────────────────────────────
+   Findable collapse: when enhanced (Chromium), each job's bullet list gets
+   hidden="until-found" (content-visibility:hidden, NOT display:none) so native
+   Cmd-F still finds the text and auto-expands the group. Browsers without
+   beforematch never get the attribute, so the list stays fully expanded.
+   Quiet height animation where supported; instant under reduced-motion. */
+.resume-bullets {
+  height: auto;
+  overflow: hidden;
+}
+.resume-bullets[hidden] {
+  height: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .resume-bullets {
+    interpolate-size: allow-keywords;
+    transition: height 0.26s ease, content-visibility 0.26s allow-discrete;
+  }
+}
