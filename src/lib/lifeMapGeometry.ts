@@ -212,6 +212,9 @@ export const NODES: LifeNode[] = (() => {
     if (nd.count <= 2) {
       const f = MONTHS_PROJ[nd.first];
       nd.tipSub = `${MONTH_ABBR[f.month]} ${f.year} · visit`;
+    } else if (nd.firstY === nd.lastY) {
+      // Entirely within one calendar year — show just the year, not a range.
+      nd.tipSub = `${nd.firstY}`;
     } else {
       const endTxt = nd.lastIdx >= N - 1 ? "now" : String(nd.lastY);
       nd.tipSub = `${nd.firstY}–${endTxt} · ~${yrs} yr${yrs > 1 ? "s" : ""} total`;
