@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useReveal } from "@/lib/useReveal";
 import Link from "next/link";
 import type { CaseStudy } from "@/data/caseStudies";
+import GameEmbed from "./GameEmbed";
 
 export default function CaseStudyCard({ study, fullPage = false }: { study: CaseStudy; fullPage?: boolean }) {
   const { ref, revealed } = useReveal<HTMLDivElement>({ threshold: 0.1 });
@@ -68,7 +69,7 @@ export default function CaseStudyCard({ study, fullPage = false }: { study: Case
             className="inline-flex items-center gap-2 font-mono text-xs tracking-widest uppercase px-5 py-2.5 rounded-full mb-8 transition-transform hover:scale-105"
             style={{ backgroundColor: "var(--color-terracotta)", color: "var(--color-warm-white)" }}
           >
-            <span aria-hidden>&#9654;</span> Play Now
+            <span aria-hidden>&#9654;</span> Play Demo
           </Link>
         )}
 
@@ -171,28 +172,8 @@ export default function CaseStudyCard({ study, fullPage = false }: { study: Case
               <p className="font-mono text-xs uppercase tracking-widest mb-2" style={{ color: "var(--color-terracotta)" }}>
                 Play it
               </p>
-              {/* Full-bleed: break out of the case-study column to the full
-                  viewport width (like /chad); height capped so it stays on
-                  screen. The game is responsive and fills the container. */}
-              <div
-                className="overflow-hidden border-y"
-                style={{
-                  borderColor: "rgba(45, 42, 38, 0.08)",
-                  width: "100vw",
-                  maxWidth: "100vw",
-                  marginLeft: "calc(50% - 50vw)",
-                  height: "min(56.25vw, 80vh)",
-                }}
-              >
-                <iframe
-                  src={study.embedUrl}
-                  title={`${study.title} — playable embed`}
-                  className="block w-full h-full"
-                  style={{ border: 0 }}
-                  loading="lazy"
-                  allow="autoplay; fullscreen; gamepad"
-                />
-              </div>
+              {/* Click-to-load: the game iframe only mounts when Play is clicked. */}
+              <GameEmbed src={study.embedUrl} poster={study.thumb} title={study.title} />
             </div>
           )}
         </div>
