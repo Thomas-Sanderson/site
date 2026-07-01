@@ -7,8 +7,9 @@ import { useState } from "react";
  * render only a static poster — the <iframe> (and the game it boots: canvas,
  * audio context, asset loading, network round-trip) is NOT mounted, so the case
  * study stays light and nothing runs in the background. Because the click is a
- * real user gesture, the game's audio is allowed to start. Full-bleed to the
- * viewport width, height capped so it stays on screen.
+ * real user gesture, the game's audio is allowed to start. Sized to the game's
+ * own frame (its native ~16:9 aspect, capped at native width) rather than
+ * stretched full-bleed.
  */
 export default function GameEmbed({
   src,
@@ -23,13 +24,12 @@ export default function GameEmbed({
 
   return (
     <div
-      className="overflow-hidden border-y"
+      className="overflow-hidden rounded-xl border"
       style={{
         borderColor: "rgba(45, 42, 38, 0.08)",
-        width: "100vw",
-        maxWidth: "100vw",
-        marginLeft: "calc(50% - 50vw)",
-        height: "min(56.25vw, 80vh)",
+        width: "100%",
+        maxWidth: 1000, // game's native width — don't upscale past it
+        aspectRatio: "1000 / 577", // game's native frame
       }}
     >
       {loaded ? (
