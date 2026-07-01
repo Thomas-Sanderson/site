@@ -4,14 +4,20 @@ import type { Metadata } from "next";
 import { caseStudies } from "@/data/caseStudies";
 import CaseStudyCard from "@/components/CaseStudyCard";
 import GabCaseStudy from "@/components/casestudies/GabCaseStudy";
+import CouveCaseStudy from "@/components/casestudies/CouveCaseStudy";
+import PaperCannonCaseStudy from "@/components/casestudies/PaperCannonCaseStudy";
+import ChadCaseStudy from "@/components/casestudies/ChadCaseStudy";
 
 /**
  * Bespoke, richer layouts live in src/components/casestudies and own their full
  * page (chrome, width, sections). Slugs not listed here fall back to the
- * generic CaseStudyCard template until they get their own v3 pass.
+ * generic CaseStudyCard template.
  */
 const BESPOKE: Record<string, () => React.ReactNode> = {
   gab: () => <GabCaseStudy />,
+  couve: () => <CouveCaseStudy />,
+  "paper-cannon": () => <PaperCannonCaseStudy />,
+  chad: () => <ChadCaseStudy />,
 };
 
 export function generateStaticParams() {
