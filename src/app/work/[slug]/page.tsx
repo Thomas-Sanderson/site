@@ -3,6 +3,16 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { caseStudies } from "@/data/caseStudies";
 import CaseStudyCard from "@/components/CaseStudyCard";
+import GabCaseStudy from "@/components/casestudies/GabCaseStudy";
+
+/**
+ * Bespoke, richer layouts live in src/components/casestudies and own their full
+ * page (chrome, width, sections). Slugs not listed here fall back to the
+ * generic CaseStudyCard template until they get their own v3 pass.
+ */
+const BESPOKE: Record<string, () => React.ReactNode> = {
+  gab: () => <GabCaseStudy />,
+};
 
 export function generateStaticParams() {
   return caseStudies.map((study) => ({ slug: study.slug }));
@@ -30,6 +40,9 @@ export default async function CaseStudyPage({
   const { slug } = await params;
   const study = caseStudies.find((s) => s.slug === slug);
   if (!study) notFound();
+
+  const bespoke = BESPOKE[slug];
+  if (bespoke) return bespoke();
 
   return (
     <main className="px-6 md:px-12 max-w-[960px] mx-auto pt-24 sm:pt-28 pb-20 min-h-[100svh]">
