@@ -1,5 +1,7 @@
 import GameEmbed from "@/components/GameEmbed";
 import Reveal from "./Reveal";
+import TrieDiagram from "./TrieDiagram";
+import SeasonCity from "./SeasonCity";
 import {
   WRAP,
   MEASURE,
@@ -18,9 +20,11 @@ import {
 /**
  * Bespoke editorial layout for the CHAD ("Chad Rescues Nobody") case study —
  * a v3 study following the Gab reference. Narrative structure (hook → real
- * problem → principle → decisions → the build running → where it stands → next
- * move → play it) with the shared StageDiagram carrying the four-beat learning
- * loop, and the live game embedded as the closing beat.
+ * problem → principle → decisions → the two-direction trie, drawn → the build
+ * running → one city, four seasons → where it stands → next move → play it),
+ * with the shared StageDiagram carrying the four-beat learning loop, a bespoke
+ * TrieDiagram + SeasonCity carrying the signature mechanics, and the live game
+ * embedded as the closing beat.
  */
 
 /** Inline Cyrillic — mono + semibold so untranslated words read as artifacts. */
@@ -227,6 +231,22 @@ export default function ChadCaseStudy() {
         </div>
       </Reveal>
 
+      {/* THE MECHANIC, UP CLOSE — trie */}
+      <Reveal as="section" className="py-14">
+        <div className={WRAP}>
+          <div className={MEASURE}>
+            <Eyebrow>The mechanic, up close</Eyebrow>
+            <SectionH2>One trie, read forwards and backwards.</SectionH2>
+            <p className="text-[17px] leading-relaxed">
+              The whole reading system is a single keyboard-native trie. Point it one way and it <em>decodes</em> — you resolve the letters on a street sign into sounds. Point it the other way and it <em>encodes</em> — you turn the sounds of a destination back into letters to spell it. The same five-node path serves both, which is why every sign you read makes the next word you spell cheaper.
+            </p>
+          </div>
+          <div className="mt-8">
+            <TrieDiagram />
+          </div>
+        </div>
+      </Reveal>
+
       {/* THE BUILD, RUNNING */}
       <Reveal as="section" className="py-14">
         <div className={WRAP}>
@@ -243,6 +263,22 @@ export default function ChadCaseStudy() {
             caption={<>The title screen — 1994 Minsk, rendered in pixels. <span style={{ color: "var(--color-charcoal)" }}>The potato is already watching.</span></>}
             pixelated
           />
+        </div>
+      </Reveal>
+
+      {/* LEVEL DESIGN — seasons */}
+      <Reveal as="section" className="py-14">
+        <div className={WRAP}>
+          <div className={MEASURE}>
+            <Eyebrow>Level design</Eyebrow>
+            <SectionH2>One city, four seasons — because geometry is data.</SectionH2>
+            <p className="text-[17px] leading-relaxed">
+              Streets, doors, and shops live in content, not code, so a level&rsquo;s layout can be reworn. The seasonal city reuses the same Minsk geometry under four sprite palettes — birch and linden trees leafing, turning, and going bare, the ground greening and then snowing over. A route you learned in summer reads differently once winter shortens the light.
+            </p>
+          </div>
+          <div className="mt-8">
+            <SeasonCity />
+          </div>
         </div>
       </Reveal>
 
@@ -267,7 +303,7 @@ export default function ChadCaseStudy() {
               <Eyebrow>The next move</Eyebrow>
               <SectionH2>Rebuilding the levels around how learning actually deepens.</SectionH2>
               <p className="text-[17px] leading-relaxed">
-                The 13 levels proved the loop; the next pass restructures them as the spine of a curriculum mapped to Bloom&rsquo;s taxonomy — climbing from <em>remember</em> (grab the right can) toward <em>create</em> (spell your own destination, hold your own at the embassy). The plan&rsquo;s signature idea: completing a phase unlocks a deeper tier of every <em>earlier</em> level, so the game grows backward and old streets ask new questions. And because the engine already separates content from code, the longer bet is a contributor platform — bilingual friends authoring new language skins as data packs, no fork required.
+                The 13 levels proved the loop; the next pass restructures them as the spine of a curriculum mapped to Bloom&rsquo;s taxonomy — climbing from <em>remember</em> (grab the right can) toward <em>create</em> (spell your own destination, hold your own at the embassy). The plan&rsquo;s signature idea: completing a phase unlocks a deeper tier of every <em>earlier</em> level, so the game grows backward and old streets ask new questions. And because the engine already separates content from code, the longer bet is a contributor platform — bilingual friends authoring new language packs as data, no fork required.
               </p>
             </div>
           </div>
