@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   VBW,
   VBH,
@@ -13,6 +13,7 @@ import {
   type LifeNode,
 } from "@/lib/lifeMapGeometry";
 import { useLifeDraw } from "@/lib/useLifeDraw";
+import { createLifeMapAudio, type LifeMapAudio } from "@/lib/lifeMapAudio";
 import { MODE_HEX, MODE_LABEL, type Mode } from "@/data/lifeGrid";
 
 // Legend display order (matches the life-line reference).
@@ -34,12 +35,57 @@ interface TipState {
  * `useLifeDraw` only resets+plays the 30s draw once JS is alive and motion is
  * allowed, auto-starting when the section scrolls into view. Hover tooltips are
  * a pure pointer enhancement over transparent hit-circles.
+ *
+ * Optional sound: an opt-in Web Audio "score" (see `lifeMapAudio`) plays one
+ * fading note per dot as it appears — a bass voice for the home/live dots and
+ * snap/horn/snare/keys for the other dot types, pitched by each dot's distance
+ * from the current home and length-modulated by its growth time. It is off by
+ * default and enabled only from a user gesture (autoplay policy).
  */
 export default function LifeMap() {
   const last = MONTHS_PROJ[N - 1];
   const lastLive = [...MONTHS_PROJ].reverse().find((m) => m.mode === "live");
   const homeLabel = lastLive ? `${lastLive.place}, ${lastLive.region}` : "";
-  const { rootRef, replay } = useLifeDraw<HTMLElement>();
+
+  const [soundOn, setSoundOn] = useState(false);
+  const audioRef = useRef<LifeMapAudio | null>(null);
+  const drawingRef = useRef(false);
+  const getAudio = () => (audioRef.current ??= createLifeMapAudio());
+
+  const { rootRef, replay } = useLifeDraw<HTMLElement>({
+    onDotEnter: (d) => audioRef.current?.triggerDot(d),
+    onStart: () => {
+      drawingRef.current = true;
+      if (soundOn) audioRef.current?.start();
+    },
+    onEnd: () => {
+      drawingRef.current = false;
+      audioRef.current?.stop();
+    },
+  });
+
+  // Tear the audio context down when the map unmounts.
+  useEffect(() => () => audioRef.current?.dispose(), []);
+
+  const toggleSound = async () => {
+    const audio = getAudio();
+    if (soundOn) {
+      audio.disable();
+      setSoundOn(false);
+    } else {
+      await audio.enable(); // resume the context inside this click gesture
+      setSoundOn(true);
+      if (drawingRef.current) audio.start(); // join a draw already in progress
+    }
+  };
+
+  const watch = () => {
+    // Resume the context within the gesture so the score can start after the
+    // pre-roll delay (which is not itself a user gesture).
+    if (soundOn) getAudio().enable();
+    replay();
+  };
+
   const stageRef = useRef<HTMLDivElement>(null);
   const [tip, setTip] = useState<TipState | null>(null);
 
@@ -156,7 +202,7 @@ export default function LifeMap() {
         )}
       </div>
 
-      {/* Modes key + replay */}
+      {/* Modes key + controls */}
       <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[color:var(--color-muted)]">
@@ -175,14 +221,31 @@ export default function LifeMap() {
             </span>
           ))}
         </div>
-        <button
-          type="button"
-          onClick={replay}
-          aria-label="Watch the journey animation"
-          className="font-mono text-xs tracking-[0.04em] inline-flex items-center gap-2 rounded-full px-4 py-2 text-[color:var(--color-cream)] bg-[color:var(--color-charcoal)] transition-transform active:translate-y-px hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[color:var(--color-teal)] focus-visible:outline-offset-2"
-        >
-          ▷ Watch the journey
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={toggleSound}
+            aria-pressed={soundOn}
+            aria-label={soundOn ? "Turn map sound off" : "Turn map sound on"}
+            title="Score the journey with sound"
+            className="font-mono text-xs tracking-[0.04em] inline-flex items-center gap-2 rounded-full px-4 py-2 border transition-colors active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-[color:var(--color-teal)] focus-visible:outline-offset-2"
+            style={{
+              borderColor: soundOn ? "var(--color-teal)" : "rgba(45,42,38,0.2)",
+              color: soundOn ? "var(--color-teal)" : "var(--color-muted)",
+              backgroundColor: soundOn ? "rgba(42,107,90,0.08)" : "transparent",
+            }}
+          >
+            {soundOn ? "♪ Sound on" : "♪ Sound off"}
+          </button>
+          <button
+            type="button"
+            onClick={watch}
+            aria-label="Watch the journey animation"
+            className="font-mono text-xs tracking-[0.04em] inline-flex items-center gap-2 rounded-full px-4 py-2 text-[color:var(--color-cream)] bg-[color:var(--color-charcoal)] transition-transform active:translate-y-px hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[color:var(--color-teal)] focus-visible:outline-offset-2"
+          >
+            ▷ Watch the journey
+          </button>
+        </div>
       </div>
     </section>
   );

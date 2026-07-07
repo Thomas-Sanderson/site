@@ -2,6 +2,32 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { MONTHS_PROJ, NODES, N, partialPath } from "./lifeMapGeometry";
+import { type Mode } from "@/data/lifeGrid";
+
+export interface DotEnterRing {
+  /** The ring's type — chooses the voice. */
+  mode: Mode;
+  /** On-screen growth time in seconds (→ fading-envelope length). */
+  growthSec: number;
+}
+
+export interface DotEnter {
+  /** Place whose dot just appeared. */
+  placeKey: string;
+  /** Current home the dot's distance (→ pitch) is measured from. */
+  homeKey: string | null;
+  /** Concentric rings, inner→outer — one voice each. */
+  rings: DotEnterRing[];
+}
+
+export interface LifeDrawCallbacks {
+  /** Fires once, when a place's dot first appears in the draw. */
+  onDotEnter?: (d: DotEnter) => void;
+  /** Fires when the draw actually begins (after the pre-roll delay). */
+  onStart?: () => void;
+  /** Fires when the draw reaches its final frame. */
+  onEnd?: () => void;
+}
 
 // 30-second pass, matching the life-line reference.
 const DUR = 30000;
@@ -11,12 +37,30 @@ const START_DELAY = 650;
 // it — so the border lingers on the old home instead of jumping the instant
 // the line arrives.
 const BORDER_LAG = 2;
+// Real time each drawn month occupies — the unit behind a ring's "time to grow".
+const MONTH_MS = DUR / Math.max(1, N - 1);
 
 // Thin border drawn on the dot that's currently expanding, so small
 // month-to-month growth is easier to see. Warm sand tone (sampled from the
 // continent fill) that stays visible on the saturated dots.
 const ACTIVE_STROKE = "#E3D9C2";
 const ACTIVE_STROKE_W = "1";
+
+// Concentric ring order (inner→outer), matching the geometry's band order.
+const RING_ORDER: Mode[] = ["live", "make", "work", "learn", "travel"];
+
+// Per-place ring list: every mode present at the place gets a voice, ordered
+// inner→outer, each carrying its own growth time (that mode's months on screen)
+// so a multi-type dot is heard in full, layer by layer.
+const NODE_RINGS = new Map<string, DotEnterRing[]>(
+  NODES.map((n) => [
+    n.key,
+    RING_ORDER.filter((m) => (n.modes[m] ?? 0) > 0).map((m) => ({
+      mode: m,
+      growthSec: ((n.modes[m] ?? 0) * MONTH_MS) / 1000,
+    })),
+  ])
+);
 
 // Layout effect on the client, no-op on the server (avoids the SSR warning
 // while still letting us reset-before-paint to prevent a flash).
@@ -55,13 +99,21 @@ interface RNode {
  * expansions are visible; each place's transparent hit-target is disabled until
  * its dot has actually been drawn.
  *
+ * Optional `cb` callbacks let a caller score the draw (used by the Life Map
+ * audio engine): `onDotEnter` fires once per place as its dot appears, carrying
+ * every ring the place has (so multi-type dots are voiced in full), the current
+ * home, and each ring's growth time; `onStart`/`onEnd` bracket a run. They are
+ * read through a ref so the effect stays mount-once.
+ *
  * Progressive enhancement: if `prefers-reduced-motion` is set (or this hook
  * never runs, i.e. no JS), the map is left on its server-rendered final state
  * with every dot present, no borders.
  */
-export function useLifeDraw<T extends HTMLElement>() {
+export function useLifeDraw<T extends HTMLElement>(cb?: LifeDrawCallbacks) {
   const rootRef = useRef<T>(null);
   const playRef = useRef<() => void>(() => {});
+  const cbRef = useRef<LifeDrawCallbacks | undefined>(cb);
+  cbRef.current = cb;
 
   useIsoLayoutEffect(() => {
     const root = rootRef.current;
@@ -176,7 +228,17 @@ export function useLifeDraw<T extends HTMLElement>() {
 
       for (const rn of rnodes) {
         if (ff >= rn.first) {
-          rn.visible = true;
+          if (!rn.visible) {
+            rn.visible = true;
+            // The dot has just appeared — score every ring it has. Home is the
+            // anchor as of the previous frame (updated below), so a brand-new
+            // home reads as a move away from where you were, then resolves.
+            cbRef.current?.onDotEnter?.({
+              placeKey: rn.key,
+              homeKey: anchorKey,
+              rings: NODE_RINGS.get(rn.key) ?? [],
+            });
+          }
           const prog = elapsedIn(rn, ff) / rn.count;
           const gr = easeOut(Math.max(0.08, prog));
           for (const c of rn.circles) c.el.setAttribute("r", (c.rTarget * gr).toFixed(2));
@@ -245,6 +307,7 @@ export function useLifeDraw<T extends HTMLElement>() {
       renderBlank();
       startTimer = window.setTimeout(() => {
         startTimer = 0;
+        cbRef.current?.onStart?.();
         const t0 = performance.now();
         const step = (now: number) => {
           const p = Math.min(1, Math.max(0, (now - t0) / DUR));
@@ -253,6 +316,7 @@ export function useLifeDraw<T extends HTMLElement>() {
           else {
             render(N - 1);
             raf = 0;
+            cbRef.current?.onEnd?.();
           }
         };
         raf = requestAnimationFrame(step);
