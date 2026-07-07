@@ -1,9 +1,24 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useReveal } from "@/lib/useReveal";
 import type { Era } from "@/data/eras";
 import galleryData from "@/data/gallery.json";
+
+// Case-study names in the narrative link to their case-study pages.
+const CS_SLUG: Record<string, string> = { "CHAD Rescues Nobody": "chad", Couve: "couve", Gab: "gab" };
+function linkifyNarrative(text: string): React.ReactNode {
+  return text.split(/\b(CHAD Rescues Nobody|Couve|Gab)\b/g).map((part, i) =>
+    CS_SLUG[part] ? (
+      <Link key={i} href={`/work/${CS_SLUG[part]}`} className="underline decoration-1 underline-offset-2 transition-opacity hover:opacity-70" style={{ color: "var(--color-terracotta)" }}>
+        {part}
+      </Link>
+    ) : (
+      part
+    )
+  );
+}
 
 // Temporary: hide the Era photo galleries until they're curated. Set to false
 // to bring them back (the gallery + lightbox code below is untouched).
@@ -108,7 +123,7 @@ export default function EraSection({ era }: { era: Era }) {
               className="text-sm sm:text-lg leading-relaxed max-w-[640px] text-charcoal/80"
               style={reveal(3 + i)}
             >
-              {paragraph}
+              {linkifyNarrative(paragraph)}
             </p>
           ))}
         </div>

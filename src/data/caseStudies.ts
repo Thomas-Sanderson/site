@@ -24,6 +24,7 @@ export const caseStudies: CaseStudy[] = [
     slug: "gab",
     title: "Gab",
     subtitle: "Deterministic LLM Chatbot for Healthcare Admissions",
+    thumb: "/images/gab/card.webp",
     context:
       "A behavioral health organization needed a patient-facing chatbot for their admissions website — handling sensitive mental health and addiction inquiries with PHI compliance requirements.",
     problem:
@@ -62,6 +63,49 @@ export const caseStudies: CaseStudy[] = [
     imagePlaceholders: [],
   },
   {
+    slug: "chad",
+    title: "CHAD Rescues Nobody",
+    subtitle:
+      "A puzzle-platformer that teaches you to survive a country, not pass a test",
+    context:
+      "A puzzle-platformer that teaches you to survive in a foreign country, not pass a language exam. You play Chad — an oblivious American accidental-billionaire in cargo shorts — who lands in 1994 Belarus and has to function: order food, find an apartment, navigate the city, handle visa paperwork, all in Russian he doesn't speak. You learn by inference and immersion, not flashcards: Cyrillic words appear in context, you guess what they mean, and you test the guess by collecting the right items.",
+    problem:
+      "Language apps optimize for streaks and recognition. They make you feel like you're learning while leaving you unable to order coffee in the actual country — vocabulary in isolation, no spatial memory, no stakes, no social context. But people don't acquire language by memorizing rules; they acquire it by needing something, failing to get it, and trying again. CHAD makes the game itself the immersion environment: you learn Russian because a fictional idiot can't, and the comedy is the pedagogy — laughter lowers the stress that kills language acquisition, and physically navigating to the right object burns vocabulary into spatial memory.",
+    built:
+      "A content-driven game engine (React / TypeScript / Vite, Canvas) with a briefing → run → gate → reveal phase structure, wrapped around mechanics that teach reading, listening, and survival production rather than grammar. A WASD-driven Cyrillic input system works both ways — sound-to-letter for spelling, letter-to-sound for reading signs. A vertical city built from real Minsk streets is navigated by reading Soviet signage and asking grandmothers for directions; shopkeeper conversations force the local social register (greet, ask, thank); and a mentor, Anya, refuses to explain grammar and trusts repetition. Crucially, a new language is a data pack a bilingual non-programmer can author — the mechanics are the platform; the language and culture are content.",
+    matters:
+      "Most “educational games” are neither. CHAD bets that the way to teach survival-level language is to make the player live a comedy of errors in the target culture — never explaining a rule, never breaking the joke — and that this produces functional speakers faster and more durably than apps that aim for fluency and deliver neither. It is built to scale: any phonetic, case-heavy language that follows Russian's rules — Polish, Ukrainian, Greek, Korean, Turkish — can ride the same engine, authored by native speakers. The unbreakable rule across every version: the joke is always the clueless foreigner, never the country. The promise isn't fluency — it's that you'll step off the plane able to get by.",
+    playUrl: "/chad",
+    embedUrl: "https://chad-pearl.vercel.app",
+    thumb: "/images/chad/title.png",
+    imagePlaceholders: [],
+  },
+  {
+    slug: "awqat",
+    title: "AWQAT",
+    subtitle: "A Retro-Pixel Prayer Clock That Computes Its Own Sky",
+    context:
+      "Most prayer-time apps are thin clients for somebody else's API — they phone home for a timetable, wrap it in ads, and go blank on airplane mode. But prayer times aren't a database; they're astronomy. The sun's position is a closed-form calculation that's been solvable with pencil and paper for centuries.",
+    problem:
+      "Fajr begins when the sun is a fixed angle below the horizon. Dhuhr is solar noon. Asr is a shadow-length ratio. Maghrib is sunset; Isha, deeper twilight. Given a date and coordinates, all five fall out of the solar declination and the equation of time — so why does checking them require a network connection, a tracking consent dialog, and somebody's server staying up?",
+    built:
+      "A vanilla-JavaScript web app with zero runtime dependencies — 18 KB gzipped — that computes all five prayers locally under seven calculation methods, then drives a living pixel sky from the same solar engine: the sun arcs on its true schedule, the palette blends through dawn and dusk, and the moon renders at its real lunar phase. Alongside the clock: a dual Gregorian/Hijri calendar with a year-long dawn–dusk chart, and a step-by-step Learn mode that walks each prayer posture-by-posture with per-line Arabic audio. Seven headless test suites drive the real module end to end.",
+    matters:
+      "It's an argument for local-first software: when the computation is centuries old and fits in your pocket, the respectful move is to do it on-device — offline, private, and explained. Every time on screen carries its astronomical definition, and every view carries its own disclaimer deferring to the local masjid. The app can always answer why.",
+    extra: {
+      label: "The Living Sky",
+      text: "The clock face is the sky itself. The same engine that sets the times positions a pixel sun along its computed arc, blends the palette through the day's phases, lights the mosque windows at dusk, and draws the moon at its real synodic phase — calculated, never canned.",
+    },
+    thumb: "/images/awqat/today.png",
+    images: [
+      { src: "/images/awqat/today.png", alt: "AWQAT Today view — pixel mosque under an afternoon sky, countdown to Maghrib, five prayer cards with times and astronomical definitions" },
+      { src: "/images/awqat/sky-maghrib.png", alt: "The sky scene moments before Maghrib — sun touching the horizon, countdown at 2:59" },
+      { src: "/images/awqat/year.png", alt: "Year view — dawn-to-dusk chart showing seasonal drift of night, twilight, and daylight, with important Islamic dates", clipped: true },
+      { src: "/images/awqat/learn-sujud.png", alt: "Learn mode — pixel figure in sujud with the tasbih line in Arabic, transliteration, and English" },
+    ],
+    imagePlaceholders: [],
+  },
+  {
     slug: "paper-cannon",
     title: "Paper Cannon",
     subtitle: "Multi-Agent Research Synthesis Pipeline",
@@ -83,24 +127,6 @@ export const caseStudies: CaseStudy[] = [
       { src: "/images/paper-cannon/stacks.png", alt: "The Stacks — pre-flight phase extracting thesis, scope, claims, and correction candidates", clipped: true },
       { src: "/images/paper-cannon/distillation.png", alt: "Chat log distillation — session dynamics, counter-arguments, and trigger candidates", clipped: true },
     ],
-    imagePlaceholders: [],
-  },
-  {
-    slug: "chad",
-    title: "CHAD Rescues Nobody",
-    subtitle:
-      "A puzzle-platformer that teaches you to survive a country, not pass a test",
-    context:
-      "A puzzle-platformer that teaches you to survive in a foreign country, not pass a language exam. You play Chad — an oblivious American accidental-billionaire in cargo shorts — who lands in 1994 Belarus and has to function: order food, find an apartment, navigate the city, handle visa paperwork, all in Russian he doesn't speak. You learn by inference and immersion, not flashcards: Cyrillic words appear in context, you guess what they mean, and you test the guess by collecting the right items.",
-    problem:
-      "Language apps optimize for streaks and recognition. They make you feel like you're learning while leaving you unable to order coffee in the actual country — vocabulary in isolation, no spatial memory, no stakes, no social context. But people don't acquire language by memorizing rules; they acquire it by needing something, failing to get it, and trying again. CHAD makes the game itself the immersion environment: you learn Russian because a fictional idiot can't, and the comedy is the pedagogy — laughter lowers the stress that kills language acquisition, and physically navigating to the right object burns vocabulary into spatial memory.",
-    built:
-      "A content-driven game engine (React / TypeScript / Vite, Canvas) with a briefing → run → gate → reveal phase structure, wrapped around mechanics that teach reading, listening, and survival production rather than grammar. A WASD-driven Cyrillic input system works both ways — sound-to-letter for spelling, letter-to-sound for reading signs. A vertical city built from real Minsk streets is navigated by reading Soviet signage and asking grandmothers for directions; shopkeeper conversations force the local social register (greet, ask, thank); and a mentor, Anya, refuses to explain grammar and trusts repetition. Crucially, a new language is a data pack a bilingual non-programmer can author — the mechanics are the platform; the language and culture are content.",
-    matters:
-      "Most “educational games” are neither. CHAD bets that the way to teach survival-level language is to make the player live a comedy of errors in the target culture — never explaining a rule, never breaking the joke — and that this produces functional speakers faster and more durably than apps that aim for fluency and deliver neither. It is built to scale: any phonetic, case-heavy language that follows Russian's rules — Polish, Ukrainian, Greek, Korean, Turkish — can ride the same engine, authored by native speakers. The unbreakable rule across every version: the joke is always the clueless foreigner, never the country. The promise isn't fluency — it's that you'll step off the plane able to get by.",
-    playUrl: "/chad",
-    embedUrl: "https://chad-pearl.vercel.app",
-    thumb: "/images/chad/title.png",
     imagePlaceholders: [],
   },
 ];

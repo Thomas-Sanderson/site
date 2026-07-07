@@ -238,7 +238,7 @@ export default function ChadCaseStudy() {
             <Eyebrow>The mechanic, up close</Eyebrow>
             <SectionH2>One trie, read forwards and backwards.</SectionH2>
             <p className="text-[17px] leading-relaxed">
-              The whole reading system is a single keyboard-native trie. Point it one way and it <em>decodes</em> — you resolve the letters on a street sign into sounds. Point it the other way and it <em>encodes</em> — you turn the sounds of a destination back into letters to spell it. The same five-node path serves both, which is why every sign you read makes the next word you spell cheaper.
+              The whole reading system is one keyboard-native trie, driven by <b>W / A / D</b> with <b>S</b> to cycle. Toggle it below. <em>Decode</em> reads a street sign — you pick each Cyrillic letter’s sound until <Ru>ПОБЕДЫ</Ru> resolves to <em>Victory Street</em>. <em>Encode</em> spells a word back — you drill the branching trie (<Ru>К</Ru> → <Ru>О</Ru> → <Ru>Н</Ru> → <Ru>В</Ru>) until only <Ru>КОНВЕРТ</Ru> is left to shout. It’s the actual in-game panel, not a diagram of it — which is why every sign you read makes the next word you spell cheaper.
             </p>
           </div>
           <div className="mt-8">
@@ -258,9 +258,9 @@ export default function ChadCaseStudy() {
             </p>
           </div>
           <FigureFrame
-            src="/images/chad/title.png"
-            alt="Title screen for Chad Rescues Nobody — pixel-art 1994 Minsk."
-            caption={<>The title screen — 1994 Minsk, rendered in pixels. <span style={{ color: "var(--color-charcoal)" }}>The potato is already watching.</span></>}
+            src="/images/chad/build-far-side.png"
+            alt="A later level of Chad Rescues Nobody, mid-run in autumn — Chad in cargo shorts on a Minsk street of apartment towers, a МЯСНАЯ (butcher) shop, hanging laundry, and blue Cyrillic street signs."
+            caption={<>A later level, running — autumn on the edge of Minsk. Cargo-shorts Chad, a <span style={{ color: "var(--color-charcoal)" }}>МЯСНАЯ</span> butcher shop, and the same street signs the trie taught you to read. <span style={{ color: "var(--color-charcoal)" }}>A real frame, straight from the build.</span></>}
             pixelated
           />
         </div>
@@ -271,9 +271,9 @@ export default function ChadCaseStudy() {
         <div className={WRAP}>
           <div className={MEASURE}>
             <Eyebrow>Level design</Eyebrow>
-            <SectionH2>One city, four seasons — because geometry is data.</SectionH2>
+            <SectionH2>One city, every season and hour — because geometry is data.</SectionH2>
             <p className="text-[17px] leading-relaxed">
-              Streets, doors, and shops live in content, not code, so a level&rsquo;s layout can be reworn. The seasonal city reuses the same Minsk geometry under four sprite palettes — birch and linden trees leafing, turning, and going bare, the ground greening and then snowing over. A route you learned in summer reads differently once winter shortens the light.
+              Streets, doors, and shops live in content, not code, so a level&rsquo;s layout can be reworn. The engine drives it two ways over the exact same Minsk geometry: a <em>seasonal</em> pass — the same birch, linden, and ornamental trees leafing, turning, and going bare, the ground greening then snowing over — and a <em>time-of-day</em> pass that carries the street from amber dawn to a starlit night. Both panels below are real frames of one avenue &mdash; click through them; a route you learned at summer noon reads differently on a winter night.
             </p>
           </div>
           <div className="mt-8">

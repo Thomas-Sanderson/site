@@ -11,10 +11,10 @@
  */
 
 const TRACKS = [
-  { letter: "D", name: "Demographics", status: "10 / 10 fields", color: "var(--color-teal)", bg: "rgba(42,107,90,0.09)" },
-  { letter: "F", name: "Financial", status: "VOB Requested", color: "#C0902E", bg: "rgba(192,144,46,0.12)" },
-  { letter: "M", name: "Medical", status: "Not Started", color: "#9A9186", bg: "rgba(154,145,134,0.14)" },
-  { letter: "D", name: "Disposition", status: "Active", color: "#3E6FA0", bg: "rgba(62,111,160,0.10)" },
+  { letter: "De", name: "Demographics", status: "10 / 10 fields", color: "var(--color-teal)", bg: "rgba(42,107,90,0.09)" },
+  { letter: "Fi", name: "Financial", status: "VOB Requested", color: "#C0902E", bg: "rgba(192,144,46,0.12)" },
+  { letter: "Me", name: "Medical", status: "Not Started", color: "#9A9186", bg: "rgba(154,145,134,0.14)" },
+  { letter: "Di", name: "Disposition", status: "Active", color: "#3E6FA0", bg: "rgba(62,111,160,0.10)" },
 ] as const;
 
 function Banner({
@@ -55,7 +55,7 @@ export default function ReadinessGate() {
           {TRACKS.map((t) => (
             <div key={t.name} className="text-center px-1">
               <div
-                className="w-[54px] h-[54px] rounded-full mx-auto mb-2.5 flex items-center justify-center font-mono font-semibold text-[19px]"
+                className="w-[54px] h-[54px] rounded-full mx-auto mb-2.5 flex items-center justify-center font-mono font-semibold text-[16px]"
                 style={{ border: `3px solid ${t.color}`, color: t.color, backgroundColor: t.bg }}
               >
                 {t.letter}
@@ -72,9 +72,6 @@ export default function ReadinessGate() {
 
         <Banner kind="block" label="BLOCKED">
           VOB before admission: currently VOB Requested
-        </Banner>
-        <Banner kind="warn" label="WARNING">
-          Financial clearance before admission: currently VOB Requested
         </Banner>
       </div>
 

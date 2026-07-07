@@ -30,19 +30,19 @@ export default function StoryDoors() {
           transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
         }}
       >
-        <Link
-          href="/work"
-          className="group block rounded-2xl p-8 ring-1 ring-charcoal/5 bg-warm-white hover:ring-charcoal/15 hover:-translate-y-0.5 transition-all duration-300"
-        >
-          <h3 className="font-serif text-2xl font-bold mb-2 flex items-center gap-2">
-            See the work
-            <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
-          </h3>
+        <div className="group block rounded-2xl p-8 ring-1 ring-charcoal/5 bg-warm-white hover:ring-charcoal/15 hover:-translate-y-0.5 transition-all duration-300">
+          <Link href="/work" className="inline-block">
+            <h3 className="font-serif text-2xl font-bold mb-2 flex items-center gap-2">
+              See the work
+              <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+            </h3>
+          </Link>
           <p className="text-base leading-relaxed text-charcoal/70">
-            Case studies — Gab, Couve, and Paper Cannon. Deterministic AI in
-            regulated, high-stakes environments.
+            Case studies — <Link href="/work/gab" className="underline decoration-1 underline-offset-2 hover:opacity-70" style={{ color: "var(--color-terracotta)" }}>Gab</Link>,{" "}
+            <Link href="/work/couve" className="underline decoration-1 underline-offset-2 hover:opacity-70" style={{ color: "var(--color-terracotta)" }}>Couve</Link>, and{" "}
+            <Link href="/work/chad" className="underline decoration-1 underline-offset-2 hover:opacity-70" style={{ color: "var(--color-terracotta)" }}>Chad</Link>. Deterministic AI in high-stakes healthcare — and a game engine that teaches a language by making you live in it.
           </p>
-        </Link>
+        </div>
 
         <Link
           href="/resume"

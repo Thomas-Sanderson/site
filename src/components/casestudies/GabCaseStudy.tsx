@@ -96,19 +96,30 @@ function HeroMeta() {
   );
 }
 
-/* ── Hero diorama — warmth on the left, the machine on the right ─────────── */
+/* ── Hero diorama — the real Fern Crest Care Navigator, and the machine ──── */
 
-function Bubble({ who, children }: { who: "a" | "u"; children: React.ReactNode }) {
-  const isUser = who === "u";
+const FC = { green: "#4C7A45", greenDk: "#274435", tan: "#D2B48C", paper: "#FAF6EE", ink: "#2B2119", inkMut: "#6E5C46", brownTint: "#EFE3D3", amber: "#C99A4A" };
+// Fern Crest's actual leaf mark (from the app's brand content store).
+const FERN_LEAF = "M6.05 8.05c-2.73 2.73-2.73 7.15-.02 9.88 1.47-3.4 4.09-6.24 7.36-7.93-2.77 2.34-4.71 5.61-5.39 9.32 2.6 1.23 5.8.78 7.95-1.37C19.43 14.47 20 4 20 4S9.53 4.57 6.05 8.05z";
+
+function BotMsg({ tag, zone = "voice", children }: { tag: string; zone?: "voice" | "structured"; children: React.ReactNode }) {
   return (
     <div
-      className="text-[13.5px] leading-[1.45] rounded-2xl px-3.5 py-2.5 max-w-[86%]"
-      style={
-        isUser
-          ? { alignSelf: "flex-end", backgroundColor: "rgba(196,114,90,0.14)", color: "var(--color-charcoal)", borderBottomRightRadius: 5 }
-          : { alignSelf: "flex-start", backgroundColor: "rgba(45,42,38,0.05)", color: "var(--color-charcoal)", borderBottomLeftRadius: 5 }
-      }
+      className="self-start max-w-[88%] rounded-[12px] px-3.5 py-2.5"
+      style={{ backgroundColor: "#FFFFFF", color: FC.ink, borderLeft: `3px solid ${zone === "voice" ? FC.green : FC.amber}`, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
     >
+      <div className="flex items-center gap-2 mb-1">
+        <span className="font-semibold text-[11px]" style={{ color: FC.green }}>Rowan</span>
+        <span className="font-mono text-[9.5px] tracking-wide" style={{ color: "rgba(43,33,25,0.32)" }}>{tag}</span>
+      </div>
+      <p className="text-[13px] leading-[1.45] m-0">{children}</p>
+    </div>
+  );
+}
+
+function UserMsg({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="self-end max-w-[80%] px-3.5 py-2.5 text-[13px] leading-[1.45]" style={{ backgroundColor: FC.tan, color: FC.ink, borderRadius: "12px 12px 4px 12px" }}>
       {children}
     </div>
   );
@@ -118,7 +129,7 @@ function InspRow({ label, value, hot = false }: { label: string; value: string; 
   return (
     <div className="flex items-baseline justify-between gap-4 py-[7px] border-b font-mono" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
       <span className="text-[11px] uppercase tracking-[0.1em] shrink-0" style={{ color: "rgba(255,255,255,0.4)" }}>{label}</span>
-      <span className="text-[12.5px] text-right" style={hot ? { color: "#7FD1B4", fontWeight: 500 } : { color: "rgba(255,255,255,0.82)" }}>
+      <span className="text-[12.5px] text-right" style={hot ? { color: "#86C08A", fontWeight: 500 } : { color: "rgba(255,255,255,0.82)" }}>
         {value}
       </span>
     </div>
@@ -130,23 +141,28 @@ function HeroDiorama() {
     <figure className="m-0 mt-10">
       <div
         role="img"
-        aria-label="Staged split view of the reference build: the Rowan chat on the left; on the right, the inspector capturing the payer field the moment it is typed."
+        aria-label="Split view of the Fern Crest Care Navigator: Rowan's chat on the left, on its real nature-first palette; on the right, the inspector catching Aetna as structured data the instant it is typed from a fuzzy reply."
         className="grid grid-cols-1 md:grid-cols-2 rounded-xl overflow-hidden border"
         style={{ borderColor: "rgba(45,42,38,0.1)" }}
       >
-        {/* The warmth */}
-        <div className="p-5 sm:p-6" style={{ backgroundColor: "var(--color-warm-white)" }}>
-          <div className="flex items-center gap-2.5 pb-4 mb-4 border-b" style={{ borderColor: "rgba(45,42,38,0.08)" }}>
-            <span aria-hidden className="inline-flex items-center justify-center w-6 h-6 rounded-full text-[12px]" style={{ backgroundColor: "rgba(42,107,90,0.12)", color: "var(--color-teal)" }}>
-              ✳
+        {/* The warmth — the real Fern Crest Care Navigator */}
+        <div style={{ backgroundColor: FC.paper }}>
+          <div className="flex items-center gap-2.5 px-5 py-3.5" style={{ backgroundColor: "#FFFFFF", borderBottom: `1px solid ${FC.brownTint}` }}>
+            <span aria-hidden className="inline-flex items-center justify-center w-7 h-7 rounded-full" style={{ backgroundColor: "rgba(76,122,69,0.12)" }}>
+              <svg viewBox="0 0 24 24" width="15" height="15" fill={FC.green} aria-hidden><path d={FERN_LEAF} /></svg>
             </span>
-            <span className="font-mono text-[13px] font-medium" style={{ color: "var(--color-charcoal)" }}>Care Navigator</span>
-            <span className="font-mono text-[11px] ml-auto" style={{ color: "var(--color-muted)" }}>2:07 AM</span>
+            <span className="flex flex-col">
+              <span className="font-semibold text-[13px] leading-none" style={{ color: FC.ink }}>Care Navigator</span>
+              <span className="font-mono text-[10px] mt-1" style={{ color: FC.inkMut }}>Fern Crest Wellness Retreats</span>
+            </span>
+            <span className="ml-auto inline-flex items-center gap-1.5 text-[11px]" style={{ color: FC.green }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: FC.green }} /> online
+            </span>
           </div>
-          <div className="flex flex-col gap-2.5">
-            <Bubble who="a">Hi, I’m Rowan. Whatever brought you here tonight — we can take it one step at a time. Want to look around, or start with something specific?</Bubble>
-            <Bubble who="u">my insurance is through my job, aetna i think</Bubble>
-            <Bubble who="a">Got it — I’ve noted Aetna. When you’re ready I can check what your plan covers, or we can just keep talking. No forms tonight.</Bubble>
+          <div className="p-5 flex flex-col gap-2.5">
+            <BotMsg tag="N-000" zone="voice">Hi, I&rsquo;m Rowan. Whatever brought you here tonight &mdash; we can take it one step at a time. Want to look around, or start with something specific?</BotMsg>
+            <UserMsg>my insurance is through my job, aetna i think</UserMsg>
+            <BotMsg tag="payer ✓ captured" zone="voice">Good news &mdash; we&rsquo;re in-network with Aetna. For exact coverage and cost, a team member can walk you through your benefits whenever you&rsquo;re ready &mdash; no forms tonight.</BotMsg>
           </div>
         </div>
         {/* The machine */}
@@ -157,10 +173,10 @@ function HeroDiorama() {
           <div className="flex flex-col">
             <InspRow label="path" value="Verify insurance" />
             <InspRow label="payer" value="Aetna ✓" hot />
+            <InspRow label="in-network" value="yes · vetted" hot />
+            <InspRow label="coverage · cost" value="deferred → team member" />
             <InspRow label="member id" value="—" />
-            <InspRow label="date of birth" value="—" />
-            <InspRow label="deferred" value="cost of treatment → human" />
-            <InspRow label="model" value="voice only · 2 calls" />
+            <InspRow label="model" value="voice only · phrasing" />
           </div>
           <p className="font-mono text-[11px] leading-[1.5] mt-4 pt-4 border-t m-0" style={{ color: "rgba(255,255,255,0.4)", borderColor: "rgba(255,255,255,0.1)" }}>
             Every field green-lit by the flow, not the model. The browser never holds the record.
@@ -168,7 +184,7 @@ function HeroDiorama() {
         </div>
       </div>
       <figcaption className="font-mono text-[12.5px] mt-3.5 leading-[1.5]" style={{ color: "var(--color-muted)" }}>
-        <b style={{ color: "var(--color-charcoal)", fontWeight: 600 }}>The moment that sells the thesis, staged in the reference build.</b> Left, the warmth — the navigator goes by Rowan. Right, the machine underneath, catching “Aetna” as structured data the instant it’s typed. The model handled nothing but the tone.
+        <b style={{ color: "var(--color-charcoal)", fontWeight: 600 }}>The moment that sells the thesis, from the real Fern Crest build.</b> Left, the warmth — the navigator goes by Rowan, on Fern Crest&rsquo;s nature-first palette. Right, the machine underneath: it catches &ldquo;Aetna&rdquo; from a fuzzy reply, confirms in-network from vetted content, and defers exact coverage and cost to a human. Rowan supplied the warmth; the flow supplied the facts &mdash; and knew where to stop.
       </figcaption>
     </figure>
   );

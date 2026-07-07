@@ -7,6 +7,7 @@ import GabCaseStudy from "@/components/casestudies/GabCaseStudy";
 import CouveCaseStudy from "@/components/casestudies/CouveCaseStudy";
 import PaperCannonCaseStudy from "@/components/casestudies/PaperCannonCaseStudy";
 import ChadCaseStudy from "@/components/casestudies/ChadCaseStudy";
+import AwqatCaseStudy from "@/components/casestudies/AwqatCaseStudy";
 
 /**
  * Bespoke, richer layouts live in src/components/casestudies and own their full
@@ -18,6 +19,7 @@ const BESPOKE: Record<string, () => React.ReactNode> = {
   couve: () => <CouveCaseStudy />,
   "paper-cannon": () => <PaperCannonCaseStudy />,
   chad: () => <ChadCaseStudy />,
+  awqat: () => <AwqatCaseStudy />,
 };
 
 export function generateStaticParams() {
