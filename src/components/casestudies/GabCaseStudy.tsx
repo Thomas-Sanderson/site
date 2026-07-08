@@ -20,7 +20,7 @@ import {
  * Bespoke editorial layout for the Gab case study (v6). The reference other
  * studies follow: narrative structure (hook → the problem shipped twice → the
  * brief behind the brief → principle → seeing it run → decisions → the system
- * drawn → handoff → who did what & where it landed → next move).
+ * drawn → the node map was the real work → next move).
  *
  * Diagrams-over-screenshots is the site thesis, so the live StageDiagram and
  * CareFlow carry the architecture; the two research artifacts (the field-research
@@ -73,7 +73,7 @@ const DECISIONS = [
 
 const HERO_META: React.ReactNode[] = [
   "Sole designer",
-  <>Working build in <b style={{ fontWeight: 600, color: "var(--color-charcoal)" }}>about a month</b>, with Claude Code</>,
+  <>Working build in <b style={{ fontWeight: 600, color: "var(--color-charcoal)" }}>about a week</b>, with Claude Code</>,
   "Handed off for production",
   "HIPAA-bound behavioral health",
 ];
@@ -373,6 +373,11 @@ export default function GabCaseStudy() {
               Live walkthrough — the conversation and the inspector, side by side.
             </figcaption>
           </figure>
+          <div className={`${MEASURE} mt-8`}>
+            <p className="text-[15px] leading-relaxed mb-0" style={{ color: "var(--color-muted)" }}>
+              Whoever takes the callback gets the whole conversation — the path taken, the questions asked, the ones deferred to a human on purpose — not just a name and a number.
+            </p>
+          </div>
         </div>
       </Reveal>
 
@@ -418,32 +423,17 @@ export default function GabCaseStudy() {
         </div>
       </Reveal>
 
-      {/* THE HANDOFF */}
-      <SeamBand>
-        <Reveal>
-          <div className={WRAP}>
-            <div className={MEASURE}>
-              <Eyebrow>The handoff</Eyebrow>
-              <SectionH2>The first phone call stops being cold.</SectionH2>
-              <p className="text-[17px] leading-relaxed">
-                Every earlier tool ended with a name, a number, and a rep dialing into the unknown. Gab treats the conversation as the payload: the lead arrives with the path taken, the questions asked, and the ones deferred on purpose because they deserved a human. The machine’s last job is to make the human’s first minute count — and the question it refuses to guess at, <em>what is this going to cost me?</em>, is the one the next project exists to answer.
-              </p>
-            </div>
-          </div>
-        </Reveal>
-      </SeamBand>
-
-      {/* THE BUILD, AND THE HONEST CLAIM (merged: who did what + where it landed) */}
+      {/* THE NODE MAP WAS THE REAL WORK (authorship + method) */}
       <Reveal as="section" className="py-14">
         <div className={WRAP}>
           <div className={MEASURE}>
             <Eyebrow>Who did what, plainly</Eyebrow>
-            <SectionH2>One designer, one coding agent, one working build.</SectionH2>
+            <SectionH2>The node map was the real work.</SectionH2>
             <p className="text-[17px] leading-relaxed mb-4">
-              I didn’t write a line of code. I wrote everything else — every node, every vetted answer, the three depths of intake, the crisis rule, the words. Claude Code typed; I decided. The build on this page is my own reference engine, white-labeled.
+              The project began as an analysis of the site’s earlier, pre-LLM system — every path a conversation could take, drawn out as a node map. I prototyped the flow in Figma, then moved into code: getting the nodes and the model’s behavior to feel natural meant iterating them live, with the LLM in the loop, not on a static canvas. Claude Code typed; I decided — the build on this page is my own reference engine, white-labeled.
             </p>
             <p className="text-[17px] leading-relaxed mb-4">
-              What that produced, in about a month, was a complete working skeleton — every path, every vetted answer, the crisis stop, the data boundaries, all of it running. Not a mockup: scoped to settle how the thing behaves, not to survive production traffic — every open design question answered in something you could actually use.
+              What that produced, in about a week, was a complete working skeleton — every path, every vetted answer, the crisis stop, the data boundaries, all of it running. Not a mockup: scoped to settle how the thing behaves, not to survive production traffic — every open design question answered in something you could actually use.
             </p>
             <p className="text-[17px] leading-relaxed mb-6">
               The handoff was that running build, the node map, and a filmed walkthrough — with one precondition: a BAA, because you don’t hand a design that captures insurance details to infrastructure that can’t legally hold them. From there the client’s engineers built it out for production — the compliance and scale a prototype gets to skip. The design was theirs to build, never to reinvent.
