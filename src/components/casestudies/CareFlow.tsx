@@ -69,7 +69,7 @@ export default function CareFlow() {
           <span className="font-mono text-[10.5px] uppercase tracking-[0.14em] mr-2" style={{ color: CLAY }}>
             From any step
           </span>
-          A message signaling suicidal intent or overdose <strong>hard-stops the flow</strong> and puts a crisis line and a human&rsquo;s phone number on screen. The model never gets a vote.
+          Suicidal intent or overdose <strong>hard-stops the flow</strong> &mdash; a crisis line and a human&rsquo;s number, on screen.
         </p>
       </div>
 

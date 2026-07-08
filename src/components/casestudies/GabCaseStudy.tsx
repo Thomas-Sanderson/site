@@ -20,7 +20,7 @@ import {
  * Bespoke editorial layout for the Gab case study (v6). The reference other
  * studies follow: narrative structure (hook → the problem shipped twice → the
  * brief behind the brief → principle → seeing it run → decisions → the system
- * drawn → handoff → who did what → impact → next move).
+ * drawn → handoff → who did what & where it landed → next move).
  *
  * Diagrams-over-screenshots is the site thesis, so the live StageDiagram and
  * CareFlow carry the architecture; the two research artifacts (the field-research
@@ -47,11 +47,6 @@ const LEGEND = [
 ];
 
 const DECISIONS = [
-  {
-    k: "Structure,\nchosen twice",
-    h: "The answer to bad nodes wasn’t no nodes.",
-    p: "A node tree again — designed properly this time. Every path authored, every stated fact vetted content: nobody gets told something untrue or pushed anywhere. The first version’s mistake was never the structure; it was the authoring. Now it has rooms.",
-  },
   {
     k: "Where the AI\nearns its place",
     h: "It warms the words. It never picks the path.",
@@ -388,7 +383,7 @@ export default function GabCaseStudy() {
             <Eyebrow>The decisions that mattered</Eyebrow>
             <SectionH2>A case study is really a record of what you chose.</SectionH2>
             <p className="text-[17px]" style={{ color: "var(--color-muted)" }}>
-              Five calls did the most work.
+              Four calls did the most work.
             </p>
           </div>
           <DecisionList items={DECISIONS} />
@@ -402,7 +397,7 @@ export default function GabCaseStudy() {
             <Eyebrow>The system, drawn</Eyebrow>
             <SectionH2>Every path resolves. Nobody hits a dead end.</SectionH2>
             <p className="text-[17px] leading-relaxed">
-              Decline, crisis, “just browsing,” a question the system can’t answer — all of it routes somewhere humane, and the phrase “start admission” pulls a person back to the front of the line from anywhere in the flow.
+              Decline, crisis, “just browsing,” a question the system can’t answer — every branch routes somewhere humane.
             </p>
           </div>
           <CareFlow />
@@ -438,7 +433,7 @@ export default function GabCaseStudy() {
         </Reveal>
       </SeamBand>
 
-      {/* WHO DID WHAT */}
+      {/* THE BUILD, AND THE HONEST CLAIM (merged: who did what + where it landed) */}
       <Reveal as="section" className="py-14">
         <div className={WRAP}>
           <div className={MEASURE}>
@@ -448,26 +443,10 @@ export default function GabCaseStudy() {
               I didn’t write a line of code. I wrote everything else — every node, every vetted answer, the three depths of intake, the crisis rule, the words. Claude Code typed; I decided. The build on this page is my own reference engine, white-labeled.
             </p>
             <p className="text-[17px] leading-relaxed mb-4">
-              What that produced was a complete, working skeleton — the full anatomy of the product, every bone in the right place, and it ran. Scoped on purpose to settle how the thing behaves, not to survive production traffic: every open question about the design, answered in something you could actually use.
-            </p>
-            <p className="text-[17px] leading-relaxed">
-              The handoff was that running build, the node map, and a filmed walkthrough — with one precondition: a BAA, because you don’t hand a design that captures insurance details to infrastructure that can’t legally hold them. From there the client’s engineers fleshed the skeleton into a production system — the compliance and scale a prototype gets to skip. The design was theirs to build, never to reinvent.
-            </p>
-          </div>
-        </div>
-      </Reveal>
-
-      {/* IMPACT */}
-      <Reveal as="section" className="py-14">
-        <div className={WRAP}>
-          <div className={MEASURE}>
-            <Eyebrow>Where it landed</Eyebrow>
-            <SectionH2 className="!mb-6">The design was finished before production began.</SectionH2>
-            <p className="text-[17px] leading-relaxed mb-4">
-              Built for a national behavioral-health provider: a care navigator that owns first contact — greeting, exploration, triage, coverage capture — no form, and nobody needed on the other end at 2&nbsp;a.m.
+              What that produced, in about a month, was a complete working skeleton — every path, every vetted answer, the crisis stop, the data boundaries, all of it running. Not a mockup: scoped to settle how the thing behaves, not to survive production traffic — every open design question answered in something you could actually use.
             </p>
             <p className="text-[17px] leading-relaxed mb-6">
-              The whole system existed as a working build in about a month — one designer, Claude Code for hands. Not a mockup: every path, every vetted answer, the crisis stop, the data boundaries, all of it running. A complete skeleton, handed to the client’s engineers to be fleshed out for production.
+              The handoff was that running build, the node map, and a filmed walkthrough — with one precondition: a BAA, because you don’t hand a design that captures insurance details to infrastructure that can’t legally hold them. From there the client’s engineers built it out for production — the compliance and scale a prototype gets to skip. The design was theirs to build, never to reinvent.
             </p>
             <ImpactCallout
               note={
