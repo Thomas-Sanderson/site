@@ -235,7 +235,7 @@ function Autopsy() {
   );
 }
 
-/* ── Stats row — the thesis on an invoice (dark section) ─────────────────── */
+/* ── Stats row — the thesis on an invoice (now anchors the closing claim) ── */
 
 const STATS: { n: React.ReactNode; l: string }[] = [
   { n: <>0</>, l: "facts the model is allowed to state on its own" },
@@ -345,12 +345,6 @@ export default function GabCaseStudy() {
                 ariaLabel="Three-layer control model: user input passes through a guardrail layer, then a deterministic core, then the model, before reaching the person."
               />
             </div>
-            <div className={`${MEASURE} mt-14`}>
-              <StatsRow />
-              <p className="text-[16px] leading-relaxed mt-6 mb-0" style={{ color: "#CFCBD6" }}>
-                The thesis on an invoice: nothing to invent, and at that leash length, sounding human costs fractions of a cent — on a bill that can’t surprise you.
-              </p>
-            </div>
           </div>
         </Reveal>
       </DarkSection>
@@ -433,20 +427,23 @@ export default function GabCaseStudy() {
               The project began as an analysis of the site’s earlier, pre-LLM system — every path a conversation could take, drawn out as a node map. I prototyped the flow in Figma, then moved into code: getting the nodes and the model’s behavior to feel natural meant iterating them live, with the LLM in the loop, not on a static canvas. Claude Code typed; I decided — the build on this page is my own reference engine, white-labeled.
             </p>
             <p className="text-[17px] leading-relaxed mb-4">
-              What that produced, in about a week, was a complete working skeleton — every path, every vetted answer, the crisis stop, the data boundaries, all of it running. Not a mockup: scoped to settle how the thing behaves, not to survive production traffic — every open design question answered in something you could actually use.
+              What that produced was a complete working skeleton — every path, every vetted answer, the crisis stop, the data boundaries, all of it running. Not a mockup: scoped to settle how the thing behaves, not to survive production traffic — every open design question answered in something you could actually use.
             </p>
-            <p className="text-[17px] leading-relaxed mb-6">
+            <p className="text-[17px] leading-relaxed mb-8">
               The handoff was that running build, the node map, and a filmed walkthrough — with one precondition: a BAA, because you don’t hand a design that captures insurance details to infrastructure that can’t legally hold them. From there the client’s engineers built it out for production — the compliance and scale a prototype gets to skip. The design was theirs to build, never to reinvent.
             </p>
-            <ImpactCallout
-              note={
-                <>
-                  <strong style={{ color: "var(--color-charcoal)" }}>The honest claim.</strong> No conversion number lives here — the production system and its analytics are the client’s.
-                </>
-              }
-            >
-              The claim isn’t speed, it’s resolution: two earlier front doors had shipped and fallen short, so the question was never whether this could be built, but what to build. A design you can run instead of read settles that — and it was settled before production started.
-            </ImpactCallout>
+            <StatsRow />
+            <div className="mt-6">
+              <ImpactCallout
+                note={
+                  <>
+                    <strong style={{ color: "var(--color-charcoal)" }}>The honest claim.</strong> No conversion number lives here — the production system and its analytics are the client’s.
+                  </>
+                }
+              >
+                Built in about a week, and exceedingly cheap to run — it invents nothing on its own, and the little it’s trusted with costs fractions of a cent a question.
+              </ImpactCallout>
+            </div>
           </div>
         </div>
       </Reveal>
