@@ -2,19 +2,18 @@
 
 // Life Map sound — an event-driven Web Audio "score" for the draw animation.
 //
-// Brief (v3): EVERY dot makes a sound, and a dot with multiple concentric rings
-// (lived + worked + made there …) voices EACH ring — inner→outer — so what you
-// hear matches what you see growing. Each ring's TYPE picks the voice
+// Brief (v4): EVERY dot makes a sound, and a dot with multiple concentric rings
+// voices EACH ring, rolled clearly inner→outer (home/live bass first) so the
+// layers never mask or cancel each other. A ring's TYPE picks the voice
 // (home/location = bass; the others = snap / horn / snare / keys), its PITCH
 // tracks the place's distance from the current home, and its "time to grow"
-// (that mode's months at the place — what sizes the ring) modulates a fading
-// envelope: long stays bloom into long, slowly-fading tones; brief visits blip.
-// The rings of one dot are lightly staggered so they roll rather than stack.
+// modulates a fading envelope. Separately, whenever the HOME itself settles on a
+// new place, a low bass root sounds — so the current home always has a voice
+// (including the final one the journey rests on).
 //
-// There is no metronome — the dots are the rhythm, so the pace is the organic
-// cadence of the journey. Everything runs through a soft limiter (+ short
-// reverb), and every pitch snaps to a D minor-pentatonic scale, so overlapping
-// fades stay consonant instead of turning to mud.
+// The master bus is only gently limited (a soft, slow compressor) so a punchy
+// bass never ducks the ring voices that follow it. Every pitch snaps to a D
+// minor-pentatonic scale, so overlapping fades stay consonant.
 //
 // Pure/lazy: no AudioContext until enable() is called from a user gesture
 // (autoplay policy), and nothing here touches the DOM at import.
@@ -48,6 +47,8 @@ export interface LifeMapAudio {
   stop: () => void;
   /** Play one fading note per ring for a dot that just appeared. */
   triggerDot: (d: DotEvent) => void;
+  /** Sound a low bass root when the home settles on a new place. */
+  homeSettled: (homeKey: string) => void;
   dispose: () => void;
 }
 
@@ -57,12 +58,14 @@ const KEYS_MIDI = 74; // D5, the vibraphone octave (learn).
 const BASS_MIDI = 38; // D2, the bass tonic (live/home).
 // D minor pentatonic over two octaves — the palette every pitch snaps to.
 const SCALE = [0, 3, 5, 7, 10, 12, 15, 17, 19, 22];
+// Bass keeps to the low octave so "home" always reads as bass, even far away.
+const BASS_SCALE = [0, 3, 5, 7, 10, 12];
 
 // Envelope length clamps (seconds): shortest blip → longest fading pad.
 const DUR_MIN = 0.22;
 const DUR_MAX = 5;
-// Gap between a dot's stacked rings so they roll rather than land as one hit.
-const RING_STAGGER = 0.06;
+// Gap between a dot's stacked rings so they roll clearly rather than blur.
+const RING_STAGGER = 0.14;
 
 const midiToFreq = (m: number) => 440 * Math.pow(2, (m - 69) / 12);
 const clamp = (x: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, x));
@@ -100,11 +103,11 @@ function distNorm(placeKey: string, homeKey: string | null): number {
   return Math.min(1, haversine(p.lat, p.lon, h.lat, h.lon) / MAX_DIST);
 }
 
-/** Distance → melodic frequency, snapped to the pentatonic scale. */
-function pitchFor(base: number, placeKey: string, homeKey: string | null): number {
-  const raw = Math.round(distNorm(placeKey, homeKey) * (SCALE.length - 1));
-  const idx = clamp(raw, 0, SCALE.length - 1);
-  return midiToFreq(base + SCALE[idx]);
+/** Distance → frequency, snapped to a (optionally low) pentatonic scale. */
+function pitchFor(base: number, placeKey: string, homeKey: string | null, scale = SCALE): number {
+  const raw = Math.round(distNorm(placeKey, homeKey) * (scale.length - 1));
+  const idx = clamp(raw, 0, scale.length - 1);
+  return midiToFreq(base + scale[idx]);
 }
 
 // ── Engine ─────────────────────────────────────────────────────────────────
@@ -139,13 +142,14 @@ export function createLifeMapAudio(): LifeMapAudio {
 
       master = ctx.createGain();
       master.gain.value = 0.0001;
-      // Soft limiter so overlapping fades glue and never clip into noise.
+      // GENTLE safety limiter only — slow attack + soft knee + low ratio so a
+      // punchy bass transient never ducks the ring voices that follow it.
       const comp = ctx.createDynamicsCompressor();
-      comp.threshold.value = -16;
-      comp.knee.value = 24;
-      comp.ratio.value = 3.4;
-      comp.attack.value = 0.004;
-      comp.release.value = 0.28;
+      comp.threshold.value = -4;
+      comp.knee.value = 34;
+      comp.ratio.value = 1.8;
+      comp.attack.value = 0.02;
+      comp.release.value = 0.3;
       master.connect(comp);
       comp.connect(ctx.destination);
 
@@ -153,14 +157,14 @@ export function createLifeMapAudio(): LifeMapAudio {
       const conv = ctx.createConvolver();
       conv.buffer = makeReverbIR(ctx);
       wet = ctx.createGain();
-      wet.gain.value = 0.2;
+      wet.gain.value = 0.18;
       wet.connect(conv);
       conv.connect(comp);
     }
     if (ctx.state === "suspended") await ctx.resume();
     on = true;
     master!.gain.cancelScheduledValues(ctx.currentTime);
-    master!.gain.setTargetAtTime(0.55, ctx.currentTime, 0.05);
+    master!.gain.setTargetAtTime(0.5, ctx.currentTime, 0.05);
   }
 
   function disable() {
@@ -176,7 +180,7 @@ export function createLifeMapAudio(): LifeMapAudio {
   }
 
   // Pitched voices fade over `dur` — the ring's growth time — "as if fading".
-  function bass(freq: number, t: number, dur: number, gain = 0.42) {
+  function bass(freq: number, t: number, dur: number, gain = 0.4) {
     if (!ctx || !Number.isFinite(freq)) return;
     const o = ctx.createOscillator();
     o.type = "triangle";
@@ -196,7 +200,7 @@ export function createLifeMapAudio(): LifeMapAudio {
     o.stop(t + dur + 0.05);
   }
 
-  function horn(freq: number, t: number, dur: number, gain = 0.16) {
+  function horn(freq: number, t: number, dur: number, gain = 0.18) {
     if (!ctx || !Number.isFinite(freq)) return;
     const o = ctx.createOscillator();
     o.type = "sawtooth";
@@ -224,7 +228,7 @@ export function createLifeMapAudio(): LifeMapAudio {
     vib.stop(t + dur + 0.05);
   }
 
-  function keys(freq: number, t: number, dur: number, gain = 0.15) {
+  function keys(freq: number, t: number, dur: number, gain = 0.16) {
     if (!ctx || !Number.isFinite(freq)) return;
     // Two-sine bell (vibraphone-ish) for the "learn" voice.
     [1, 2.01].forEach((mult, i) => {
@@ -254,8 +258,7 @@ export function createLifeMapAudio(): LifeMapAudio {
     return src;
   }
 
-  // Percussive voices are naturally short; growth only stretches the tail a
-  // little (a brief visit snaps, a long stay brushes a touch longer).
+  // Percussive voices are naturally short; growth only stretches the tail a bit.
   function snap(t: number, dur: number, gain = 0.3) {
     if (!ctx) return;
     const tail = clamp(dur * 0.18, 0.04, 0.14);
@@ -272,7 +275,7 @@ export function createLifeMapAudio(): LifeMapAudio {
     out(g);
   }
 
-  function snare(t: number, dur: number, gain = 0.16) {
+  function snare(t: number, dur: number, gain = 0.18) {
     if (!ctx) return;
     const tail = clamp(dur * 0.4, 0.12, 0.6);
     const src = noiseBurst(t, tail);
@@ -292,7 +295,7 @@ export function createLifeMapAudio(): LifeMapAudio {
     const dur = clamp(ring.growthSec, DUR_MIN, DUR_MAX);
     switch (ring.mode) {
       case "live":
-        bass(pitchFor(BASS_MIDI, placeKey, homeKey), t, dur);
+        bass(pitchFor(BASS_MIDI, placeKey, homeKey, BASS_SCALE), t, dur);
         break;
       case "work":
         horn(pitchFor(ROOT_MIDI, placeKey, homeKey), t, dur);
@@ -312,10 +315,16 @@ export function createLifeMapAudio(): LifeMapAudio {
   function triggerDot(d: DotEvent) {
     if (!ctx || !on || !armed) return;
     const base = ctx.currentTime + 0.02;
-    // One voice per ring, inner→outer, lightly rolled so all layers are heard.
+    // One voice per ring, inner→outer, rolled so every layer is heard clearly.
     d.rings.forEach((ring, i) => {
       playRing(ring, d.placeKey, d.homeKey, base + i * RING_STAGGER);
     });
+  }
+
+  function homeSettled(homeKey: string) {
+    if (!ctx || !on || !armed) return;
+    // The home is, by definition, at distance 0 → the bass tonic (root).
+    bass(midiToFreq(BASS_MIDI), ctx.currentTime + 0.02, 1.6, 0.44);
   }
 
   return {
@@ -329,6 +338,7 @@ export function createLifeMapAudio(): LifeMapAudio {
       armed = false;
     },
     triggerDot,
+    homeSettled,
     dispose: () => {
       armed = false;
       if (ctx) {

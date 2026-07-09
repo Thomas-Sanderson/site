@@ -36,24 +36,26 @@ interface TipState {
  * allowed, auto-starting when the section scrolls into view. Hover tooltips are
  * a pure pointer enhancement over transparent hit-circles.
  *
- * Optional sound: an opt-in Web Audio "score" (see `lifeMapAudio`) plays one
- * fading note per dot as it appears — a bass voice for the home/live dots and
- * snap/horn/snare/keys for the other dot types, pitched by each dot's distance
- * from the current home and length-modulated by its growth time. It is off by
- * default and enabled only from a user gesture (autoplay policy).
+ * Sound (on by default): an opt-out Web Audio "score" (see `lifeMapAudio`)
+ * plays the journey — a bass root each time you move to a home (replayed on
+ * return), and snap/horn/snare/keys for the other dot types as their dots
+ * appear, pitched by distance from the current home and length-modulated by
+ * growth time. The AudioContext is created/resumed only from the play/toggle
+ * gesture (autoplay policy), so nothing sounds until you press play.
  */
 export default function LifeMap() {
   const last = MONTHS_PROJ[N - 1];
   const lastLive = [...MONTHS_PROJ].reverse().find((m) => m.mode === "live");
   const homeLabel = lastLive ? `${lastLive.place}, ${lastLive.region}` : "";
 
-  const [soundOn, setSoundOn] = useState(false);
+  const [soundOn, setSoundOn] = useState(true);
   const audioRef = useRef<LifeMapAudio | null>(null);
   const drawingRef = useRef(false);
   const getAudio = () => (audioRef.current ??= createLifeMapAudio());
 
   const { rootRef, replay } = useLifeDraw<HTMLElement>({
     onDotEnter: (d) => audioRef.current?.triggerDot(d),
+    onHomeChange: (k) => audioRef.current?.homeSettled(k),
     onStart: () => {
       drawingRef.current = true;
       if (soundOn) audioRef.current?.start();
@@ -79,7 +81,7 @@ export default function LifeMap() {
     }
   };
 
-  const watch = () => {
+  const play = () => {
     // Resume the context within the gesture so the score can start after the
     // pre-roll delay (which is not itself a user gesture).
     if (soundOn) getAudio().enable();
@@ -170,6 +172,7 @@ export default function LifeMap() {
                     key={`${n.key}-band-${bi}`}
                     data-lifemap-ring={n.key}
                     data-lifemap-r={b.r}
+                    data-lifemap-start={b.firstIdx}
                     cx={n.x}
                     cy={n.y}
                     r={b.r}
@@ -227,23 +230,25 @@ export default function LifeMap() {
             onClick={toggleSound}
             aria-pressed={soundOn}
             aria-label={soundOn ? "Turn map sound off" : "Turn map sound on"}
-            title="Score the journey with sound"
-            className="font-mono text-xs tracking-[0.04em] inline-flex items-center gap-2 rounded-full px-4 py-2 border transition-colors active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-[color:var(--color-teal)] focus-visible:outline-offset-2"
+            title={soundOn ? "Sound on" : "Sound off"}
+            className="inline-flex items-center justify-center rounded-full w-9 h-9 border transition-colors active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-[color:var(--color-teal)] focus-visible:outline-offset-2"
             style={{
-              borderColor: soundOn ? "var(--color-teal)" : "rgba(45,42,38,0.2)",
-              color: soundOn ? "var(--color-teal)" : "var(--color-muted)",
-              backgroundColor: soundOn ? "rgba(42,107,90,0.08)" : "transparent",
+              borderColor: soundOn ? "var(--color-teal)" : "rgba(45,42,38,0.25)",
+              color: soundOn ? "var(--color-cream)" : "var(--color-muted)",
+              backgroundColor: soundOn ? "var(--color-teal)" : "transparent",
             }}
           >
-            {soundOn ? "♪ Sound on" : "♪ Sound off"}
+            <span aria-hidden className="text-[14px] leading-none">
+              ♪
+            </span>
           </button>
           <button
             type="button"
-            onClick={watch}
-            aria-label="Watch the journey animation"
+            onClick={play}
+            aria-label="Play the journey animation"
             className="font-mono text-xs tracking-[0.04em] inline-flex items-center gap-2 rounded-full px-4 py-2 text-[color:var(--color-cream)] bg-[color:var(--color-charcoal)] transition-transform active:translate-y-px hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[color:var(--color-teal)] focus-visible:outline-offset-2"
           >
-            ▷ Watch the journey
+            ▷ Play the journey
           </button>
         </div>
       </div>

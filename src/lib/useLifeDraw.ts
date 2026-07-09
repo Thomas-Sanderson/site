@@ -16,13 +16,15 @@ export interface DotEnter {
   placeKey: string;
   /** Current home the dot's distance (→ pitch) is measured from. */
   homeKey: string | null;
-  /** Concentric rings, inner→outer — one voice each. */
+  /** Activity rings, inner→outer — one voice each. */
   rings: DotEnterRing[];
 }
 
 export interface LifeDrawCallbacks {
   /** Fires once, when a place's dot first appears in the draw. */
   onDotEnter?: (d: DotEnter) => void;
+  /** Fires when the home anchor moves onto a new place (the "move"). */
+  onHomeChange?: (homeKey: string) => void;
   /** Fires when the draw actually begins (after the pre-roll delay). */
   onStart?: () => void;
   /** Fires when the draw reaches its final frame. */
@@ -33,10 +35,11 @@ export interface LifeDrawCallbacks {
 const DUR = 30000;
 // Hold the map blank briefly before the line starts drawing.
 const START_DELAY = 650;
-// Months a NEW home's dot must have been drawing before the border moves onto
-// it — so the border lingers on the old home instead of jumping the instant
-// the line arrives.
-const BORDER_LAG = 2;
+// Months a NEW home's dot must have been drawing before the border (active
+// white ring) moves onto it. 0 = it transfers the instant the line reaches the
+// new home, so it never lingers on the previous stop — e.g. it no longer holds
+// on a repeat like Kenilworth while the line is already heading to NC.
+const BORDER_LAG = 0;
 // Real time each drawn month occupies — the unit behind a ring's "time to grow".
 const MONTH_MS = DUR / Math.max(1, N - 1);
 
@@ -46,16 +49,19 @@ const MONTH_MS = DUR / Math.max(1, N - 1);
 const ACTIVE_STROKE = "#E3D9C2";
 const ACTIVE_STROKE_W = "1";
 
-// Concentric ring order (inner→outer), matching the geometry's band order.
-const RING_ORDER: Mode[] = ["live", "make", "work", "learn", "travel"];
+// Activity rings (inner→outer) that sound when a place's DOT first appears.
+// "live" is intentionally excluded: the home/bass voice is driven separately by
+// onHomeChange (the move), so a place you only visit first — e.g. Delaware —
+// doesn't sound like "moving there" until it actually becomes home.
+const ACTIVITY_ORDER: Mode[] = ["make", "work", "learn", "travel"];
 
-// Per-place ring list: every mode present at the place gets a voice, ordered
-// inner→outer, each carrying its own growth time (that mode's months on screen)
-// so a multi-type dot is heard in full, layer by layer.
+// Per-place activity-ring list: every non-live mode present at the place gets a
+// voice, ordered inner→outer, each carrying its own growth time so a multi-type
+// dot is heard in full, layer by layer.
 const NODE_RINGS = new Map<string, DotEnterRing[]>(
   NODES.map((n) => [
     n.key,
-    RING_ORDER.filter((m) => (n.modes[m] ?? 0) > 0).map((m) => ({
+    ACTIVITY_ORDER.filter((m) => (n.modes[m] ?? 0) > 0).map((m) => ({
       mode: m,
       growthSec: ((n.modes[m] ?? 0) * MONTH_MS) / 1000,
     })),
@@ -67,14 +73,20 @@ const NODE_RINGS = new Map<string, DotEnterRing[]>(
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
 // key -> "Place, Region" for the home ticker.
 const PLACE_LABEL = new Map(NODES.map((n) => [n.key, `${n.place}, ${n.region}`]));
 
+// Mirrors the geometry's baseRadius core — the sqrt size curve a dot's radius
+// follows as time accrues. Used so a trip shows at full "one-visit" size on its
+// first visit and only grows a little when visited again.
+const sizeAt = (n: number) => 3.5 + Math.sqrt(Math.max(0, n)) * 1.05;
+
 interface RingEl {
   el: SVGCircleElement;
   rTarget: number;
+  /** Month index this ring starts drawing at (its mode's first month here). */
+  start: number;
 }
 
 interface RNode {
@@ -100,10 +112,10 @@ interface RNode {
  * its dot has actually been drawn.
  *
  * Optional `cb` callbacks let a caller score the draw (used by the Life Map
- * audio engine): `onDotEnter` fires once per place as its dot appears, carrying
- * every ring the place has (so multi-type dots are voiced in full), the current
- * home, and each ring's growth time; `onStart`/`onEnd` bracket a run. They are
- * read through a ref so the effect stays mount-once.
+ * audio engine): `onDotEnter` fires once per place as its dot appears (with its
+ * activity rings + the current home), `onHomeChange` fires when you move (the
+ * home anchor lands on a new place), and `onStart`/`onEnd` bracket a run. They
+ * are read through a ref so the effect stays mount-once.
  *
  * Progressive enhancement: if `prefers-reduced-motion` is set (or this hook
  * never runs, i.e. no JS), the map is left on its server-rendered final state
@@ -130,8 +142,9 @@ export function useLifeDraw<T extends HTMLElement>(cb?: LifeDrawCallbacks) {
     root.querySelectorAll<SVGCircleElement>("[data-lifemap-ring]").forEach((el) => {
       const k = el.getAttribute("data-lifemap-ring") ?? "";
       const rTarget = parseFloat(el.getAttribute("data-lifemap-r") ?? el.getAttribute("r") ?? "0");
+      const start = parseInt(el.getAttribute("data-lifemap-start") ?? "0", 10);
       const arr = byKey.get(k) ?? [];
-      arr.push({ el, rTarget });
+      arr.push({ el, rTarget, start });
       byKey.set(k, arr);
     });
 
@@ -174,6 +187,7 @@ export function useLifeDraw<T extends HTMLElement>(cb?: LifeDrawCallbacks) {
     let activeKey: string | null = null;
     let anchorKey: string | null = null;
     let borderKey: string | null = null;
+    let homeVoiced: string | null = null;
     let startTimer = 0;
     let finalLiveAnchor: string | null = null;
     for (let i = N - 1; i >= 0; i--) {
@@ -200,6 +214,14 @@ export function useLifeDraw<T extends HTMLElement>(cb?: LifeDrawCallbacks) {
       setBorder(activeKey ? byKeyNode.get(activeKey) : undefined, false);
       setBorder(key ? byKeyNode.get(key) : undefined, true);
       activeKey = key;
+    };
+
+    // Sound a bass root the first time you MOVE to a place (anchor lands on it).
+    const voiceHome = (key: string | null) => {
+      if (key && key !== homeVoiced) {
+        homeVoiced = key;
+        cbRef.current?.onHomeChange?.(key);
+      }
     };
 
     const elapsedIn = (rn: RNode, ff: number): number => {
@@ -230,18 +252,28 @@ export function useLifeDraw<T extends HTMLElement>(cb?: LifeDrawCallbacks) {
         if (ff >= rn.first) {
           if (!rn.visible) {
             rn.visible = true;
-            // The dot has just appeared — score every ring it has. Home is the
-            // anchor as of the previous frame (updated below), so a brand-new
-            // home reads as a move away from where you were, then resolves.
+            // The dot has just appeared — score its activity rings (the home
+            // bass is handled separately by the move, below).
             cbRef.current?.onDotEnter?.({
               placeKey: rn.key,
               homeKey: anchorKey,
               rings: NODE_RINGS.get(rn.key) ?? [],
             });
           }
-          const prog = elapsedIn(rn, ff) / rn.count;
-          const gr = easeOut(Math.max(0.08, prog));
-          for (const c of rn.circles) c.el.setAttribute("r", (c.rTarget * gr).toFixed(2));
+          // Radius tracks the TIME accrued here so far, on an absolute size
+          // scale: an early visit shows at real visit-size (never a sliver of
+          // an eventual home — e.g. Austin's 2011 trip), it grows a little on
+          // each revisit (e.g. Charleston, Miami), and the linear term still
+          // fills it to full size as its months complete, keeping home revisit
+          // growth visible (e.g. NYC, Bay Area, Kenilworth).
+          const elapsed = elapsedIn(rn, ff);
+          const full = rn.outer?.rTarget ?? 1;
+          const gr = Math.max(elapsed / rn.count, Math.min(1, sizeAt(elapsed) / full));
+          // Each ring only appears once its own activity has begun here, so a
+          // place visited before you lived there doesn't show its home/work
+          // rings during those early visits.
+          for (const c of rn.circles)
+            c.el.setAttribute("r", ff >= c.start ? (c.rTarget * gr).toFixed(2) : "0");
           if (rn.hit) rn.hit.style.pointerEvents = "";
         } else if (rn.visible) {
           rn.visible = false;
@@ -268,8 +300,12 @@ export function useLifeDraw<T extends HTMLElement>(cb?: LifeDrawCallbacks) {
           }
         }
         setActive(borderKey);
+        // The move (bass) tracks the actual residence, not the lagged border,
+        // so the home voice lands when you arrive — including the final home.
+        voiceHome(anchorKey);
       } else {
         setActive(finalLiveAnchor);
+        voiceHome(finalLiveAnchor);
       }
 
       const cur = MONTHS_PROJ[Math.min(N - 1, Math.round(cf))];
@@ -290,6 +326,7 @@ export function useLifeDraw<T extends HTMLElement>(cb?: LifeDrawCallbacks) {
       }
       anchorKey = null;
       borderKey = null;
+      homeVoiced = null;
       setActive(null);
       if (yearEl) yearEl.textContent = String(MONTHS_PROJ[0].year);
       if (placeEl) placeEl.textContent = "";
@@ -330,7 +367,7 @@ export function useLifeDraw<T extends HTMLElement>(cb?: LifeDrawCallbacks) {
     }
 
     // The map rests on its complete, final state. It does NOT auto-play on
-    // scroll — the "Watch the journey" button plays the draw on demand.
+    // scroll — the "Play the journey" button plays the draw on demand.
     return () => {
       if (raf) cancelAnimationFrame(raf);
       if (startTimer) clearTimeout(startTimer);

@@ -71,11 +71,33 @@ export const MONTHS_PROJ: ProjMonth[] = MONTHS.map((m, i) => {
 
 export const N = MONTHS_PROJ.length;
 
+// Home tenure — how long each place was the CURRENT home. Every month is
+// attributed to the last place declared "live", until a different home is
+// declared, so work trips and travel taken while based somewhere still count
+// toward that home's duration. This is the honest measure of "how long I lived
+// there": recorded live months undercount it (time away on trips), and the
+// first-to-last live span overcounts it (gaps spent living elsewhere).
+export const HOME_TENURE: Record<string, number> = (() => {
+  const t: Record<string, number> = {};
+  let home: string | null = null;
+  for (const m of MONTHS) {
+    if (m.mode === "live") home = m.placeKey;
+    if (home) t[home] = (t[home] ?? 0) + 1;
+  }
+  return t;
+})();
+
 // ── Nodes: one per place, with concentric mode bands ──────────────────────
 const RING_ORDER: Mode[] = ["live", "make", "work", "learn", "travel"];
 
 export interface Band {
   color: string;
+  /** The mode this ring represents. */
+  mode: Mode;
+  /** First month index (global) at which this place has this mode — the ring
+   *  stays hidden in the draw until then, so e.g. Austin's green/work rings
+   *  don't appear during its earlier travel visits. */
+  firstIdx: number;
   /** Month count for this mode at this place. */
   n: number;
   /** Outer radius of the band at full draw. */
@@ -96,6 +118,8 @@ export interface LifeNode {
   firstY: number;
   lastY: number;
   modes: Partial<Record<Mode, number>>;
+  /** First month index per mode at this place. */
+  modeFirst: Partial<Record<Mode, number>>;
   /** Index of the first/last month actually tagged "live" here (-1 if none). */
   firstLiveIdx: number;
   lastLiveIdx: number;
@@ -125,14 +149,14 @@ function bandsFor(
   // travel), each a thin shell scaled by its own amount.
   if ((modes.live ?? 0) > 0 && liveSpan > 0) {
     const greenR = baseRadius(liveSpan);
-    const bands: Band[] = [{ color: MODE_HEX.live, n: liveSpan, r: greenR }];
+    const bands: Band[] = [{ color: MODE_HEX.live, mode: "live", firstIdx: 0, n: liveSpan, r: greenR }];
     let cum = greenR;
     for (const m of RING_ORDER) {
       if (m === "live") continue;
       const c = modes[m] ?? 0;
       if (c > 0) {
         cum += Math.min(4, 1.0 + Math.sqrt(c) * 0.45);
-        bands.push({ color: MODE_HEX[m], n: c, r: cum });
+        bands.push({ color: MODE_HEX[m], mode: m, firstIdx: 0, n: c, r: cum });
       }
     }
     return bands;
@@ -143,7 +167,7 @@ function bandsFor(
   const present: Band[] = [];
   for (const m of RING_ORDER) {
     const n = modes[m] ?? 0;
-    if (n > 0) present.push({ color: MODE_HEX[m], n, r: 0 });
+    if (n > 0) present.push({ color: MODE_HEX[m], mode: m, firstIdx: 0, n, r: 0 });
   }
   if (present.length <= 1) {
     if (present.length === 1) present[0].r = R;
@@ -180,6 +204,7 @@ export const NODES: LifeNode[] = (() => {
         firstY: mo.year,
         lastY: mo.year,
         modes: {},
+        modeFirst: {},
         firstLiveIdx: -1,
         lastLiveIdx: -1,
         baseR: 0,
@@ -195,29 +220,45 @@ export const NODES: LifeNode[] = (() => {
     nd.lastIdx = mo.i;
     nd.lastY = mo.year;
     nd.modes[mo.mode] = (nd.modes[mo.mode] ?? 0) + 1;
+    if (nd.modeFirst[mo.mode] == null) nd.modeFirst[mo.mode] = mo.i;
     if (mo.mode === "live") {
       if (nd.firstLiveIdx < 0) nd.firstLiveIdx = mo.i;
       nd.lastLiveIdx = mo.i;
     }
   }
   for (const nd of order) {
-    const liveSpan = nd.firstLiveIdx >= 0 ? nd.lastLiveIdx - nd.firstLiveIdx + 1 : 0;
-    nd.bands = bandsFor(nd.count, nd.modes, liveSpan);
+    // Green core sized by home tenure, so a home reflects the years it was
+    // actually home (incl. trips away), not its recorded live months.
+    const tenure = HOME_TENURE[nd.key] ?? 0;
+    nd.bands = bandsFor(nd.count, nd.modes, tenure);
+    // Each ring only begins drawing at its own mode's first month here.
+    for (const band of nd.bands) band.firstIdx = nd.modeFirst[band.mode] ?? nd.first;
     nd.baseR = nd.bands.reduce((mx, b) => Math.max(mx, b.r), 0);
     // Hit-target matches the visible dot exactly, so tooltips correspond to
     // real dots (not padded geography); later dots drawn on top win overlaps.
     nd.hitR = nd.baseR;
     nd.tipName = `${nd.place}, ${nd.region}`;
-    const yrs = Math.max(1, Math.round(nd.count / 12));
-    if (nd.count <= 2) {
+    const dur = HOME_TENURE[nd.key] ?? nd.count; // homes: tenure; trips: visits
+    const yrs = Math.max(1, Math.round(dur / 12));
+    const isHome = (HOME_TENURE[nd.key] ?? 0) > 0;
+    // A home's range shows only its LIVED years — a visit before (or after)
+    // living there doesn't extend it (Lewes reads 2025–now, not 2023–now).
+    const startY = isHome && nd.firstLiveIdx >= 0 ? MONTHS_PROJ[nd.firstLiveIdx].year : nd.firstY;
+    const endY = isHome && nd.lastLiveIdx >= 0 ? MONTHS_PROJ[nd.lastLiveIdx].year : nd.lastY;
+    const workN = nd.modes.work ?? 0;
+    const otherN = Math.max(nd.modes.travel ?? 0, nd.modes.make ?? 0, nd.modes.learn ?? 0);
+    if (!isHome && workN > 0 && workN >= otherN) {
+      // Work-only site: label it "work", placed by year (not a specific month).
+      nd.tipSub = nd.firstY === nd.lastY ? `${nd.firstY} · work` : `${nd.firstY}\u2013${nd.lastY} · work`;
+    } else if (nd.count <= 2) {
       const f = MONTHS_PROJ[nd.first];
       nd.tipSub = `${MONTH_ABBR[f.month]} ${f.year} · visit`;
-    } else if (nd.firstY === nd.lastY) {
-      // Entirely within one calendar year — show just the year, not a range.
-      nd.tipSub = `${nd.firstY}`;
+    } else if (startY === endY) {
+      // Entirely within one year — show just the year, not a range.
+      nd.tipSub = `${startY}`;
     } else {
-      const endTxt = nd.lastIdx >= N - 1 ? "now" : String(nd.lastY);
-      nd.tipSub = `${nd.firstY}–${endTxt} · ~${yrs} yr${yrs > 1 ? "s" : ""} total`;
+      const endTxt = nd.lastIdx >= N - 1 ? "now" : String(endY);
+      nd.tipSub = `${startY}–${endTxt} · ~${yrs} yr${yrs > 1 ? "s" : ""} total`;
     }
   }
   return order;
