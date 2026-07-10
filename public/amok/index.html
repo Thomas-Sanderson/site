@@ -48,12 +48,15 @@
     document.addEventListener('pointerdown', function (e) {
       if (e.target.closest('a') || started) return;
       started = true;
+      var fired = false;
       document.body.classList.add('started');
-      // unlock audio inside the gesture, then fire it at the wrap moment
+      // unlock audio inside the gesture — MUTED, so nothing is audible until fire
       try {
+        snd.muted = true;
         var u = snd.play();
-        if (u) u.then(function () { snd.pause(); snd.currentTime = 0; })
-                .catch(function () {});
+        if (u) u.then(function () {
+          if (\!fired) { snd.pause(); snd.currentTime = 0; }
+        }).catch(function () {});
       } catch (err) {}
       var cur = 0;
       try { cur = chip.getCurrentTime(); } catch (err) {}
@@ -62,8 +65,11 @@
         document.querySelectorAll('animate.in').forEach(function (a) {
           try { a.beginElement(); } catch (err) {}
         });
-        try { snd.currentTime = 0; var p = snd.play(); if (p) p.catch(function () {}); }
-        catch (err) {}
+        fired = true;
+        try {
+          snd.muted = false; snd.currentTime = 0;
+          var p = snd.play(); if (p) p.catch(function () {});
+        } catch (err) {}
         setTimeout(function () {
           var s = document.querySelector('set.pop');
           if (s) { try { s.beginElement(); } catch (err) {} }
