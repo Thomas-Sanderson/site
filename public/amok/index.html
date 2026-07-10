@@ -19,10 +19,10 @@
   .chip > svg { width: 100%; height: 100%; display: block; }
   .ttl {
     position: fixed;
-    left: clamp(16px, 4.5vw, 72px);
+    left: 50%; transform: translateX(-50%);
     top: clamp(14px, 4.5svh, 64px);
-    display: flex; align-items: center;
-    gap: clamp(14px, 2.2vw, 28px);
+    display: flex; flex-direction: column; align-items: center;
+    gap: clamp(8px, 1.4svh, 16px);
   }
   .ttl > svg { width: clamp(180px, 38vw, 470px); aspect-ratio: 3.7951; display: block; }
   .enter {
