@@ -55,7 +55,7 @@
         snd.muted = true;
         var u = snd.play();
         if (u) u.then(function () {
-          if (\!fired) { snd.pause(); snd.currentTime = 0; }
+          if (!fired) { snd.pause(); snd.currentTime = 0; }
         }).catch(function () {});
       } catch (err) {}
       var cur = 0;
