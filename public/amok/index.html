@@ -21,11 +21,11 @@
     position: fixed;
     left: clamp(16px, 4.5vw, 72px);
     top: clamp(14px, 4.5svh, 64px);
-    width: clamp(180px, 38vw, 470px);
+    display: flex; align-items: center;
+    gap: clamp(14px, 2.2vw, 28px);
   }
-  .ttl > svg { width: 100%; aspect-ratio: 3.7951; display: block; }
+  .ttl > svg { width: clamp(180px, 38vw, 470px); aspect-ratio: 3.7951; display: block; }
   .enter {
-    display: block; margin-top: 0.9em; text-align: center;
     font-family: Georgia, 'Times New Roman', serif;
     font-size: clamp(13px, 2.4vw, 18px); letter-spacing: 0.04em;
     color: #141414; text-decoration: none;
