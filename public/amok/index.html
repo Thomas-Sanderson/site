@@ -45,6 +45,12 @@
     var chip = document.querySelector('.chip svg');
     var W = 1.7889;
     var started = false;
+    snd.addEventListener('error', function () {
+      if (snd.dataset.alt) return;          // one retry only
+      snd.dataset.alt = '1';
+      snd.src = 'amok/amok.mp3';            // relative fallback (file:// etc.)
+      snd.load();
+    });
     document.addEventListener('pointerdown', function (e) {
       if (e.target.closest('a') || started) return;
       started = true;
