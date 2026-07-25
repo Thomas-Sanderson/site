@@ -431,7 +431,7 @@
 </g></g><circle cx="72.00" cy="132" r="1.8" fill="#D63B8F"/><circle cx="137.10" cy="132" r="1.8" fill="#D63B8F"/><circle cx="206.85" cy="132" r="1.8" fill="#D63B8F"/><circle cx="272.73" cy="132" r="1.8" fill="#D63B8F"/><circle cx="340.93" cy="132" r="1.8" fill="#D63B8F"/><text x="72.0" y="210.0" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#9DB8DC" text-anchor="middle">BARREL · B=72</text><text x="137.1" y="223.0" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#9DB8DC" text-anchor="middle">CENTER · C=80 / c=12</text><text x="206.9" y="210.0" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#9DB8DC" text-anchor="middle">THIRD · T=75 / t=10</text><text x="272.7" y="223.0" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#9DB8DC" text-anchor="middle">FOURTH · F=80 / f=10</text><text x="340.9" y="210.0" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#9DB8DC" text-anchor="middle">ESCAPE · E=15 / e=8</text><text x="468" y="223" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#9DB8DC" text-anchor="middle">BALANCE · 1.25 Hz</text></svg>
       <div class="bench__bar" role="group" aria-label="Simulation speed">
         <span class="k">Time scale</span>
-        <button class="spd" data-k="0.016666667" aria-pressed="false">1/60&#215; &#8212; slow motion</button>
+        <button class="spd" data-k="0.166666667" aria-pressed="false">1/6&#215; &#8212; slow motion</button>
         <button class="spd" data-k="1" aria-pressed="true">1× — true speed</button>
         <button class="spd" data-k="60" aria-pressed="false">60×</button>
         <button class="spd" data-k="3600" aria-pressed="false">3,600×</button>
@@ -545,12 +545,12 @@
     var K=1, simH=0, last=null, running=true;
 
     var READ={
-      0.016666667:'<b>1/60&#215; &#8212; slow motion.</b> One beat every twenty-four seconds: watch the entry jewel release its tooth, the wheel kick the exit pallet, and the fork toss the impulse pin.',
+      0.166666667:'<b>1/6&#215; &#8212; slow motion.</b> One beat every 2.4 seconds: watch the entry jewel release its tooth, the wheel kick the exit pallet, and the fork toss the impulse pin.',
       1:'<b>True speed.</b> The balance beats 2.5 times a second; the escape wheel ticks 24° per beat; the fourth wheel is your second hand. The center wheel takes an hour per turn and the barrel takes six — they\u2019re moving, you just can\u2019t prove it. That spread is the point.',
       60:'<b>60× — a minute per second.</b> Now the slow half of the train confesses: the fourth wheel laps once a second, the third every 7.5 seconds, the center once a minute. The escapement is doing 150 beats a second, which is why it\u2019s drawn as a blur — some honesty is best rendered fuzzy.',
       3600:'<b>3,600× — an hour per second.</b> The barrel finally shows its work: one revolution every six seconds, feeding a center wheel spinning once a second. Everything downstream is a smear. Five orders of magnitude between the spring and the beat, one gear ratio at a time.'
     };
-    var FAST={0.016666667:[], 1:[], 60:['escape','fork','balance'], 3600:['third','fourth','escape','fork','balance']};
+    var FAST={0.166666667:[], 1:[], 60:['escape','fork','balance'], 3600:['third','fourth','escape','fork','balance']};
 
     function rot(name,deg){ var L=ARBORS[name]; if(!L) return;
       for(var i=0;i<L.length;i++) L[i].el.setAttribute('transform','rotate('+deg+' '+L[i].cx+' '+L[i].cy+')'); }
@@ -594,7 +594,7 @@
       var FA=-11.22, fk=Math.max(-11.22,Math.min(11.22,fr));
       var m=Math.round(bt), D1=-28.00, D3=-20.00;
       var es=(fk+FA)/(2*FA), pR=m%2? es:1-es;
-      var sS=pR*pR*(3-2*pR);
+      var sS=pR<0.5?2*pR*pR:1-2*(1-pR)*(1-pR);  // linear accel then decel: velocity ramps as a triangle, starting and stopping at rest with the fork dwell (was a smoothstep, whose rounded ease read as a pause rather than a lock)
       var wE=(m==0)?0:(m%2? -24*(m-1)+D1*sS : -24*(m-2)+D1+D3*sS);
       for(var n in DPB) rot(n,(wE*(DPB[n]/DPB['escape']))%360);
       rot('fork', fk);
