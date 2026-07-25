@@ -23,7 +23,7 @@ export default function WorkCard({ study }: { study: CaseStudy }) {
       }}
     >
       <Link
-        href={`/work/${study.slug}`}
+        href={study.href ?? `/work/${study.slug}`}
         className="group block rounded-2xl overflow-hidden ring-1 ring-charcoal/5 bg-warm-white hover:ring-charcoal/15 hover:-translate-y-0.5 transition-all duration-300"
       >
         <div className="aspect-[16/10] overflow-hidden" style={{ backgroundColor: "rgba(45, 42, 38, 0.05)" }}>

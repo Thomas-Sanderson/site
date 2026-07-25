@@ -9,6 +9,8 @@ export interface CaseStudy {
   matters: string;
   /** If set, renders a 'Play Now' CTA linking here. */
   playUrl?: string;
+  /** If set, the /work index card links straight here instead of /work/[slug]. */
+  href?: string;
   /** If set, embeds the project (e.g. a playable iframe) at the bottom. */
   embedUrl?: string;
   /** Index-card thumbnail; falls back to the first body image. */
@@ -126,6 +128,30 @@ export const caseStudies: CaseStudy[] = [
       { src: "/images/paper-cannon/architecture.svg", alt: "Paper Cannon pipeline architecture — 14-agent multi-agent research synthesis system" },
       { src: "/images/paper-cannon/stacks.png", alt: "The Stacks — pre-flight phase extracting thesis, scope, claims, and correction candidates", clipped: true },
       { src: "/images/paper-cannon/distillation.png", alt: "Chat log distillation — session dynamics, counter-arguments, and trigger candidates", clipped: true },
+    ],
+    imagePlaceholders: [],
+  },
+  {
+    slug: "going-train",
+    title: "The Going Train",
+    subtitle: "A Hand-Drawn Clock Blueprint, Run and Audited by AI",
+    thumb: "/images/going-train/card.png",
+    href: "/going-train/index.html",
+    playUrl: "/going-train/index.html",
+    context:
+      "Seven years ago \u2014 no client, no deadline \u2014 I hand-drew a complete clock movement to understand it: six subsystems, every gear at its true tooth count, the ratios carried in the layer names. This year I handed the file to an AI.",
+    problem:
+      "Can a drawing be a spec? If the artifact is rigorous enough, a machine should be able to run it \u2014 and running it becomes an audit, catching errors a still image can hide for years.",
+    built:
+      "The blueprint's own linework, animated as a working movement: pallet contacts, lever throw, and escapement timing all measured out of the drawing \u2014 the two hand-drawn 'ghost' overlays turned out to be exact keyframes \u2014 with a tick synthesized at the instant each tooth lands on its jewel.",
+    matters:
+      "The audit came back with a bill: a pendulum variant physics prices at 4 cm long, and pallet jewels drawn 54\u00b0 apart where the geometry wants 60\u00b0 \u2014 so the second hand limps \u00b10.4\u00b0 per tick. Both kept, both labeled. A spec you can bill against is the whole point of a spec.",
+    extra: {
+      label: "The Fix",
+      text: "How a grandfather clock pays that bill: remove a wheel. A 30-tooth escape turns once per minute and carries the second hand itself, the beat slows to one per second, and the pendulum becomes the 994 mm seconds pendulum \u2014 the reason longcase clocks are as tall as their owners.",
+    },
+    images: [
+      { src: "/images/going-train/sheet.png", alt: "The full hand-drawn clock blueprint \u2014 six labeled subsystems in white and gold linework on blueprint blue", clipped: true },
     ],
     imagePlaceholders: [],
   },
