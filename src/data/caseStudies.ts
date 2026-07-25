@@ -136,7 +136,7 @@ export const caseStudies: CaseStudy[] = [
     title: "The Going Train",
     subtitle: "A Hand-Drawn Clock Blueprint, Run and Audited by AI",
     thumb: "/images/going-train/card.png",
-    href: "/going-train/index.html",
+    href: "/work/going-train",
     playUrl: "/going-train/index.html",
     context:
       "Seven years ago \u2014 no client, no deadline \u2014 I hand-drew a complete clock movement to understand it: six subsystems, every gear at its true tooth count, the ratios carried in the layer names. This year I handed the file to an AI.",
