@@ -23,6 +23,17 @@ const nextConfig: NextConfig = {
       { source: "/work/sudsy", destination: "/work/couve", permanent: true },
     ];
   },
+  // Serve the self-contained interactive study at a clean /work/going-train URL
+  // (matching the other case studies) instead of exposing /going-train/index.html.
+  // beforeFiles runs ahead of the /work/[slug] dynamic route, so this wins; the
+  // generated [slug] page stays as a graceful fallback if the rewrite ever misses.
+  async rewrites() {
+    return {
+      beforeFiles: [
+        { source: "/work/going-train", destination: "/going-train/index.html" },
+      ],
+    };
+  },
 };
 
 export default nextConfig;
